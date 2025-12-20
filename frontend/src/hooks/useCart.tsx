@@ -1,0 +1,69 @@
+"use client";
+
+import { useEffect, useState, useMemo } from "react";
+import { useGetCartQuery } from "@/src/redux/apis/users";
+import { useTypedSelector } from "@/src/redux/store";
+import { getGuestCart } from "@/src/utils/guestCart";
+import { CartType } from "@/src/types/user";
+
+/**
+ * Hook to manage fetching and calculating cart details
+ * for both logged-in users and guests.
+ */
+export const useCart = () => {
+    const user = useTypedSelector((state) => state.auth.user);
+    const isLoggedIn = !!user?._id;
+    const [cart, setCart] = useState<CartType[]>([]);
+
+    // Fetch cart data if logged in, else use guest cart
+    const {
+        data,
+        isLoading: isCartLoading,
+        isError,
+    } = useGetCartQuery(user?._id || "", {
+        skip: !isLoggedIn,
+    });
+
+    useEffect(() => {
+        if (isLoggedIn && data?.data) {
+            setCart(data.data);
+        } else if (!isLoggedIn) {
+            const guestCart = getGuestCart();
+            setCart(guestCart);
+        }
+    }, [isLoggedIn, data]);
+
+    // Order total calculation
+    const subtotal = useMemo(
+        () =>
+            cart.reduce(
+                (sum, item) => sum + (item.product?.price || 0) * item.quantity,
+                0
+            ),
+        [cart]
+    );
+
+    const itemCount = useMemo(
+        () => cart.reduce((sum, item) => sum + item.quantity, 0),
+        [cart]
+    );
+
+    const shipping = useMemo(() => {
+        if (itemCount === 0) return 0;
+        const baseShipping = 40;
+        const perItemCharge = 10;
+        // (itemCount - 1) handles the first item being included in base
+        return baseShipping + Math.max(0, itemCount - 1) * perItemCharge;
+    }, [itemCount]);
+
+    const total = useMemo(() => subtotal + shipping, [subtotal, shipping]);
+
+    return {
+        cart,
+        subtotal,
+        shipping,
+        total,
+        isLoading: isCartLoading,
+        isError,
+    };
+};
