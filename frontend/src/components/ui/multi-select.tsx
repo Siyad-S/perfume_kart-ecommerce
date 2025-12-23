@@ -14,7 +14,6 @@ interface MultiSelectProps {
 }
 
 export function MultiSelect({ value, onChange, options, placeholder }: MultiSelectProps) {
-    const [open, setOpen] = React.useState(false);
 
     const handleSelect = (option: string) => {
         if (value.includes(option)) {

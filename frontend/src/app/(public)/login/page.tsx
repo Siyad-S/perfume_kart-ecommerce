@@ -4,7 +4,9 @@ import { SignupForm } from "@/src/components/admin/login/signupForm";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-export default function AuthPage() {
+import { Suspense } from "react";
+
+function AuthPageContent() {
     const [isLogin, setIsLogin] = useState(true);
     const params = useSearchParams();
     const redirect = params.get("redirect") || "/home";
@@ -94,5 +96,13 @@ export default function AuthPage() {
                 </button>
             </div>
         </div>
+    );
+}
+
+export default function AuthPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <AuthPageContent />
+        </Suspense>
     );
 }

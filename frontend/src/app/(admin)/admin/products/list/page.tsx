@@ -32,11 +32,24 @@ interface Product {
   description?: string;
   price: number;
   image_urls?: string[];
-  created_at?: Date;
+  banner_url?: string;
+  created_at?: Date | string;
   brand_id?: string;
   category_id?: string;
-
-
+  discount_price?: number;
+  stock_quantity?: number;
+  sku?: string;
+  notes?: {
+    top: string[];
+    middle: string[];
+    base: string[];
+  };
+  tags?: string[];
+  best_seller?: boolean;
+  trending?: boolean;
+  new_launch?: boolean;
+  banner_file?: File;
+  image_files?: File[];
 }
 
 export default function ProductsListingPage() {
@@ -47,7 +60,7 @@ export default function ProductsListingPage() {
     "desc"
   );
   const [openAddEdit, setOpenAddEdit] = React.useState(false);
-  const [editProduct, setEditProduct] = React.useState<any | null>(null);
+  const [editProduct, setEditProduct] = React.useState<Product | null>(null);
 
   const { upload } = useFileUpload();
   const [createProduct, { isLoading: createLoading }] =
@@ -66,7 +79,8 @@ export default function ProductsListingPage() {
 
   const formInitialValue = React.useMemo(
     () => ({
-      id: editProduct?._id || undefined,
+      ...editProduct,
+      id: editProduct?._id,
       name: editProduct?.name || "",
       description: editProduct?.description || "",
       brand_id: editProduct?.brand_id || "",
@@ -90,13 +104,15 @@ export default function ProductsListingPage() {
     [editProduct]
   );
 
-
-  console.log("editProduct", editProduct);
-
-
-  const submitForm = async (values: any) => {
+  const submitForm = async (values: Product) => {
     try {
-      const updatedValues = { ...values };
+      const updatedValues = {
+        ...values,
+        description: values.description || "",
+        discount_price: values.discount_price || 0,
+        stock_quantity: values.stock_quantity || 0,
+        sku: values.sku || "",
+      };
 
       if (values.banner_file) {
         const formData = new FormData();
@@ -106,15 +122,15 @@ export default function ProductsListingPage() {
       }
       delete updatedValues.banner_file;
 
-      if (values.image_files?.length > 0) {
+      if (values.image_files && values.image_files.length > 0) {
         const formData = new FormData();
         values.image_files.forEach((file: File) => {
           formData.append("images", file);
         });
         const result = await upload(formData);
         updatedValues.image_urls = [
-          ...values.image_urls,
-          ...(result?.data?.images?.map((img: any) => img.url) || []),
+          ...(values.image_urls || []),
+          ...(result?.data?.images?.map((img: { url: string }) => img.url) || []),
         ];
       }
       delete updatedValues.image_files;
@@ -155,96 +171,93 @@ export default function ProductsListingPage() {
     }
   };
 
-  const products = productsData?.data?.data || [];
+  const products: Product[] = (productsData?.data?.data as unknown as Product[]) || [];
 
   return (
-    <div className="flex flex-col w-full h-[calc(100vh-64px)] p-4 mt-14">
-      <div className="overflow-x-auto flex-1 border shadow rounded-md">
-        <div className="bg-white p-4 rounded-md min-h-[500px] max-h-[500px]">
-          {isLoading && <Loader />}
-          <TableListingPage
-            data={products}
-            totalCount={productsData?.data?.totalCount || 0}
-            columns={[
-              {
-                key: "image_urls",
-                label: "Image",
-                sortable: false,
-                render: (item: Product) =>
-                  item.image_urls && item.image_urls[0] ? (
-                    <div className="relative bg-gray-200 w-[90px] h-[90px] bg-grey">
-                      <Image
-                        src={item.image_urls[0]}
-                        alt="Product"
-                        fill
-                        className="rounded-md"
-                      />
-                    </div>
-                  ) : (
-                    "No Image"
-                  ),
-              },
-              {
-                key: "name",
-                label: "Name",
-                sortable: true,
-              },
-              {
-                key: "price",
-                label: "Price",
-                sortable: true,
-                render: (item: Product) => `₹${item.price}`,
-              },
-              {
-                key: "created_at",
-                label: "Created At",
-                sortable: true,
-                render: (item: Product) =>
-                  item.created_at
-                    ? new Date(item.created_at).toLocaleDateString()
-                    : "N/A",
-              },
-            ]}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            sortColumn={sortColumn}
-            setSortColumn={(c) => setSortColumn(c as SortColumn)}
-            sortDirection={sortDirection}
-            setSortDirection={setSortDirection}
-            itemsPerPage={5}
-            title="Products"
-            addButtonLabel="Add Product"
-            onAddClick={() => {
-              setEditProduct(null);
-              setOpenAddEdit(true);
-            }}
-            onEditClick={(item: Product) => {
-              setEditProduct(item);
-              setTimeout(() => {
-                setOpenAddEdit(true);
-              }, 100);
-            }}
-            onDeleteClick={(item: Product) =>
-              handleDeleteProduct(item?._id || "")
-            }
-            loading={
-              isLoading || createLoading || updateLoading || deleteLoading
-            }
-          />
+    <div className="flex flex-col w-full h-[calc(100vh-64px)] p-4">
+      {isLoading && <Loader />}
+      <TableListingPage
+        data={products}
+        totalCount={productsData?.data?.totalCount || 0}
+        columns={[
+          {
+            key: "image_urls",
+            label: "Image",
+            sortable: false,
+            render: (item: Product) =>
+              item.image_urls && item.image_urls[0] ? (
+                <div className="relative w-[50px] h-[50px] bg-gray-200 rounded-md">
+                  <Image
+                    src={item.image_urls[0]}
+                    alt="Product"
+                    fill
+                    className="rounded-md object-cover"
+                  />
+                </div>
+              ) : (
+                "No Image"
+              ),
+          },
+          {
+            key: "name",
+            label: "Name",
+            sortable: true,
+          },
+          {
+            key: "price",
+            label: "Price",
+            sortable: true,
+            render: (item: Product) => `₹${item.price}`,
+          },
+          {
+            key: "created_at",
+            label: "Created At",
+            sortable: true,
+            render: (item: Product) =>
+              item.created_at
+                ? new Date(item.created_at).toLocaleDateString()
+                : "N/A",
+          },
+        ]}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        sortColumn={sortColumn}
+        setSortColumn={(c) => setSortColumn(c as SortColumn)}
+        sortDirection={sortDirection}
+        setSortDirection={setSortDirection}
+        itemsPerPage={5}
+        title="Products"
+        addButtonLabel="Add Product"
+        onAddClick={() => {
+          setEditProduct(null);
+          setOpenAddEdit(true);
+        }}
+        onEditClick={(item: Product) => {
+          setEditProduct(item);
+          setTimeout(() => {
+            setOpenAddEdit(true);
+          }, 100);
+        }}
+        onDeleteClick={(item: Product) =>
+          handleDeleteProduct(item?._id || "")
+        }
+        loading={
+          isLoading || createLoading || updateLoading || deleteLoading
+        }
+      />
 
-          <AddEditProduct
-            open={openAddEdit}
-            setOpen={setOpenAddEdit}
-            initialValues={formInitialValue}
-            onSubmit={submitForm}
-            submitting={createLoading || updateLoading}
-          />
+      <AddEditProduct
+        open={openAddEdit}
+        setOpen={setOpenAddEdit}
+        initialValues={formInitialValue}
+        onSubmit={submitForm}
+        submitting={createLoading || updateLoading}
+      />
 
-          <Toaster richColors position="top-right" />
-        </div>
-      </div>
+      <Toaster richColors position="top-right" />
     </div>
+
   );
 }

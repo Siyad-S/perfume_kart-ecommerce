@@ -6,13 +6,12 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = "text", error, value = "", ...props }, ref) => {
+  ({ className, type = "text", error, ...props }, ref) => {
     return (
       <div className="w-full">
         <input
           ref={ref}
           type={type}
-          value={value ?? ""} // ✅ always controlled
           aria-invalid={!!error}
           data-slot="input"
           className={cn(

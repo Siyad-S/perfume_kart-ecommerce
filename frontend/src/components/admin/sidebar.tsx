@@ -3,22 +3,65 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Image from "next/image"
 import { cn } from "@/src/lib/utils"
 import { Button } from "@/src/components/ui/button"
 import { ScrollArea } from "@/src/components/ui/scroll-area"
-import { Home, Tags, Grid, Package, ShoppingCart, Box, CreditCard, Star, Truck, X, Menu, Image } from "lucide-react";
+import {
+  LayoutDashboard,
+  Tags,
+  Grid,
+  Package,
+  ShoppingCart,
+  CreditCard,
+  Image as ImageIcon,
+  X,
+  Menu,
+  Settings,
+  Users
+} from "lucide-react";
 
-const sidebarLinks = [
-  // { label: "Overview", icon: Home, href: "/admin/overview" },
-  { label: "Brands", icon: Tags, href: "/admin/brands" },
-  { label: "Categories", icon: Grid, href: "/admin/categories" },
-  { label: "Banners", icon: Image, href: "/admin/banners" },
-  { label: "Products", icon: Package, href: "/admin/products/list" },
-  { label: "Orders", icon: ShoppingCart, href: "/admin/orders" },
-  // { label: "Inventory", icon: Box, href: "/admin/inventory" },
-  { label: "Payments", icon: CreditCard, href: "/admin/payments" },
-  // { label: "Reviews", icon: Star, href: "/admin/reviews" },
-  // { label: "Shipments", icon: Truck, href: "/admin/shipments/list" },
+type SidebarGroup = {
+  title: string;
+  items: {
+    label: string;
+    icon: React.ElementType;
+    href: string;
+    activePrefix?: string;
+  }[];
+}
+
+const sidebarGroups: SidebarGroup[] = [
+  {
+    title: "Overview",
+    items: [
+      { label: "Dashboard", icon: LayoutDashboard, href: "/admin", activePrefix: "/admin" },
+    ]
+  },
+  {
+    title: "Catalog",
+    items: [
+      { label: "Products", icon: Package, href: "/admin/products/list", activePrefix: "/admin/products" },
+      { label: "Categories", icon: Grid, href: "/admin/categories" },
+      { label: "Brands", icon: Tags, href: "/admin/brands" },
+      { label: "Banners", icon: ImageIcon, href: "/admin/banners" },
+    ]
+  },
+  {
+    title: "Sales & Orders",
+    items: [
+      { label: "Orders", icon: ShoppingCart, href: "/admin/orders" },
+      { label: "Payments", icon: CreditCard, href: "/admin/payments" },
+      // { label: "Shipments", icon: Truck, href: "/admin/shipments" }, 
+    ]
+  },
+  {
+    title: "Management",
+    items: [
+      // Placeholder for now
+      { label: "Settings", icon: Settings, href: "/admin/settings" },
+    ]
+  }
 ];
 
 
@@ -35,51 +78,74 @@ export function Sidebar() {
         </Button>
       </div>
 
-      {/* Sidebar - use h-screen so it always fills viewport height */}
+      {/* Sidebar */}
       <aside
         className={cn(
-          "md:static top-0 left-0 h-screen w-64 bg-background border-r z-40 transform transition-transform duration-300 ease-in-out fixed",
-          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          "fixed top-0 left-0 z-40 h-screen w-64 border-r bg-card transition-transform duration-300 ease-in-out md:translate-x-0",
+          isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* make ScrollArea full height and column layout so content stretches */}
-        <ScrollArea className="h-full">
-          <div className="p-4 h-full flex flex-col">
-            <h2 className="text-lg font-bold mb-6">Admin Dashboard</h2>
+        <div className="h-16 border-b flex items-center px-6 gap-3">
+          <div className="relative h-8 w-8">
+            <Image
+              src="/fragrance_kart_ecommerce_logo.png"
+              alt="Logo"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <span className="text-xl font-serif font-bold tracking-wide text-primary">Fragrance Kart</span>
+        </div>
 
-            {/* nav grows to fill space if needed */}
-            <div className="h-full flex flex-col justify-between">
+        <ScrollArea className="h-[calc(100vh-64px)]">
+          <div className="space-y-6 p-4">
+            {sidebarGroups.map((group, index) => (
+              <div key={index} className="px-3 py-2">
+                <h3 className="mb-2 px-4 text-xs font-semibold uppercase text-muted-foreground tracking-wider">
+                  {group.title}
+                </h3>
+                <div className="space-y-1">
+                  {group.items.map(({ label, icon: Icon, href, activePrefix }) => {
+                    // Check if path is active
+                    let isActive = false;
+                    if (activePrefix) {
+                      if (activePrefix === "/admin") {
+                        // Only match exact /admin or /admin/ or query params
+                        isActive = pathname === "/admin" || pathname === "/admin/";
+                      } else {
+                        isActive = pathname?.startsWith(activePrefix);
+                      }
+                    } else {
+                      // Fallback matching
+                      isActive = pathname === href || (href !== "/admin" && pathname?.startsWith(href));
+                    }
 
-              <nav className="space-y-1 flex-1">
-                {sidebarLinks.map(({ label, icon: Icon, href }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
-                      pathname === href && "bg-accent text-accent-foreground"
-                    )}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {label}
-                  </Link>
-                ))}
-              </nav>
-
-              {/* optional footer area pinned to bottom */}
-              {/* <div className="mt-4">
-                <button className="w-full text-sm px-3 py-2 rounded-md">Logout</button>
-              </div> */}
-            </div>
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        onClick={() => setIsOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                          isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {label}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         </ScrollArea>
       </aside>
 
-      {/* Overlay for mobile when menu is open */}
+      {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-30 md:hidden"
+          className="fixed inset-0 z-30 bg-background/80 backdrop-blur-sm md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
