@@ -76,123 +76,114 @@ export default function PaymentsPage() {
     };
 
     return (
-        <div className="flex flex-col w-full h-full p-4 mt-14">
-            <div className="overflow-x-auto flex-1 border shadow rounded-md">
-                <div className="bg-white p-4 rounded-md min-h-[500px] max-h-[500px]">
-                    {(isLoading || deleteLoading) && <Loader />}
+        <div className="flex flex-col w-full h-[calc(100vh-64px)] p-4">
+            {(isLoading || deleteLoading) && <Loader />}
 
-                    {/* 🔽 Filter Section */}
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-2">
-                            <label className="text-sm font-medium text-gray-700">
-                                Filter by Status:
-                            </label>
-                            <select
-                                value={statusFilter}
-                                onChange={(e) => {
-                                    setStatusFilter(e.target.value);
-                                    setCurrentPage(1); // reset to first page on filter change
-                                }}
-                                className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            >
-                                <option value="all">All</option>
-                                <option value="success">Success</option>
-                                <option value="failed">Failed</option>
-                                <option value="pending">Pending</option>
-                            </select>
-                        </div>
+            <TableListingPage
+                data={payments?.data?.data || []}
+                totalCount={payments?.data?.totalCount || 0}
+                filters={
+                    <div className="flex items-center space-x-2">
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => {
+                                setStatusFilter(e.target.value);
+                                setCurrentPage(1); // reset to first page on filter change
+                            }}
+                            className="border capitalize border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 h-10 bg-background"
+                        >
+                            <option value="all">All Status</option>
+                            <option value="success">Success</option>
+                            <option value="failed">Failed</option>
+                            <option value="pending">Pending</option>
+                        </select>
                     </div>
+                }
+                columns={[
+                    {
+                        key: "user",
+                        label: "Customer",
+                        render: (item: Payment) =>
+                            item.user ? (
+                                <div>
+                                    <div className="font-medium">{item.user.name}</div>
+                                    <div className="text-sm text-gray-500">
+                                        {item.user.email}
+                                    </div>
+                                </div>
+                            ) : (
+                                "N/A"
+                            ),
+                    },
+                    {
+                        key: "amount",
+                        label: "Amount",
+                        sortable: true,
+                        render: (item: Payment) =>
+                            item.amount ? `₹${item.amount.toFixed(2)}` : "N/A",
+                    },
+                    {
+                        key: "payment_method",
+                        label: "Method",
+                        render: (item: Payment) =>
+                            item.payment_method || "N/A",
+                    },
+                    {
+                        key: "payment_status",
+                        label: "Status",
+                        render: (item: Payment) => (
+                            <span
+                                className={`px-2 py-1 text-sm rounded-md ${item.payment_status === "success"
+                                    ? "bg-green-100 text-green-700"
+                                    : item.payment_status === "failed"
+                                        ? "bg-red-100 text-red-700"
+                                        : item.payment_status === "pending"
+                                            ? "bg-yellow-100 text-yellow-700"
+                                            : "bg-gray-100 text-gray-700"
+                                    }`}
+                            >
+                                {item.payment_status || "N/A"}
+                            </span>
+                        ),
+                    },
+                    {
+                        key: "order_id",
+                        label: "Order ID",
+                        render: (item: Payment) => item.order_id || "N/A",
+                    },
+                    {
+                        key: "payment_id",
+                        label: "Payment ID",
+                        render: (item: Payment) => item.payment_id || "N/A",
+                    },
+                    {
+                        key: "created_at",
+                        label: "Date",
+                        sortable: true,
+                        render: (item: Payment) =>
+                            item.created_at
+                                ? new Date(item.created_at).toLocaleDateString()
+                                : "N/A",
+                    },
+                ]}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                sortColumn={sortColumn}
+                setSortColumn={(column) => setSortColumn(column as SortColumn)}
+                sortDirection={sortDirection}
+                setSortDirection={setSortDirection}
+                itemsPerPage={5}
+                title="Payments"
+                addButtonLabel=""
+                onDeleteClick={(item: Payment) =>
+                    handleDeletePayment(item?._id || "")
+                }
+                loading={isLoading || deleteLoading}
+            />
 
-                    <TableListingPage
-                        data={payments?.data?.data || []}
-                        totalCount={payments?.data?.totalCount || 0}
-                        columns={[
-                            {
-                                key: "user",
-                                label: "Customer",
-                                render: (item: Payment) =>
-                                    item.user ? (
-                                        <div>
-                                            <div className="font-medium">{item.user.name}</div>
-                                            <div className="text-sm text-gray-500">
-                                                {item.user.email}
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        "N/A"
-                                    ),
-                            },
-                            {
-                                key: "amount",
-                                label: "Amount",
-                                sortable: true,
-                                render: (item: Payment) =>
-                                    item.amount ? `₹${item.amount.toFixed(2)}` : "N/A",
-                            },
-                            {
-                                key: "payment_method",
-                                label: "Method",
-                                render: (item: Payment) =>
-                                    item.payment_method || "N/A",
-                            },
-                            {
-                                key: "payment_status",
-                                label: "Status",
-                                render: (item: Payment) => (
-                                    <span
-                                        className={`px-2 py-1 text-sm rounded-md ${item.payment_status === "success"
-                                                ? "bg-green-100 text-green-700"
-                                                : item.payment_status === "failed"
-                                                    ? "bg-red-100 text-red-700"
-                                                    : item.payment_status === "pending"
-                                                        ? "bg-yellow-100 text-yellow-700"
-                                                        : "bg-gray-100 text-gray-700"
-                                            }`}
-                                    >
-                                        {item.payment_status || "N/A"}
-                                    </span>
-                                ),
-                            },
-                            {
-                                key: "order_id",
-                                label: "Order ID",
-                                render: (item: Payment) => item.order_id || "N/A",
-                            },
-                            {
-                                key: "payment_id",
-                                label: "Payment ID",
-                                render: (item: Payment) => item.payment_id || "N/A",
-                            },
-                            {
-                                key: "created_at",
-                                label: "Date",
-                                sortable: true,
-                                render: (item: Payment) =>
-                                    item.created_at
-                                        ? new Date(item.created_at).toLocaleDateString()
-                                        : "N/A",
-                            },
-                        ]}
-                        searchTerm={searchTerm}
-                        setSearchTerm={setSearchTerm}
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                        sortColumn={sortColumn}
-                        setSortColumn={(column) => setSortColumn(column as SortColumn)}
-                        sortDirection={sortDirection}
-                        setSortDirection={setSortDirection}
-                        itemsPerPage={5}
-                        title="Payments"
-                        addButtonLabel=""
-                        onDeleteClick={(item: Payment) =>
-                            handleDeletePayment(item?._id || "")
-                        }
-                        loading={isLoading || deleteLoading}
-                    />
-
-                    <Toaster richColors position="top-right" />
-                </div>
-            </div>
+            <Toaster richColors position="top-right" />
         </div>
     );
 }

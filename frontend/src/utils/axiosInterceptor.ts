@@ -1,4 +1,9 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+
+// Extend the internal config to include our custom property
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -10,10 +15,10 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
   (response) => response.data, // unwrap response automatically
   async (error: AxiosError) => {
-    const originalRequest: any = error.config;
+    const originalRequest = error.config as CustomAxiosRequestConfig;
 
     // If access token expired → try refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
@@ -22,7 +27,7 @@ axiosInstance.interceptors.response.use(
 
         // Retry the original request
         return axiosInstance(originalRequest);
-      } catch (refreshError) {
+      } catch {
         // Refresh failed → clear session and redirect
         if (typeof window !== "undefined") {
           window.location.href = "/login";

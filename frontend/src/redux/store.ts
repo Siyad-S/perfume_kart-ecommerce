@@ -17,6 +17,7 @@ import { orderApi } from "./apis/orders"
 import { paymentApi } from "./apis/payments"
 import { adminOrderApi } from "./apis/adminOrders"
 import { adminPaymentApi } from "./apis/adminPayments";
+import { adminAnalyticsApi } from "./apis/adminAnalytics";
 import brandsReducer from "./slices/brands";
 
 export const store = configureStore({
@@ -35,6 +36,7 @@ export const store = configureStore({
         [paymentApi.reducerPath]: paymentApi.reducer,
         [adminOrderApi.reducerPath]: adminOrderApi.reducer,
         [adminPaymentApi.reducerPath]: adminPaymentApi.reducer,
+        [adminAnalyticsApi.reducerPath]: adminAnalyticsApi.reducer,
         file: fileReducer,
         auth: authReducer,
         categories: categoriesReducer,

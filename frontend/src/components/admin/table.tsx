@@ -22,17 +22,17 @@ import Loader from "../common/loader";
 import { NoData } from "../common/noData";
 import { CustomPagination } from "../common/customPagination";
 
-interface Column {
+interface Column<T> {
     key: string;
     label: string;
     sortable?: boolean;
-    render?: (item: any) => React.ReactNode;
+    render?: (item: T) => React.ReactNode;
 }
 
-interface TableListingPageProps {
-    data: any[];
+interface TableListingPageProps<T> {
+    data: T[];
     totalCount: number;
-    columns: Column[];
+    columns: Column<T>[];
     searchTerm: string;
     setSearchTerm: (value: string) => void;
     currentPage: number;
@@ -45,12 +45,13 @@ interface TableListingPageProps {
     title: string;
     addButtonLabel: string;
     onAddClick?: () => void;
-    onEditClick?: (item: any) => void;
-    onDeleteClick?: (item: any) => void;
+    onEditClick?: (item: T) => void;
+    onDeleteClick?: (item: T) => void;
     loading: boolean;
+    filters?: React.ReactNode;
 }
 
-export function TableListingPage({
+export function TableListingPage<T extends { id?: string | number; _id?: string }>({
     data,
     totalCount,
     columns,
@@ -69,7 +70,8 @@ export function TableListingPage({
     onEditClick,
     onDeleteClick,
     loading,
-}: TableListingPageProps) {
+    filters,
+}: TableListingPageProps<T>) {
 
     // Handle sorting
     const handleSort = (columnKey: string) => {
@@ -84,13 +86,20 @@ export function TableListingPage({
     const totalPages = Math.ceil(totalCount / itemsPerPage);
 
     return (
-        <div className="flex flex-col w-full h-full p-4 gap-4">
+        <div className="flex flex-col w-full h-full gap-4">
             {/* Top bar */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-start gap-2">
                     <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
                 </div>
                 <div className="flex items-center gap-2 w-full sm:w-auto">
+                    {/* Filters Slot */}
+                    {filters && (
+                        <div className="mr-2">
+                            {filters}
+                        </div>
+                    )}
+
                     <Input
                         placeholder="Search..."
                         value={searchTerm}
@@ -149,7 +158,8 @@ export function TableListingPage({
                                                 <TableCell key={column.key} className="py-3">
                                                     {column.render
                                                         ? column.render(item)
-                                                        : item[column.key]}
+                                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                        : (item as any)[column.key]}
                                                 </TableCell>
                                             ))}
                                             <TableCell>

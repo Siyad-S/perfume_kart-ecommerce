@@ -14,6 +14,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { useFileUpload } from "@/src/hooks/useFileUpload";
 import Loader from "@/src/components/common/loader";
 import { AddEditCategory } from "@/src/components/admin/Category/addEditCategory";
+import Image from "next/image";
 
 type SortColumn = "name" | "created_at";
 type SortValue =
@@ -48,7 +49,7 @@ export default function CategoriesPage() {
         useAdminCreateCategoryMutation();
     const [updateCategory, { isLoading: updateLoading, isSuccess: updateSuccess }] =
         useAdminUpdateCategoryMutation();
-    const [deleteCategory, { isLoading: deleteLoading, isSuccess: deleteSuccess }] =
+    const [deleteCategory, { isLoading: deleteLoading }] =
         useAdminDeleteCategoryMutation();
 
     const { upload, loading: uploadLoading } = useFileUpload();
@@ -61,7 +62,6 @@ export default function CategoriesPage() {
     const {
         data: categories,
         isLoading,
-        error,
         refetch,
     } = useAdminGetCategoriesQuery({
         search: searchTerm,
@@ -82,7 +82,7 @@ export default function CategoriesPage() {
             setEditCategory(null);
             refetch();
         }
-    }, [createSuccess, updateSuccess]);
+    }, [createSuccess, updateSuccess, refetch]);
 
     const formInitialValue = React.useMemo(
         () => ({
@@ -135,88 +135,85 @@ export default function CategoriesPage() {
     };
 
     return (
-        <div className="flex flex-col w-full h-full p-4 mt-14">
-            <div className="overflow-x-auto flex-1 border shadow rounded-md">
-                <div className="bg-white p-4 rounded-md min-h-[500px] max-h-[500px]">
-                    {isLoading && <Loader />}
-                    <TableListingPage
-                        data={categories?.data?.data || []}
-                        totalCount={categories?.data?.totalCount || 0}
-                        columns={[
-                            {
-                                key: "image_url",
-                                label: "Image",
-                                render: (item: Category) =>
-                                    item.image_url ? (
-                                        <div className="relative w-[80px] h-[80px]">
-                                            <img
-                                                src={item.image_url}
-                                                alt={item.name}
-                                                className="w-full h-full rounded-md"
-                                            />
-                                        </div>
-                                    ) : (
-                                        "N/A"
-                                    ),
-                            },
-                            {
-                                key: "name",
-                                label: "Category Name",
-                                sortable: true,
-                            },
-                            {
-                                key: "created_at",
-                                label: "Created At",
-                                sortable: true,
-                                render: (item: Category) =>
-                                    item.created_at
-                                        ? new Date(item.created_at).toLocaleDateString()
-                                        : "N/A",
-                            },
-                        ]}
-                        searchTerm={searchTerm}
-                        setSearchTerm={setSearchTerm}
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                        sortColumn={sortColumn}
-                        setSortColumn={(column) => setSortColumn(column as SortColumn)}
-                        sortDirection={sortDirection}
-                        setSortDirection={setSortDirection}
-                        itemsPerPage={5}
-                        title="Categories"
-                        addButtonLabel="Add Category"
-                        onAddClick={() => {
-                            setEditCategory(null);
-                            setOpenAddEdit(true);
-                        }}
-                        onEditClick={(item: Category) => {
-                            setEditCategory(item);
-                            setTimeout(() => {
-                                setOpenAddEdit(true);
-                            }, 100);
-                        }}
-                        onDeleteClick={(item: Category) =>
-                            handleDeleteCategory(item?._id || "")
-                        }
-                        loading={
-                            isLoading ||
-                            createLoading ||
-                            updateLoading ||
-                            deleteLoading
-                        }
-                    />
+        <div className="flex flex-col w-full h-[calc(100vh-64px)] p-4">
+            {isLoading && <Loader />}
+            <TableListingPage
+                data={categories?.data?.data || []}
+                totalCount={categories?.data?.totalCount || 0}
+                columns={[
+                    {
+                        key: "image_url",
+                        label: "Image",
+                        render: (item: Category) =>
+                            item.image_url ? (
+                                <div className="relative w-[50px] h-[50px] bg-gray-200 rounded-md">
+                                    <Image
+                                        src={item.image_url}
+                                        alt={item.name}
+                                        fill
+                                        className="rounded-md object-cover"
+                                    />
+                                </div>
+                            ) : (
+                                "N/A"
+                            ),
+                    },
+                    {
+                        key: "name",
+                        label: "Category Name",
+                        sortable: true,
+                    },
+                    {
+                        key: "created_at",
+                        label: "Created At",
+                        sortable: true,
+                        render: (item: Category) =>
+                            item.created_at
+                                ? new Date(item.created_at).toLocaleDateString()
+                                : "N/A",
+                    },
+                ]}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                sortColumn={sortColumn}
+                setSortColumn={(column) => setSortColumn(column as SortColumn)}
+                sortDirection={sortDirection}
+                setSortDirection={setSortDirection}
+                itemsPerPage={5}
+                title="Categories"
+                addButtonLabel="Add Category"
+                onAddClick={() => {
+                    setEditCategory(null);
+                    setOpenAddEdit(true);
+                }}
+                onEditClick={(item: Category) => {
+                    setEditCategory(item);
+                    setTimeout(() => {
+                        setOpenAddEdit(true);
+                    }, 100);
+                }}
+                onDeleteClick={(item: Category) =>
+                    handleDeleteCategory(item?._id || "")
+                }
+                loading={
+                    isLoading ||
+                    createLoading ||
+                    updateLoading ||
+                    deleteLoading
+                }
+            />
 
-                    <AddEditCategory
-                        open={openAddEdit}
-                        setOpen={setOpenAddEdit}
-                        initialValues={formInitialValue}
-                        onSubmit={submitForm}
-                        submitting={uploadLoading || createLoading || updateLoading}
-                    />
+            <AddEditCategory
+                open={openAddEdit}
+                setOpen={setOpenAddEdit}
+                initialValues={formInitialValue}
+                onSubmit={submitForm}
+                submitting={uploadLoading || createLoading || updateLoading}
+            />
 
-                    <Toaster richColors position="top-right" />
-                </div>
-            </div>
+            <Toaster richColors position="top-right" />
         </div>
     );
 }

@@ -24,15 +24,26 @@ type SortValue = "created_at_asc" | "created_at_desc" | undefined;
 
 interface Banner {
     _id?: string;
-    banner_url?: string | null;
-    product_id?: string | null;
+    banner_url?: string;
+    product_id?: string;
     banner_text?: string;
     description?: string;
     home_slider?: boolean;
     home_sub?: boolean;
     category_listing?: boolean;
-    category_id?: string | null;
+    category_id?: string;
     created_at?: Date;
+    banner_file?: File;
+}
+
+interface Product {
+    _id: string;
+    name: string;
+}
+
+interface Category {
+    _id: string;
+    name: string;
 }
 
 export default function BannersPage() {
@@ -48,7 +59,7 @@ export default function BannersPage() {
         useAdminCreateBannerMutation();
     const [updateBanner, { isLoading: updateLoading, isSuccess: updateSuccess }] =
         useAdminUpdateBannerMutation();
-    const [deleteBanner, { isLoading: deleteLoading, isSuccess: deleteSuccess }] =
+    const [deleteBanner, { isLoading: deleteLoading }] =
         useAdminDeleteBannerMutation();
 
     const { data: banners, isLoading, refetch } = useAdminGetBannersQuery({
@@ -82,11 +93,29 @@ export default function BannersPage() {
             setEditBanner(null);
             refetch();
         }
-    }, [createSuccess, updateSuccess]);
+    }, [createSuccess, updateSuccess, refetch]);
 
-    const submitForm = async (values: any) => {
+    const submitForm = async (values: {
+        id?: string;
+        banner_file?: File;
+        banner_url?: string;
+        product_id?: string | null;
+        category_id?: string | null;
+        banner_text?: string;
+        description?: string;
+        home_slider: boolean;
+        home_sub: boolean;
+        category_listing: boolean;
+    }) => {
         try {
-            const updatedValues = { ...values };
+            const { id, product_id, category_id, ...rest } = values;
+
+            const updatedValues: Partial<Banner> = {
+                ...rest,
+                _id: id,
+                product_id: product_id || undefined,
+                category_id: category_id || undefined,
+            };
 
             if (values.banner_file) {
                 const formData = new FormData();
@@ -136,7 +165,7 @@ export default function BannersPage() {
     // Create lookup maps
     const productMap = React.useMemo(() => {
         const map: Record<string, string> = {};
-        productsData?.data?.data?.forEach((p: any) => {
+        productsData?.data?.data?.forEach((p: Product) => {
             map[p._id] = p.name;
         });
         return map;
@@ -144,88 +173,84 @@ export default function BannersPage() {
 
     const categoryMap = React.useMemo(() => {
         const map: Record<string, string> = {};
-        categoriesData?.data?.data?.forEach((c: any) => {
+        categoriesData?.data?.data?.forEach((c: Category) => {
             map[c._id] = c.name;
         });
         return map;
     }, [categoriesData]);
 
     return (
-        <div className="flex flex-col w-full h-full p-4 mt-14">
-            <div className="overflow-x-auto flex-1 border shadow rounded-md">
-                <div className="bg-white p-4 rounded-md min-h-[500px] max-h-[500px]">
-                    {isLoading && <Loader />}
-                    <TableListingPage
-                        data={banners?.data?.data || []}
-                        totalCount={banners?.data?.totalCount || 0}
-                        columns={[
-                            {
-                                key: "banner_url",
-                                label: "Image",
-                                sortable: false,
-                                render: (item: Banner) =>
-                                    item.banner_url ? (
-                                        <div className="relative w-[130px] h-[100px]">
-                                            <Image src={item?.banner_url} alt="Banner" fill className="rounded-md" />
-                                        </div>
-                                    ) : "No Image",
-                            },
-                            {
-                                key: "product_id",
-                                label: "Product",
-                                sortable: false,
-                                render: (item: Banner) => productMap[item.product_id!] || "N/A",
-                            },
-                            {
-                                key: "category_id",
-                                label: "Category",
-                                sortable: false,
-                                render: (item: Banner) => categoryMap[item.category_id!] || "N/A",
-                            },
-                            {
-                                key: "created_at",
-                                label: "Created At",
-                                sortable: true,
-                                render: (item: Banner) =>
-                                    item.created_at ? new Date(item.created_at).toLocaleDateString() : "N/A",
-                            },
-                        ]}
-                        searchTerm={searchTerm}
-                        setSearchTerm={setSearchTerm}
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                        sortColumn={sortColumn}
-                        setSortColumn={(c) => setSortColumn(c as SortColumn)}
-                        sortDirection={sortDirection}
-                        setSortDirection={setSortDirection}
-                        itemsPerPage={5}
-                        title="Banners"
-                        addButtonLabel="Add Banner"
-                        onAddClick={() => {
-                            setEditBanner(null);
-                            setOpenAddEdit(true);
-                        }}
-                        onEditClick={(item: Banner) => {
-                            setEditBanner(item);
-                            setTimeout(() => {
-                                setOpenAddEdit(true);
-                            }, 100);
-                        }}
-                        onDeleteClick={(item: Banner) =>
-                            handleDeleteBanner(item?._id || "")
-                        }
-                        loading={isLoading || createLoading || updateLoading || deleteLoading}
-                    />
-                    <AddEditBanner
-                        open={openAddEdit}
-                        setOpen={setOpenAddEdit}
-                        initialValues={formInitialValue}
-                        onSubmit={submitForm}
-                        submitting={createLoading || updateLoading}
-                    />
-                    <Toaster richColors position="top-right" />
-                </div>
-            </div>
+        <div className="flex flex-col w-full h-[calc(100vh-64px)] p-4">
+            {isLoading && <Loader />}
+            <TableListingPage
+                data={banners?.data?.data || []}
+                totalCount={banners?.data?.totalCount || 0}
+                columns={[
+                    {
+                        key: "banner_url",
+                        label: "Image",
+                        sortable: false,
+                        render: (item: Banner) =>
+                            item.banner_url ? (
+                                <div className="relative w-[130px] h-[100px] bg-gray-200 rounded-md">
+                                    <Image src={item?.banner_url} alt="Banner" fill className="rounded-md object-cover" />
+                                </div>
+                            ) : "No Image",
+                    },
+                    {
+                        key: "product_id",
+                        label: "Product",
+                        sortable: false,
+                        render: (item: Banner) => productMap[item.product_id!] || "N/A",
+                    },
+                    {
+                        key: "category_id",
+                        label: "Category",
+                        sortable: false,
+                        render: (item: Banner) => categoryMap[item.category_id!] || "N/A",
+                    },
+                    {
+                        key: "created_at",
+                        label: "Created At",
+                        sortable: true,
+                        render: (item: Banner) =>
+                            item.created_at ? new Date(item.created_at).toLocaleDateString() : "N/A",
+                    },
+                ]}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                sortColumn={sortColumn}
+                setSortColumn={(c) => setSortColumn(c as SortColumn)}
+                sortDirection={sortDirection}
+                setSortDirection={setSortDirection}
+                itemsPerPage={5}
+                title="Banners"
+                addButtonLabel="Add Banner"
+                onAddClick={() => {
+                    setEditBanner(null);
+                    setOpenAddEdit(true);
+                }}
+                onEditClick={(item: Banner) => {
+                    setEditBanner(item);
+                    setTimeout(() => {
+                        setOpenAddEdit(true);
+                    }, 100);
+                }}
+                onDeleteClick={(item: Banner) =>
+                    handleDeleteBanner(item?._id || "")
+                }
+                loading={isLoading || createLoading || updateLoading || deleteLoading}
+            />
+            <AddEditBanner
+                open={openAddEdit}
+                setOpen={setOpenAddEdit}
+                initialValues={formInitialValue}
+                onSubmit={submitForm}
+                submitting={createLoading || updateLoading}
+            />
+            <Toaster richColors position="top-right" />
         </div>
     );
 }

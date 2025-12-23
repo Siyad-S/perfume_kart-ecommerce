@@ -10,6 +10,7 @@ import { getErrorMessage } from "@/src/lib/utils";
 import Loader from "@/src/components/common/loader";
 import { useFileUpload } from "@/src/hooks/useFileUpload";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import Image from "next/image";
 
 type SortColumn = "name" | "created_at";
 type SortValue = "name_asc" | "name_desc" | "created_at_asc" | "created_at_desc" | undefined;
@@ -34,7 +35,7 @@ export default function BrandsPage() {
 
     const [createBrand, { isLoading: createLoading, isSuccess: createSuccess }] = useAdminCreateBrandMutation();
     const [updateBrand, { isLoading: updateLoading, isSuccess: updateSuccess }] = useAdminUpdateBrandMutation();
-    const [deleteBrand, { isLoading: deleteLoading, isSuccess: deleteSuccess }] = useAdminDeleteBrandMutation();
+    const [deleteBrand, { isLoading: deleteLoading }] = useAdminDeleteBrandMutation();
 
     const { upload, loading: uploadLoading } = useFileUpload();
 
@@ -68,7 +69,7 @@ export default function BrandsPage() {
             setEditBrand(null);
             refetch();
         }
-    }, [createSuccess, updateSuccess]);
+    }, [createSuccess, updateSuccess, refetch]);
 
     const submitForm = async (values: Brand) => {
         try {
@@ -112,68 +113,64 @@ export default function BrandsPage() {
     };
 
     return (
-        <div className="flex flex-col w-full h-full p-4 mt-14">
-            <div className="overflow-x-auto flex-1 border shadow rounded-md">
-                <div className="bg-white p-4 rounded-md min-h-[500px] max-h-[500px]">
-                    {isLoading && <Loader />}
-                    <TableListingPage
-                        data={brands?.data?.data || []}
-                        totalCount={brands?.data?.totalCount || 0}
-                        columns={[
-                            {
-                                key: "logo_url", label: "Logo", render: (item: Brand) =>
-                                    item.logo_url ? (
-                                        <div className="relative w-[80px] h-[80px]">
-                                            <img src={item.logo_url} alt={item.name} className="w-full h-full rounded-md" />
-                                        </div>
-                                    ) : (
-                                        "N/A"
-                                    )
-                            },
-                            { key: "name", label: "Brand Name", sortable: true },
-                            { key: "origin", label: "Origin", sortable: true },
-                            {
-                                key: "created_at",
-                                label: "Created At",
-                                sortable: true,
-                                render: (item: Brand) =>
-                                    item.created_at ? new Date(item.created_at).toLocaleDateString() : "N/A",
-                            },
-                        ]}
-                        searchTerm={searchTerm}
-                        setSearchTerm={setSearchTerm}
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                        sortColumn={sortColumn}
-                        setSortColumn={(c) => setSortColumn(c as SortColumn)}
-                        sortDirection={sortDirection}
-                        setSortDirection={setSortDirection}
-                        itemsPerPage={5}
-                        title="Brands"
-                        addButtonLabel={isEdit ? "Update Brand" : "Add Brand"}
-                        onAddClick={() => {
-                            setEditBrand(null);
-                            setOpenAddEdit(true);
-                        }}
-                        onEditClick={(item: Brand) => {
-                            setEditBrand(item);
-                            setTimeout(() => {
-                                setOpenAddEdit(true);
-                            }, 100);
-                        }}
-                        onDeleteClick={(item: Brand) => handleDeleteBrand(item?._id || "")}
-                        loading={isLoading || createLoading || updateLoading || deleteLoading}
-                    />
-                    <AddEditBrand
-                        open={openAddEdit}
-                        setOpen={setOpenAddEdit}
-                        initialValues={formInitialValue}
-                        onSubmit={submitForm}
-                        submitting={uploadLoading || createLoading || updateLoading}
-                    />
-                    <Toaster richColors position="top-right" />
-                </div>
-            </div>
+        <div className="flex flex-col w-full h-[calc(100vh-64px)] p-4">
+            {isLoading && <Loader />}
+            <TableListingPage
+                data={brands?.data?.data || []}
+                totalCount={brands?.data?.totalCount || 0}
+                columns={[
+                    {
+                        key: "logo_url", label: "Logo", render: (item: Brand) =>
+                            item.logo_url ? (
+                                <div className="relative w-[50px] h-[50px] bg-gray-200 rounded-md">
+                                    <Image src={item.logo_url} alt={item.name} fill className="rounded-md object-cover" />
+                                </div>
+                            ) : (
+                                "N/A"
+                            )
+                    },
+                    { key: "name", label: "Brand Name", sortable: true },
+                    { key: "origin", label: "Origin", sortable: true },
+                    {
+                        key: "created_at",
+                        label: "Created At",
+                        sortable: true,
+                        render: (item: Brand) =>
+                            item.created_at ? new Date(item.created_at).toLocaleDateString() : "N/A",
+                    },
+                ]}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                sortColumn={sortColumn}
+                setSortColumn={(c) => setSortColumn(c as SortColumn)}
+                sortDirection={sortDirection}
+                setSortDirection={setSortDirection}
+                itemsPerPage={5}
+                title="Brands"
+                addButtonLabel={isEdit ? "Update Brand" : "Add Brand"}
+                onAddClick={() => {
+                    setEditBrand(null);
+                    setOpenAddEdit(true);
+                }}
+                onEditClick={(item: Brand) => {
+                    setEditBrand(item);
+                    setTimeout(() => {
+                        setOpenAddEdit(true);
+                    }, 100);
+                }}
+                onDeleteClick={(item: Brand) => handleDeleteBrand(item?._id || "")}
+                loading={isLoading || createLoading || updateLoading || deleteLoading}
+            />
+            <AddEditBrand
+                open={openAddEdit}
+                setOpen={setOpenAddEdit}
+                initialValues={formInitialValue}
+                onSubmit={submitForm}
+                submitting={uploadLoading || createLoading || updateLoading}
+            />
+            <Toaster richColors position="top-right" />
         </div>
     );
 }
