@@ -10,12 +10,16 @@ interface Product {
   discount_price: number;
   stock_quantity: number;
   sku: string;
-  notes: string[];
-  tags: string[];
+  notes?: {
+    top: string[];
+    middle: string[];
+    base: string[];
+  };
+  tags?: string[];
   category_id?: string;
-  best_seller: boolean;
-  trending: boolean;
-  new_launch: boolean;
+  best_seller?: boolean;
+  trending?: boolean;
+  new_launch?: boolean;
 }
 
 interface ListRequestType {

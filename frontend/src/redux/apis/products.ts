@@ -11,14 +11,18 @@ interface Product {
   discount_price: number;
   stock_quantity: number;
   sku: string;
-  notes: string[];
+  notes?: {
+    top: string[];
+    middle: string[];
+    base: string[];
+  };
   image_files?: File[];
   banner_file?: File;
-  tags: string[];
+  tags?: string[];
   category_id?: string;
-  best_seller: boolean;
-  trending: boolean;
-  new_launch: boolean;
+  best_seller?: boolean;
+  trending?: boolean;
+  new_launch?: boolean;
 }
 
 // Allowed sorting options for products
