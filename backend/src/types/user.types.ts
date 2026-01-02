@@ -1,6 +1,5 @@
 import mongoose, { Document, Types } from 'mongoose';
 
-// Interface for the Address document
 export interface AddressType {
   _id?: mongoose.Types.ObjectId;
   fullName: string;
@@ -12,14 +11,14 @@ export interface AddressType {
   phone: string;
 }
 
-// Interface for the User document
 export interface UserType extends Document {
   _id: mongoose.Types.ObjectId;
   name: string;
   // lastName: string;
   email: string;
   phone?: string;
-  password: string;
+  password?: string;
+  googleId?: string;
   newPassword?: string;
   confirmPassword?: string;
   addresses?: AddressType[];
@@ -42,11 +41,12 @@ export interface UserType extends Document {
     quantity: number;
   }>;
   is_deleted: boolean;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   created_at: Date;
   updated_at: Date;
 }
 
-// Interface for login/register request body
 export interface LoginRegisterType {
   name: string;
   // lastName: string;

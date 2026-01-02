@@ -27,22 +27,22 @@ export const uploadImages = async (req: Request<{}, {}, Partial<{
       image?: UploadResult;
     } = {} as object;
 
-    // Upload logo if provided
+    // Upload logo
     if (logoFile) {
       response.logo = await uploadSingleImage(logoFile, 'logos');
     }
 
-    // Upload images if provided
+    // Upload images
     if (imageFiles.length > 0) {
       response.images = await uploadMultipleImages(imageFiles, 'product-images');
     }
 
-    // Upload banner if provided
+    // Upload banner
     if (bannerFile) {
       response.banner = await uploadSingleImage(bannerFile, 'banners');
     }
 
-    // Upload image if provided
+    // Upload image
     if (imageFile) {
       response.image = await uploadSingleImage(imageFile, 'category-image');
     }

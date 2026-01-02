@@ -7,6 +7,7 @@ import { responseFormatter } from '../utils/responseFormatter';
 import { ListRequestType } from '@/types/common.types';
 import mongoose from 'mongoose';
 import UserModel from '../models/user.model';
+import { sendEmail } from '../services/mailer.service';
 
 interface User {
   id: string,
@@ -21,12 +22,7 @@ interface AuthRequest extends Request {
   user?: { id: string; email: string; role: string };
 }
 
-// Helper: generate tokens
-const generateTokens = (payload: object) => {
-  const accessToken = jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: "15m" });
-  const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET!, { expiresIn: "7d" });
-  return { accessToken, refreshToken };
-};
+import { generateTokens } from '../utils/token.utils';
 
 // Register
 export const register = async (
@@ -36,22 +32,15 @@ export const register = async (
 ) => {
   const { name, email, password } = req.body;
   try {
-    // Check if user exists
     const existingUser = await User.findByQuery({ email });
     if (existingUser) {
       return responseFormatter(res, null, 'User already exists', 400);
     }
-
-    // Validate JWT_SECRET
     if (!process.env.JWT_SECRET) {
       throw new Error('JWT_SECRET is not defined');
     }
-
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Create user
     const user = await User.createUser({
       name,
       email,
@@ -62,19 +51,18 @@ export const register = async (
     const payload = { id: user._id, email: user.email };
     const { accessToken, refreshToken } = generateTokens(payload);
 
-    // inside register or login after generating tokens
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "development", // only send over HTTPS in prod
+      secure: process.env.NODE_ENV === "development",
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "development",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return responseFormatter(res, {
@@ -97,23 +85,27 @@ export const login = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { email, password } = req.body;
+  const { email, password, portal } = req.body;
   try {
-    // Check if user exists
     const user = await User.findByQuery({ email });
     if (!user) {
       return responseFormatter(res, null, 'User does not exist', 400);
     }
-    // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return responseFormatter(res, null, 'Invalid credentials', 400);
     } else {
-      // Generate JWT
-      const payload = { id: user._id, email: user.email };
+      if (portal === 'admin' && user.role !== 'admin') {
+        return responseFormatter(res, null, 'Unauthorized access to admin portal', 403);
+      }
+      const payload = { id: user._id, email: user.email, role: user.role };
       const { accessToken, refreshToken } = generateTokens(payload);
 
-      res.cookie("accessToken", accessToken, {
+      const isForAdmin = portal === 'admin';
+      const accessTokenCookieName = isForAdmin ? "adminAccessToken" : "accessToken";
+      const refreshTokenCookieName = isForAdmin ? "adminRefreshToken" : "refreshToken";
+
+      res.cookie(accessTokenCookieName, accessToken, {
         httpOnly: true,
         // secure: process.env.NODE_ENV === "production",
         // sameSite: "strict",
@@ -122,7 +114,7 @@ export const login = async (
         maxAge: 15 * 60 * 1000,
       });
 
-      res.cookie("refreshToken", refreshToken, {
+      res.cookie(refreshTokenCookieName, refreshToken, {
         httpOnly: true,
         // secure: process.env.NODE_ENV === "production",
         // sameSite: "strict",
@@ -130,12 +122,6 @@ export const login = async (
         secure: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
-
-      // Log tokens and cookies
-      console.log("Access Token:", accessToken.substring(0, 20) + "...");
-      console.log("Refresh Token:", refreshToken.substring(0, 20) + "...");
-      console.log("Set-Cookie header:", res.getHeaders()["set-cookie"]);
-
 
       return responseFormatter(res, {
         user: {
@@ -221,7 +207,6 @@ export const update: RequestHandler<deleteParams, any, Partial<UserType>> = asyn
       confirmPassword
     } = req.body;
 
-    // Check if user exists
     const existingUser = await User.findByQuery({ _id: new mongoose.Types.ObjectId(id) })
 
     const updateData: Partial<UserType> = {
@@ -372,6 +357,8 @@ export const logout = async (req: Request, res: Response) => {
     // Clear the token cookie
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
+    res.clearCookie("adminAccessToken");
+    res.clearCookie("adminRefreshToken");
     return responseFormatter(res, null, 'Logout success', 200);
   } catch (error) {
     return responseFormatter(res, null, 'Logout failed', 500);
@@ -382,10 +369,9 @@ export const logout = async (req: Request, res: Response) => {
 export const getUserProfile = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user) {
-      return responseFormatter(res, null, "Unauthorized", 401);
+      return responseFormatter(res, { user: null }, "Guest user", 200);
     }
 
-    // Fetch user from DB (to ensure latest data)
     const user = await UserModel.findById(req.user.id).select("-password");
 
     if (!user) {
@@ -398,6 +384,7 @@ export const getUserProfile = async (req: AuthRequest, res: Response) => {
   }
 };
 
+//get user cart
 export const getCart = async (
   req: Request<{ id: string }, {}, Partial<UserType>>,
   res: Response
@@ -421,6 +408,7 @@ export const getCart = async (
   }
 }
 
+//get user addresses
 export const getAddresses = async (
   req: Request<{ id: string }, {}, Partial<UserType>>,
   res: Response
@@ -444,6 +432,7 @@ export const getAddresses = async (
   }
 }
 
+//clear user cart
 export const clearCart = async (
   req: Request<{ id: string }, {}, Partial<UserType>>,
   res: Response
@@ -460,3 +449,59 @@ export const clearCart = async (
     responseFormatter(res, null, 'User cart clearing failed', 500);
   }
 }
+
+// Forgot Password
+export const forgotPassword = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findByQuery({ email });
+    if (!user) {
+      return responseFormatter(res, null, 'User with this email does not exist', 404);
+    }
+
+    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const expireTime = Date.now() + 3600000;
+
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = new Date(expireTime);
+    await User.update(user._id, user);
+
+    const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/reset-password/${token}`;
+
+    await sendEmail(user.email, 'Password Reset Request', 'resetPassword', { resetUrl });
+
+    return responseFormatter(res, null, 'Password reset email sent', 200);
+
+  } catch (error) {
+    console.error('Forgot Password Error:', error);
+    return responseFormatter(res, null, 'Error processing request', 500);
+  }
+};
+
+// Reset Password
+export const resetPassword = async (req: Request, res: Response) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  try {
+    const user = await UserModel.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return responseFormatter(res, null, 'Password reset token is invalid or has expired', 400);
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    return responseFormatter(res, null, 'Password has been reset', 200);
+  } catch (error) {
+    console.error('Reset Password Error:', error);
+    return responseFormatter(res, null, 'Error resetting password', 500);
+  }
+};

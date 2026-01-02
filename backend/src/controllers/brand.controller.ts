@@ -14,7 +14,6 @@ export const create = async (
     try {
         const { name, description, origin, logo_url } = req.body;
 
-        // Prepare brand data
         const brandData: Partial<BrandType> = {
             name,
             description,
@@ -22,14 +21,12 @@ export const create = async (
             logo_url,
         };
 
-        // Create the brand
         const brand = await Brand.createBrand(brandData);
 
         return responseFormatter(res, brand, "Brand created", 201);
     } catch (error) {
         console.error("Brand Creation Error:", error);
 
-        // Provide specific error messages
         if (error instanceof mongoose.Error) {
             return responseFormatter(res, null, "Database error during brand creation", 500);
         }
@@ -45,9 +42,7 @@ export const list = async (
 ) => {
     try {
         const { search, skip, limit, sort, filter = {} } = req.body;
-        // Set default filter for is_deleted
         (filter as { is_deleted: boolean }).is_deleted = false;
-        // Set sorting logic
         let listSort: Record<string, 1 | -1> = { created_at: -1 };
         if (sort) {
             switch (sort) {
@@ -73,7 +68,6 @@ export const list = async (
         if (search) {
             (filter as { search: string }).search = search;
         }
-        // Call the list function with skip and limit as numbers
         const brandList = await Brand.list(Number(skip) || null, Number(limit) || null, filter);
         if (!brandList.data || brandList.data.length === 0) {
             return responseFormatter(res, [], 'Brands list is empty!', 200);
@@ -105,7 +99,6 @@ export const update = async (
 
         const { name, description, origin, logo_url } = req.body;
 
-        // Prepare update data
         const updateData: Partial<BrandType> = {
             name,
             description,
@@ -114,22 +107,16 @@ export const update = async (
             updated_at: new Date(),
         };
 
-        // Validate that at least one field is provided
         if (Object.keys(updateData).length === 0) {
             return responseFormatter(res, isExists, "No changes provided", 400);
         }
 
-        console.log("updateData", updateData);
-        
-
-        // Update the brand
         const brand = await Brand.update(id, updateData);
 
         return responseFormatter(res, brand, "Brand updated", 200);
     } catch (error) {
         console.error("Brand Update Error:", error);
 
-        // Provide specific error messages
         if (error instanceof mongoose.Error) {
             return responseFormatter(res, null, "Database error during brand update", 500);
         }

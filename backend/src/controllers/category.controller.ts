@@ -162,8 +162,6 @@ export const getMegaMenu = async (
             sort: { created_at: -1 },
         }, ['category', 'brand']);
 
-        console.log("data", { categories, brands, bestSellers });
-
         return responseFormatter(res, {
             categories: categories.data,
             brands: brands,

@@ -9,10 +9,7 @@ import orderService from "../services/order.service";
 import UserService from "../services/user.service";
 import { ListRequestType } from "@/types/common.types";
 
-/**
- * ✅ Manual Payment Verification
- * Used when verifying Razorpay payment manually from frontend.
- */
+// Manual Payment Verification
 export const verifyPayment = async (req: Request, res: Response) => {
   try {
     const {
@@ -24,12 +21,10 @@ export const verifyPayment = async (req: Request, res: Response) => {
       error_reason,
     } = req.body;
 
-    // ✅ 1️⃣ If payment failed or cancelled, skip signature validation
     if (payment_status === "failed" || payment_status === "cancelled") {
       const updatedPayment = await PaymentService?.update(payment_id, {
         payment_status,
         updated_at: new Date(),
-        // error_reason: error_reason || "Payment failed/cancelled",
       });
 
       return responseFormatter(
@@ -40,7 +35,6 @@ export const verifyPayment = async (req: Request, res: Response) => {
       );
     }
 
-    // ✅ 2️⃣ Verify signature only for successful payments
     const secret = process.env.RAZORPAY_KEY_SECRET!;
     const generatedSignature = crypto
       .createHmac("sha256", secret)
@@ -51,7 +45,6 @@ export const verifyPayment = async (req: Request, res: Response) => {
       return responseFormatter(res, null, "Payment verification failed", 400);
     }
 
-    // ✅ 4️⃣ Update DB
     const updatedPayment = await PaymentService?.update(payment_id, {
       razorpay: {
         order_id: razorpay_order_id,
@@ -62,9 +55,6 @@ export const verifyPayment = async (req: Request, res: Response) => {
       updated_at: new Date(),
     });
 
-    console.log("updatedPayment", updatedPayment);
-
-    // ✅ 3️⃣ Update corresponding order as confirmed
     if (updatedPayment?.payment_status === "completed") {
       const updatedOrder = await orderService?.update(updatedPayment?.order_id as mongoose.Types.ObjectId, {
         status: "confirmed",
@@ -85,10 +75,7 @@ export const verifyPayment = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * ✅ Razorpay Webhook Handler
- * Automatically updates local DB based on Razorpay event notifications.
- */
+// Razorpay Webhook Handler
 export const razorpayWebhook = async (req: Request, res: Response) => {
   try {
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!;
@@ -126,7 +113,7 @@ export const razorpayWebhook = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Payment not found" });
     }
 
-    // ✅ Update based on event
+    // Update based on event
     switch (event) {
       case "payment.authorized":
         await PaymentService?.update(paymentDoc._id, {
@@ -141,7 +128,7 @@ export const razorpayWebhook = async (req: Request, res: Response) => {
 
       case "payment.captured":
         await PaymentService?.update(paymentDoc._id, {
-          payment_status: "completed", // internally mark completed
+          payment_status: "completed",
           razorpay: {
             payment_id: paymentEntity.id,
             order_id: paymentEntity.order_id,
@@ -169,7 +156,6 @@ export const razorpayWebhook = async (req: Request, res: Response) => {
         break;
     }
 
-    // ✅ Respond quickly so Razorpay doesn’t retry
     res.status(200).json({ status: "ok" });
   } catch (error) {
     console.error("Razorpay Webhook Error:", error);
@@ -260,7 +246,6 @@ export const getPayments = async (
 
     responseFormatter(res, payments, 'Payments fetched success!', 200);
   } catch (error) {
-    console.log('Payment listing error:', error);
     responseFormatter(res, null, 'Failed to fetch payments', 500);
   }
 }
@@ -289,7 +274,6 @@ export const deletePayment = async (
 
     return responseFormatter(res, payment, 'Payment deleted', 200);
   } catch (error) {
-    console.error('Payment Delete Error:', error);
     responseFormatter(res, null, 'Payment delete failed', 500);
   }
 }

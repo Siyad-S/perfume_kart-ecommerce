@@ -3,21 +3,22 @@ import { Order } from "../models/order.model";
 import { OrderType } from '../types/order.types';
 import { stringify } from "querystring";
 
-// 🧩 Create a new order
+// Create a new order
 export const create = async (orderData: Partial<OrderType>) => {
   return await Order.create(orderData);
 };
 
-// 🔍 Find a single order by query
+// Find a single order by query
 export const findByQuery = async (query: Partial<OrderType>) => {
   return await Order.findOne(query as mongoose.FilterQuery<OrderType>);
 };
 
-
+// Update an order by ID
 export const update = async (id: mongoose.Types.ObjectId, updateData: Partial<OrderType>) => {
   return await Order.findByIdAndUpdate(id, updateData, { new: true }).exec();
 };
 
+// List orders with pagination and filtering
 export const list = async (
   skip: number | null,
   limit: number | null,
@@ -30,10 +31,8 @@ export const list = async (
 
   if (sortOrder) delete filter.sort;
 
-  // Remove search to avoid redundancy
   if (search) delete filter.search;
 
-  // Always exclude deleted payments
   aggregationQuery.push({
     $match: { is_deleted: false },
   });
@@ -45,12 +44,9 @@ export const list = async (
     delete filter.status;
   }
 
-  // Apply generic filters if any left
   if (filter && Object.keys(filter).length > 0) {
     aggregationQuery.push({ $match: filter });
   }
-
-  // Handle $lookup for includes (user, order)
   if (includes.length > 0) {
     includes.forEach((include) => {
       switch (include) {
@@ -100,14 +96,12 @@ export const list = async (
     });
   }
 
-  // Apply sorting
   if (sortOrder) {
     aggregationQuery.push({
       $sort: sortOrder,
     });
   }
 
-  //search
   if (search) {
     const searchRegex = new RegExp(search, 'i');
     aggregationQuery.push({
@@ -123,7 +117,6 @@ export const list = async (
 
   const dataPipeline = [...aggregationQuery];
 
-  // Add skip and limit for pagination in the data pipeline
   if (skip !== null && limit !== null) {
     dataPipeline.push({
       $skip: skip,
@@ -133,7 +126,6 @@ export const list = async (
     });
   }
 
-  // Facet for total count and paginated data
   aggregationQuery.push({
     $facet: {
       data: dataPipeline,
@@ -141,16 +133,12 @@ export const list = async (
     },
   });
 
-  // Project data and total count
   aggregationQuery.push({
     $project: {
       data: 1,
       totalCount: { $ifNull: [{ $arrayElemAt: ['$totalCount.total', 0] }, 0] },
     },
   });
-
-  console.log("aggregationQuery66666666666", aggregationQuery);
-
 
   const result = await Order.aggregate(aggregationQuery);
 
