@@ -8,7 +8,7 @@ export interface ProductType extends Document {
   price: number;
   discount_price: number;
   stock_quantity: number;
-  sku: string; //Stock keeping unit for inventory tracking
+  sku: string;
   notes?: {
     top: string[];
     middle: string[];

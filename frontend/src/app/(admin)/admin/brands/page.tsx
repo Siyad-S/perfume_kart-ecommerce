@@ -114,7 +114,6 @@ export default function BrandsPage() {
 
     return (
         <div className="flex flex-col w-full h-[calc(100vh-64px)] p-4">
-            {isLoading && <Loader />}
             <TableListingPage
                 data={brands?.data?.data || []}
                 totalCount={brands?.data?.totalCount || 0}

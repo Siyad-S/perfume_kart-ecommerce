@@ -1,11 +1,11 @@
 import React from "react";
-import About from "@/src/components/user/about";
-import BannerSlider from "@/src/components/user/bannerSlider";
-import BestSellers from "@/src/components/user/bestSellers";
-import Categories from "@/src/components/user/categories";
-import Footer from "@/src/components/user/footer";
-import ProductScroller from "@/src/components/user/productScroller";
-import Trendings from "@/src/components/user/trendings";
+import About from "@/src/components/public/about";
+import BannerSlider from "@/src/components/public/bannerSlider";
+import BestSellers from "@/src/components/public/bestSellers";
+import Categories from "@/src/components/public/categories";
+import Footer from "@/src/components/public/footer";
+import ProductScroller from "@/src/components/public/productScroller";
+import Trendings from "@/src/components/public/trendings";
 
 export default function Home() {
   return (

@@ -143,3 +143,24 @@
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+/* Route Loader Positioning */
+#nprogress .bar {
+  position: fixed;
+  z-index: 2000;
+  top: 80px !important; /* Mobile height */
+  left: 0;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  #nprogress .bar {
+    top: 130px !important; /* Desktop height (Header + Nav + Borders) */
+  }
+}
+
+/* Optional: Hide on admin pages if needed, but this is global. 
+   We will only import RouteLoader in (public)/layout.tsx so it won't affect admin if not imported there.
+   However, nprogress attaches to body, so if it persists, we might need scoping. 
+   But nextjs-toploader usually handles component mounting/unmounting. */
+

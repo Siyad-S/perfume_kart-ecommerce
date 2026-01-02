@@ -8,7 +8,7 @@ export interface PaginatedItem {
 }
 
 interface UseInfiniteScrollPaginationOptions<T> {
-    useQueryHook: (args: { skip: number; limit: number, search?: string }) => {
+    useQueryHook: (args: { skip: number; limit: number; search?: string;[key: string]: any }) => {
         data?: { data?: { data?: T[]; totalCount?: number } };
         isFetching: boolean;
         isLoading: boolean;
@@ -16,6 +16,7 @@ interface UseInfiniteScrollPaginationOptions<T> {
     };
     limit?: number;
     search?: string;
+    extraQueryArgs?: Record<string, any>;
 }
 
 /** Find nearest scrollable parent */
@@ -37,6 +38,7 @@ export function useInfiniteScrollPagination<T extends PaginatedItem>({
     useQueryHook,
     limit = 10,
     search,
+    extraQueryArgs = {},
 }: UseInfiniteScrollPaginationOptions<T>) {
     const [list, setList] = useState<T[]>([]);
     const [totalCount, setTotalCount] = useState(0);
@@ -51,17 +53,19 @@ export function useInfiniteScrollPagination<T extends PaginatedItem>({
     const hasMoreRef = useRef(true);
     const currentPageRef = useRef(1);
 
-    // Reset pagination when search changes
+    // Reset pagination when search or extraQueryArgs (filters/sort) change
+    // We strive to stable stringify extraQueryArgs to avoid unnecessary resets if object ref changes but content is same
+    // simplified for now: dependency on JSON.stringify(extraQueryArgs)
+    const queryArgsString = JSON.stringify(extraQueryArgs);
+
     useEffect(() => {
-        if (search !== undefined) {
-            setList([]);
-            setTotalCount(0);
-            setCurrentPage(1);
-            currentPageRef.current = 1;
-            setHasMore(true);
-            hasMoreRef.current = true;
-        }
-    }, [search]);
+        setList([]);
+        setTotalCount(0);
+        setCurrentPage(1);
+        currentPageRef.current = 1;
+        setHasMore(true);
+        hasMoreRef.current = true;
+    }, [search, queryArgsString]);
 
     useEffect(() => {
         hasMoreRef.current = hasMore;
@@ -72,10 +76,12 @@ export function useInfiniteScrollPagination<T extends PaginatedItem>({
     }, [currentPage]);
 
     // Use RTK Query
+    // We merge extraQueryArgs into the query
     const { data, isFetching, isLoading, refetch } = useQueryHook({
         skip: (currentPage - 1) * limit,
         limit,
         search,
+        ...extraQueryArgs,
     });
 
     useEffect(() => {

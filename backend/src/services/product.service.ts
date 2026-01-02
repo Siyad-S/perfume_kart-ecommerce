@@ -2,17 +2,17 @@ import mongoose from 'mongoose';
 import Product from '../models/product.model';
 import { ProductType } from '../types/product.types';
 
-// Create a new product
+// Create product
 export const createProduct = async (productData: Partial<ProductType>) => {
   return await Product.create(productData);
 };
 
-// Find a single product by query
+// Find a single product
 export const findByQuery = async (query: Partial<ProductType>) => {
   return await Product.findOne(query as mongoose.FilterQuery<ProductType>);
 };
 
-// List all products with pagination, filtering, and includes
+// List all products
 export const list = async (
   skip: number | null,
   limit: number | null,
@@ -22,17 +22,14 @@ export const list = async (
   let aggregationQuery: any[] = [];
   const search = filter?.search?.trim() || null;
 
-  // Remove search from filter to avoid redundant processing
   if (search) delete filter.search;
 
-  // Apply is_deleted filter
   aggregationQuery.push({
     $match: {
       is_deleted: false,
     },
   });
 
-  // Apply sorting
   if (filter?.sort) {
     aggregationQuery.push({
       $sort: filter.sort,
@@ -63,12 +60,9 @@ export const list = async (
   }
   delete filter.price;
 
-  // Apply filter if it exists
   if (filter && Object.keys(filter).length > 0) {
     aggregationQuery.push({ $match: filter });
   }
-
-  // Handle $lookup and $unwind for includes (category, brand)
   if (includes.length > 0) {
     includes.forEach((include) => {
       switch (include) {
@@ -106,7 +100,6 @@ export const list = async (
     });
   }
 
-  // Apply search filter if search term exists
   if (search) {
     const searchRegex = new RegExp(search, 'i');
     aggregationQuery.push({
@@ -127,7 +120,6 @@ export const list = async (
 
   const dataPipeline = [...aggregationQuery];
 
-  // Add skip and limit for pagination in the data pipeline
   if (skip !== null && limit !== null) {
     dataPipeline.push({
       $skip: skip,
@@ -137,15 +129,13 @@ export const list = async (
     });
   }
 
-  // Add facet stage for pagination and total count
   aggregationQuery.push({
     $facet: {
-      data: dataPipeline, // Use the data pipeline with skip and limit
-      totalCount: [{ $count: 'total' }], // Calculate total count
+      data: dataPipeline,
+      totalCount: [{ $count: 'total' }],
     },
   });
 
-  // Project the results to extract total count
   aggregationQuery.push({
     $project: {
       data: 1,
@@ -155,11 +145,9 @@ export const list = async (
 
   const result = await Product.aggregate(aggregationQuery);
 
-  // Return the result, handling the case where no documents are found
   return result[0] || { data: [], totalCount: 0 };
 };
 
-// Update a product by ID
 export const update = async (id: string, updateData: Partial<ProductType>) => {
   return await Product.findByIdAndUpdate(id, updateData, { new: true }).exec();
 };

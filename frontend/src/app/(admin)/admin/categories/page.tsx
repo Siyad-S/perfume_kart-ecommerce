@@ -136,7 +136,6 @@ export default function CategoriesPage() {
 
     return (
         <div className="flex flex-col w-full h-[calc(100vh-64px)] p-4">
-            {isLoading && <Loader />}
             <TableListingPage
                 data={categories?.data?.data || []}
                 totalCount={categories?.data?.totalCount || 0}

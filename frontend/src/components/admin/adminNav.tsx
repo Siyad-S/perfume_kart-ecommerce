@@ -17,20 +17,13 @@ import { useLogoutMutation } from "@/src/redux/apis/auth"
 import { useRouter } from "next/navigation"
 
 export function AdminNav() {
-  // Simulated admin data
-  const user = {
-    name: "Admin User",
-    email: "admin@fragrancekart.com",
-    image: "", // Add image URL here to test with a real avatar
-  }
-
   const [logout, { isLoading }] = useLogoutMutation()
   const router = useRouter()
 
   const handleLogout = async () => {
     try {
       await logout()
-      router.push("/admin/login")
+      router.push("/admin/auth")
     } catch (error) {
       console.error("Logout failed:", error)
     }
@@ -51,28 +44,24 @@ export function AdminNav() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full">
               <Avatar className="h-9 w-9 border">
-                {user.image ? (
-                  <AvatarImage src={user.image} alt={user.name} />
-                ) : (
-                  <AvatarFallback>
-                    <User className="h-5 w-5" />
-                  </AvatarFallback>
-                )}
+                <AvatarFallback>
+                  <User className="h-5 w-5" />
+                </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>
               <div className="flex flex-col">
-                <span className="font-medium">{user.name}</span>
-                <span className="text-xs text-muted-foreground">{user.email}</span>
+                <span className="font-medium">Admin</span>
+                <span className="text-xs text-muted-foreground">admin@fragrancekart.com</span>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => console.log("Profile clicked")}>
+            <DropdownMenuItem>
               Profile
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log("Settings clicked")}>
+            <DropdownMenuItem>
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />

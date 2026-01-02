@@ -7,7 +7,8 @@ const userSchema: mongoose.Schema<UserType> = new mongoose.Schema<UserType>(
     // lastName: { type: String, required: false },
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: false },
-    password: { type: String, required: true },
+    password: { type: String, required: false },
+    googleId: { type: String, unique: true, sparse: true },
     addresses: [
       {
         fullName: { type: String, required: false },
@@ -48,6 +49,8 @@ const userSchema: mongoose.Schema<UserType> = new mongoose.Schema<UserType>(
       },
     ],
     is_deleted: { type: Boolean, default: false },
+    resetPasswordToken: { type: String, required: false },
+    resetPasswordExpires: { type: Date, required: false },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now },
   },

@@ -1,16 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import ProductCard from "@/src/components/common/products/product-card";
-import { useGetProductsQuery } from "@/src/redux/apis/products";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/src/components/ui/pagination";
+import { ProductGridSkeleton } from "@/src/components/skeletons/product-card-skeleton";
+import { useGetProductsQuery, ProductSort } from "@/src/redux/apis/products";
 import { Input } from "@/src/components/ui/input";
 import {
     Select,
@@ -19,12 +12,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/src/components/ui/select";
-import { ProductSort } from "@/src/redux/apis/products";
-import Categories from "@/src/components/user/categories";
+import Categories from "@/src/components/public/categories";
 import Breadcrumbs from "@/src/components/common/breadcrumbs";
 import { useSelector } from "react-redux";
 import { RootState } from "@/src/redux/store";
-
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -35,212 +26,231 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { Slider } from "@/src/components/ui/slider";
 import { Checkbox } from "@/src/components/ui/checkbox";
-import { Filter } from "lucide-react";
+import { Filter, Loader2, Search } from "lucide-react";
 import { useGetBrandsQuery } from "@/src/redux/apis/brands";
-import { useGetUserQuery, useUpdateUserMutation } from "@/src/redux/apis/users";
+import { useInfiniteScrollPagination } from "@/src/hooks/useInfiniteScrollPagination";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 export default function ProductsPage() {
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("created_at_desc");
-    const [currentPage, setCurrentPage] = useState(1);
     const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-    const [priceRange, setPriceRange] = useState<number[]>([0, 0]);
+    const [priceRange, setPriceRange] = useState<number[]>([0, 100000]);
 
-    const limit = 8;
+    const containerRef = useRef<HTMLDivElement>(null);
+
     const category = useSelector((state: RootState) => state.categories.category);
     const brand = useSelector((state: RootState) => state.brands.brand);
 
-    // Example brands (could come from API)
-    const { data: brands, isLoading, refetch } = useGetBrandsQuery({
+    // Brands Query
+    const { data: brands } = useGetBrandsQuery({
         search: "",
         skip: null,
         limit: null,
         sort: `name_asc`,
     });
 
-    // call API with filters
-    const { data: products } = useGetProductsQuery({
+    // Prepare filters
+    const filters = {
+        ...(brand ? { brand_id: brand } : {}),
+        ...(category ? { category_id: category } : {}),
+        ...(selectedBrands.length ? { brand: selectedBrands } : {}),
+        ...(priceRange[1] > priceRange[0] ? { price: { min: priceRange[0], max: priceRange[1] } } : {}),
+    };
+
+    // Infinite Scroll Hook
+    const {
+        list: productsData,
+        isFetching,
+        hasMore,
+        observerRef,
+    } = useInfiniteScrollPagination({
+        useQueryHook: useGetProductsQuery,
+        limit: 12, // Increased limit
         search,
-        skip: (currentPage - 1) * limit,
-        limit,
-        sort: sort as ProductSort,
-        filter: {
-            ...(brand ? { brand_id: brand } : {}),
-            ...(category ? { category_id: category } : {}),
-            ...(selectedBrands.length ? { brand: selectedBrands } : {}),
-            ...(priceRange[1] > priceRange[0] ? { price: { min: priceRange[0], max: priceRange[1] } } : {}),
+        extraQueryArgs: {
+            sort: sort as ProductSort,
+            filter: filters,
         },
     });
 
-    const productsData = products?.data?.data || [];
-    const total = products?.data?.totalCount || 0;
-    const totalPages = Math.ceil(total / limit);
+    // GSAP Animation for initial load and list updates
+    useGSAP(() => {
+        // Simple stagger for entering items
+        // We select items that haven't been animated yet if we wanted to be complex,
+        // but a simple "from" on the container children works for initial load.
+        // For infinite scroll, items are appended. 
+        // We can just rely on the CSS/GSAP in ProductCard for individual hover effects, 
+        // and here just do a page entry animation.
 
-    // reset to page 1 when search/sort/filters change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [search, sort, selectedBrands, priceRange]);
+        if (productsData.length > 0 && !isFetching) {
+            gsap.fromTo(".product-card-item",
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: "power2.out", clearProps: "all" }
+            );
+        }
+    }, { dependencies: [/* productsData.length // Re-animating on length change might be jarring */], scope: containerRef });
+
+    // Better: Animate only on mount or sort change.
+    useGSAP(() => {
+        gsap.fromTo(".header-animate",
+            { opacity: 0, y: -20 },
+            { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: "power3.out" }
+        );
+    }, { scope: containerRef });
+
 
     return (
-        <div className="p-6">
-            {/* Breadcrumbs */}
-            <div className="mb-6">
-                <Breadcrumbs
-                    items={[
-                        { label: "Home", href: "/home" },
-                        { label: "Products", href: "/products" },
-                    ]}
-                />
-            </div>
+        <div ref={containerRef} className="min-h-screen bg-neutral-50/50">
+            {/* Header Section */}
+            <div className="bg-white border-b sticky top-0 z-30 shadow-sm/50 backdrop-blur-md bg-white/80 support-[backdrop-filter]:bg-white/50">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center gap-4 w-full md:w-auto">
+                            <h1 className="text-xl font-bold tracking-tight">Shop</h1>
+                            <div className="hidden md:block h-6 w-px bg-neutral-200"></div>
+                            <Breadcrumbs
+                                items={[
+                                    { label: "Home", href: "/home" },
+                                    { label: "Products", href: "/products" },
+                                ]}
+                            />
+                        </div>
 
-            {/* Categories Section */}
-            <Categories />
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                            <div className="relative flex-1 md:w-64">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                                <Input
+                                    placeholder="Search..."
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    className="pl-9 bg-neutral-100 border-none focus-visible:ring-1 transition-all rounded-full h-10"
+                                />
+                            </div>
 
-            {/* Header Row */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mt-12 mb-6">
-                <h1 className="text-2xl font-bold">Our Collection</h1>
+                            <Select value={sort} onValueChange={setSort}>
+                                <SelectTrigger className="w-[160px] rounded-full border-neutral-200 h-10">
+                                    <SelectValue placeholder="Sort" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="created_at_desc">Newest</SelectItem>
+                                    <SelectItem value="price_asc">Price: Low - High</SelectItem>
+                                    <SelectItem value="price_desc">Price: High - Low</SelectItem>
+                                    <SelectItem value="name_asc">Name: A - Z</SelectItem>
+                                </SelectContent>
+                            </Select>
 
-                <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                    {/* Search Input */}
-                    <Input
-                        placeholder="Search products..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="sm:w-[250px]"
-                    />
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="h-10 w-10 flex items-center justify-center border border-neutral-200 rounded-full hover:bg-neutral-100 transition-colors bg-white">
+                                        <Filter className="w-4 h-4 text-neutral-600" />
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-72 p-4 mr-4" align="end">
+                                    <DropdownMenuLabel>Filters</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
 
-                    {/* Sort Select + Filter Dropdown */}
-                    <div className="flex items-center gap-2">
-                        <Select value={sort} onValueChange={(value) => setSort(value)}>
-                            <SelectTrigger className="w-[220px]">
-                                <SelectValue placeholder="Sort by" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="created_at_desc">Newest to Oldest</SelectItem>
-                                <SelectItem value="created_at_asc">Oldest to Newest</SelectItem>
-                                <SelectItem value="price_asc">Price: Low to High</SelectItem>
-                                <SelectItem value="price_desc">Price: High to Low</SelectItem>
-                            </SelectContent>
-                        </Select>
-
-                        {/* Filter Dropdown */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button className="p-2 border rounded-lg hover:bg-muted">
-                                    <Filter className="w-5 h-5" />
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-64 p-4 space-y-4">
-                                <DropdownMenuLabel>Filters</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-
-                                {/* Brand Filter */}
-                                <div>
-                                    <h3 className="text-sm font-semibold mb-2">Brands</h3>
-                                    <div className="space-y-2">
-                                        {brands?.data?.data?.map((brand: any) => (
-                                            <div
-                                                key={brand?._id}
-                                                className="flex items-center gap-2"
-                                            >
-                                                <Checkbox
-                                                    checked={selectedBrands.includes(brand?._id)}
-                                                    onCheckedChange={(checked) => {
-                                                        if (checked) {
-                                                            setSelectedBrands([
-                                                                ...selectedBrands,
-                                                                brand?._id,
-                                                            ]);
-                                                        } else {
-                                                            setSelectedBrands(
-                                                                selectedBrands.filter(
-                                                                    (b) => b !== brand?._id
-                                                                )
-                                                            );
-                                                        }
-                                                    }}
-                                                />
-                                                <span className="text-sm">{brand?.name}</span>
+                                    <div className="py-4 space-y-6">
+                                        {/* Price Range */}
+                                        <div className="space-y-4">
+                                            <div className="flex items-center justify-between">
+                                                <h3 className="text-sm font-semibold">Price Range</h3>
+                                                <span className="text-xs text-neutral-500">₹{priceRange[0]} - ₹{priceRange[1]}</span>
                                             </div>
-                                        ))}
-                                    </div>
-                                </div>
 
-                                <DropdownMenuSeparator />
+                                            <Slider
+                                                value={priceRange}
+                                                min={0}
+                                                max={100000}
+                                                step={1000}
+                                                onValueChange={setPriceRange}
+                                            />
+                                        </div>
 
-                                {/* Price Range */}
-                                <div>
-                                    <h3 className="text-sm font-semibold mb-2">Price Range</h3>
-                                    <Slider
-                                        value={priceRange}
-                                        min={0}
-                                        max={100000}
-                                        step={1000}
-                                        onValueChange={setPriceRange}
-                                    />
-                                    <div className="flex justify-between text-xs mt-2">
-                                        <span>₹{priceRange[0]}</span>
-                                        <span>₹{priceRange[1]}</span>
+                                        {/* Brands */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-sm font-semibold">Brands</h3>
+                                            <div className="max-h-48 overflow-y-auto pr-2 space-y-2 scrollbar-thin scrollbar-thumb-neutral-200">
+                                                {brands?.data?.data?.map((brand: any) => (
+                                                    <div key={brand?._id} className="flex items-center gap-3">
+                                                        <Checkbox
+                                                            id={`brand-${brand._id}`}
+                                                            checked={selectedBrands.includes(brand?._id)}
+                                                            onCheckedChange={(checked) => {
+                                                                if (checked) {
+                                                                    setSelectedBrands([...selectedBrands, brand?._id]);
+                                                                } else {
+                                                                    setSelectedBrands(selectedBrands.filter((b) => b !== brand?._id));
+                                                                }
+                                                            }}
+                                                        />
+                                                        <label htmlFor={`brand-${brand._id}`} className="text-sm cursor-pointer select-none">
+                                                            {brand?.name}
+                                                        </label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Product Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 md:px-8">
-                {productsData.map((product: any) => (
-                    <ProductCard
-                        key={product?._id}
-                        {...product}
-                    />
-                ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="flex justify-center mt-10">
-                    <Pagination>
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    size="icon"
-                                    onClick={() =>
-                                        setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)
-                                    }
-                                />
-                            </PaginationItem>
-
-                            {Array.from({ length: totalPages }, (_, i) => (
-                                <PaginationItem key={i}>
-                                    <PaginationLink
-                                        size="icon"
-                                        isActive={currentPage === i + 1}
-                                        onClick={() => setCurrentPage(i + 1)}
-                                    >
-                                        {i + 1}
-                                    </PaginationLink>
-                                </PaginationItem>
-                            ))}
-
-                            <PaginationItem>
-                                <PaginationNext
-                                    size="icon"
-                                    onClick={() =>
-                                        setCurrentPage(
-                                            currentPage < totalPages
-                                                ? currentPage + 1
-                                                : totalPages
-                                        )
-                                    }
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
+            {/* Main Content */}
+            <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+                {/* Categories - keeping it here as per original design, but maybe cleaner if separate? 
+                    Original design had it. We'll keep it but maybe it should be less obtrusive or just "Categories" text.
+                    Actually, let's keep it as is, it's a nice discovery feature. 
+                */}
+                <div className="mb-12 header-animate">
+                    <Categories />
                 </div>
-            )}
+
+                <div className="header-animate mb-8">
+                    <h2 className="text-2xl font-bold tracking-tight">All Products</h2>
+                    <p className="text-neutral-500">Showing {productsData.length} items</p>
+                </div>
+
+                {/* Product Grid */}
+                {productsData.length === 0 && isFetching ? (
+                    <div className="header-animate">
+                        <ProductGridSkeleton count={8} />
+                    </div>
+                ) : productsData.length === 0 ? (
+                    <div className="text-center py-20 text-neutral-500 header-animate">
+                        No products found matching your criteria.
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+                        {productsData.map((product: any, index: number) => (
+                            <div key={`${product?._id}-${index}`} className="product-card-item">
+                                <ProductCard product={product} />
+                            </div>
+                        ))}
+                        {/* Show skeleton capability for infinite scroll if needed, or keeping the loader at bottom */}
+                    </div>
+                )}
+
+                {/* Loading State & Observer Target */}
+                <div
+                    ref={observerRef}
+                    className="w-full h-20 flex items-center justify-center mt-12 mb-20"
+                >
+                    {(isFetching || hasMore) && (
+                        <div className="flex items-center gap-2 text-neutral-500">
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <span className="text-sm font-medium">Loading more...</span>
+                        </div>
+                    )}
+                    {!hasMore && productsData.length > 0 && (
+                        <p className="text-neutral-400 text-sm">You've reached the end</p>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

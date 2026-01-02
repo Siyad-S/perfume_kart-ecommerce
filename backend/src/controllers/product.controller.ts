@@ -52,7 +52,6 @@ export const createProduct = async (
     });
     responseFormatter(res, product, 'Product created successfully', 201);
   } catch (error) {
-    console.error('Create Product Error:', error);
     responseFormatter(res, null, 'Failed to create product', 500);
   }
 };
@@ -142,7 +141,6 @@ export const list = async (
     responseFormatter(res, products, 'Products fetched success!', 200);
 
   } catch (error) {
-    console.log('Product listing error:', error);
     responseFormatter(res, null, 'Failed to create product', 500);
   }
 };
@@ -287,7 +285,6 @@ export const globalSearch = async (
     const products = await Product.list(skip, limit, filter, ['category', 'brand']);
     responseFormatter(res, products, 'Products fetched successfully', 200);
   } catch (error) {
-    console.error('Product search error:', error);
     responseFormatter(res, null, 'Failed to search products', 500);
   }
 }

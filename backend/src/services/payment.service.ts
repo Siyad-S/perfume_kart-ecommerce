@@ -2,17 +2,17 @@ import mongoose from 'mongoose';
 import { Payment } from '../models/payment.model';
 import { PaymentType } from '../types/payment.types';
 
-// 🧩 Create a new payment
+// Create a new payment
 export const create = async (paymentData: Partial<PaymentType>) => {
     return await Payment.create(paymentData);
 };
 
-// 🔍 Find a single payment by query
+// Find a single payment by query
 export const findByQuery = async (query: Partial<PaymentType>) => {
     return await Payment.findOne(query as mongoose.FilterQuery<PaymentType>);
 };
 
-// 📋 List all payments with pagination, filtering, and optional includes (user/order)
+// List all payments
 export const list = async (
     skip: number | null,
     limit: number | null,
@@ -22,15 +22,12 @@ export const list = async (
     let aggregationQuery: any[] = [];
     const search = filter?.search?.trim() || null;
 
-    // Remove search to avoid redundancy
     if (search) delete filter.search;
 
-    // Always exclude deleted payments
     aggregationQuery.push({
         $match: { is_deleted: false },
     });
 
-    // Filter by payment_status (if provided)
     if (filter?.payment_status) {
         aggregationQuery.push({
             $match: { payment_status: filter.payment_status },
@@ -38,7 +35,6 @@ export const list = async (
         delete filter.payment_status;
     }
 
-    // Apply sorting
     if (filter?.sort) {
         aggregationQuery.push({
             $sort: filter.sort,
@@ -46,15 +42,10 @@ export const list = async (
         delete filter.sort;
     }
 
-    console.log("filter77777777777", filter);
-
-
-    // Apply generic filters if any left
     if (filter && Object.keys(filter).length > 0) {
         aggregationQuery.push({ $match: filter });
     }
 
-    // Handle $lookup for includes (user, order)
     if (includes.length > 0) {
         includes.forEach((include) => {
             switch (include) {
@@ -89,7 +80,6 @@ export const list = async (
         });
     }
 
-    // 🔎 Apply search
     if (search) {
         const searchRegex = new RegExp(search, 'i');
         aggregationQuery.push({
@@ -105,14 +95,12 @@ export const list = async (
         });
     }
 
-    // Create data pipeline for pagination
     const dataPipeline = [...aggregationQuery];
     if (skip !== null && limit !== null) {
         dataPipeline.push({ $skip: skip });
         dataPipeline.push({ $limit: limit });
     }
 
-    // Facet for total count and paginated data
     aggregationQuery.push({
         $facet: {
             data: dataPipeline,
@@ -120,7 +108,6 @@ export const list = async (
         },
     });
 
-    // Project data and total count
     aggregationQuery.push({
         $project: {
             data: 1,
@@ -133,7 +120,7 @@ export const list = async (
     return result[0] || { data: [], totalCount: 0 };
 };
 
-// 🔄 Update a payment by ID
+// Update a payment
 export const update = async (id: mongoose.Types.ObjectId, updateData: Partial<PaymentType>) => {
     return await Payment.findByIdAndUpdate(id, updateData, { new: true }).exec();
 };

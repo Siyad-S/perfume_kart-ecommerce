@@ -4,6 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { responseFormatter } from "@/utils/responseFormatter";
 import mongoose from "mongoose";
 
+// create banner
 export const create = async (
     req: Request<{}, {}, Partial<BannerType>>,
     res: Response,
@@ -20,7 +21,6 @@ export const create = async (
             description,
         } = req.body;
 
-        // Prepare banner data
         const bannerData: Partial<BannerType> = {
             banner_url,
             product_id,
@@ -32,14 +32,12 @@ export const create = async (
             category_listing,
         };
 
-        // Create the banner
         const banner = await Banner.create(bannerData);
 
         return responseFormatter(res, banner, "Banner created", 201);
     } catch (error) {
         console.error("Banner Creation Error:", error);
 
-        // Provide specific error messages
         if (error instanceof mongoose.Error) {
             return responseFormatter(res, null, "Database error during banner creation", 500);
         }

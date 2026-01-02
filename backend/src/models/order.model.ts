@@ -43,7 +43,7 @@ const orderSchema = new mongoose.Schema<OrderType>(
     ],
     tracking_number: { type: String, default: null },
     razorpay: {
-      order_id: { type: String, default: null }, // Keep only order_id
+      order_id: { type: String, default: null },
     },
     paid_at: {
       type: Date,

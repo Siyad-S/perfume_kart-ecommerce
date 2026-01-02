@@ -1,6 +1,7 @@
 // routes/authRoutes.js
 import { RequestHandler, Router } from 'express';
-import { register, login, refreshToken, deleteUser, logout, list, update, getUserProfile, getCart, getAddresses } from '../controllers/user.controller';
+import { register, login, refreshToken, deleteUser, logout, list, update, getUserProfile, getCart, getAddresses, forgotPassword, resetPassword } from '../controllers/user.controller';
+import { authMiddleware, optionalAuthMiddleware } from '../middlewares/auth.middleware';
 const router = Router();
 type DeleteParams = { id: string };
 type UpdateParams = { id: string };
@@ -24,12 +25,23 @@ router.patch(
     "/update/:id",
     update as RequestHandler<UpdateParams>
 );
-router.get('/me', getUserProfile)
 
+// Get user profile
+router.get('/me', optionalAuthMiddleware, getUserProfile as RequestHandler)
+
+// Get user cart
 router.get("/cart/:id", getCart)
 
-// get user addresses
+// Get user addresses
 router.get("/addresses/:id", getAddresses)
 
+//Get all user addresses
+router.get("/addresses/:id", getAddresses)
+
+// Forgot Password
+router.post('/forgot-password', forgotPassword);
+
+// Reset Password
+router.post('/reset-password/:token', resetPassword);
 
 export default router

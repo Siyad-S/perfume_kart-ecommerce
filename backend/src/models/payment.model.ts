@@ -6,12 +6,12 @@ const paymentSchema = new mongoose.Schema<PaymentType>(
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
-      required: false, // Allow guest checkouts
+      required: false,
     },
     order_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "orders",
-      required: true, // Require order_id to link payment to order
+      required: true,
     },
     razorpay: {
       order_id: { type: String, required: true, unique: true }, // Razorpay order ID

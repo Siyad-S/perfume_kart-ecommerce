@@ -110,8 +110,6 @@ export default function OrdersPage() {
 
     return (
         <div className="flex flex-col w-full h-full p-4">
-            {(isLoading || deleteLoading) && <Loader />}
-
             <TableListingPage
                 data={orders?.data?.data || []}
                 totalCount={orders?.data?.totalCount || 0}

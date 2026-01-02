@@ -6,11 +6,14 @@ import { useTypedDispatch } from "../redux/store";
 import { useGetUserQuery, useUpdateUserMutation } from "../redux/apis/users";
 import { getGuestCart, clearGuestCart, mergeCarts } from "@/src/utils/guestCart";
 import { toast } from "sonner";
+import { usePathname } from "next/navigation";
 import { CartType } from "@/src/types/user";
 
 export default function UserProvider({ children }: { children: React.ReactNode }) {
     const dispatch = useTypedDispatch();
-    const { data: userData, isSuccess } = useGetUserQuery(undefined, {
+    const path = usePathname();
+    const isAdmin = path.startsWith("/admin");
+    const { data: userData, isSuccess } = useGetUserQuery(isAdmin ? "admin/user/me" : "user/me", {
         refetchOnMountOrArgChange: true,
     });
     const user = userData?.data?.user

@@ -2,12 +2,12 @@ import User from '../models/user.model';
 import { UserType, LoginRegisterType } from '../types/user.types';
 import mongoose from 'mongoose';
 
-// Create a new user
+// Create user
 const createUser = async (userData: LoginRegisterType) => {
   return await User.create(userData);
 };
 
-// Find a single user by query
+// Find user
 const findByQuery = async (query: Partial<UserType>) => {
   const result = await User.aggregate([
     { $match: query as mongoose.FilterQuery<UserType> },
@@ -76,9 +76,12 @@ const list = async (
     });
   }
 
+  const { search: _search, sort: _sort, ...restFilter } = filter || {};
+
   aggregationQuery.push({
     $match: {
       is_deleted: false,
+      ...restFilter
     },
   });
 
@@ -150,8 +153,8 @@ const list = async (
 
   aggregationQuery.push({
     $facet: {
-      data: dataPipeline, // Use the data pipeline with skip and limit
-      totalCount: [{ $count: 'total' }], // Calculate total count
+      data: dataPipeline,
+      totalCount: [{ $count: 'total' }],
     },
   });
 
@@ -166,7 +169,7 @@ const list = async (
 
 };
 
-// Update a user by ID
+// Update user
 const update = async (id: mongoose.Types.ObjectId, updateData: Partial<UserType>) => {
   await User.findByIdAndUpdate(id, updateData, { new: true }).exec();
 

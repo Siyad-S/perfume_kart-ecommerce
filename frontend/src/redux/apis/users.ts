@@ -9,8 +9,8 @@ export const userApi = createApi({
     tagTypes: ["User", "Cart", "Addresses"],
     endpoints: (builder) => ({
         // Get logged-in user
-        getUser: builder.query<{ data: { user: UserType } }, void>({
-            query: () => "admin/user/me",
+        getUser: builder.query<{ data: { user: UserType } }, string | void>({
+            query: (endpoint) => endpoint || "user/me",
             providesTags: ["User"],
         }),
 
@@ -40,6 +40,24 @@ export const userApi = createApi({
             query: (id) => `user/addresses/${id}`,
             providesTags: ["Addresses"],
         }),
+
+        // Forgot Password
+        forgotPassword: builder.mutation<{ message: string }, { email: string }>({
+            query: (body) => ({
+                url: `user/forgot-password`,
+                method: "POST",
+                body,
+            }),
+        }),
+
+        // Reset Password
+        resetPassword: builder.mutation<{ message: string }, { token: string; password: string }>({
+            query: ({ token, password }) => ({
+                url: `user/reset-password/${token}`,
+                method: "POST",
+                body: { password },
+            }),
+        }),
     }),
 });
 
@@ -48,4 +66,6 @@ export const {
     useUpdateUserMutation,
     useGetCartQuery,
     useGetAddressesQuery,
+    useForgotPasswordMutation,
+    useResetPasswordMutation,
 } = userApi;

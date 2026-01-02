@@ -17,8 +17,6 @@ export function SignupForm({ setIsLogin = (isLogin: boolean) => void 0 }: { setI
         onSubmit: async (values) => {
             try {
                 const res = await signup(values).unwrap();
-                console.log("res12345", res);
-                
                 setIsLogin(true);
                 toast.success("Signed up successfully");
             } catch (err: any) {
