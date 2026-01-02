@@ -1,99 +1,262 @@
 "use client";
+
 import { LoginForm } from "@/src/components/admin/login/loginForm";
 import { SignupForm } from "@/src/components/admin/login/signupForm";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-
-import { Suspense } from "react";
+import { useState, useRef, Suspense } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useForgotPasswordMutation } from "@/src/redux/apis/users";
+import { toast } from "sonner";
 
 function AuthPageContent() {
-    const [isLogin, setIsLogin] = useState(true);
+    // viewState: 'login' | 'signup' | 'forgot-password'
+    const [viewState, setViewState] = useState<'login' | 'signup' | 'forgot-password'>('login');
     const params = useSearchParams();
     const redirect = params.get("redirect") || "/home";
 
+    const containerRef = useRef<HTMLDivElement>(null);
+    const imagePanelRef = useRef<HTMLDivElement>(null);
+    const formPanelRef = useRef<HTMLDivElement>(null);
+
+    // Forgot Password Logic
+    const [forgotEmail, setForgotEmail] = useState("");
+    const [forgotPassword, { isLoading: isForgotLoading }] = useForgotPasswordMutation();
+
+    const handleForgotSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await forgotPassword({ email: forgotEmail }).unwrap();
+            toast.success("Password reset email sent! Please check your inbox.");
+            setViewState('login');
+        } catch (error: any) {
+            toast.error(error?.data?.message || "Failed to send reset email");
+        }
+    };
+
+    useGSAP(() => {
+        const tl = gsap.timeline();
+
+        // 1. Image Panel Reveal (Slide in from left + Scale)
+        tl.fromTo(imagePanelRef.current,
+            { xPercent: -100, opacity: 0 },
+            { xPercent: 0, opacity: 1, duration: 1, ease: "power3.out" }
+        )
+            // 2. Form Panel Reveal (Fade in + Slide up)
+            .fromTo(formPanelRef.current,
+                { y: 30, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" },
+                "-=0.6" // Overlap animations
+            )
+            // 3. Stagger children of form panel
+            .fromTo(".form-animate-item",
+                { y: 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.5, stagger: 0.05, ease: "power2.out" },
+                "-=0.4"
+            );
+
+    }, { scope: containerRef });
+
+    // Animate transition between Views
+    useGSAP(() => {
+        if (!formPanelRef.current) return;
+
+        const container = formPanelRef.current.querySelector(".auth-form-container");
+
+        // Simple fade and slide transition based on state change
+        gsap.fromTo(container,
+            { opacity: 0, x: 20 },
+            { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }
+        );
+    }, { dependencies: [viewState], scope: formPanelRef });
+
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
-            <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
-                {/* Brand / Logo */}
-                <div className="flex flex-col items-center mb-6">
-                    <div className="flex items-center justify-center w-full h-[80px] w-[100px]">
-                        <img
-                            src="/fragrance_kart_ecommerce_logo.png" // replace with your ecommerce logo
-                            alt="Logo"
-                            className="h-full w-full object-contain"
-                        />
-                    </div>
-                    <h1 className="text-xl font-bold text-gray-800">
-                        {isLogin ? "Welcome Back" : "Create Your Account"}
-                    </h1>
-                    <p className="text-gray-500 text-sm mt-1">
-                        {isLogin ? "Login to continue shopping" : "Join us and start shopping"}
+        <div ref={containerRef} className="min-h-screen w-full flex bg-gray-50 overflow-hidden">
+
+            {/* Left: Brand Image Panel (Hidden on Mobile) */}
+            <div
+                ref={imagePanelRef}
+                className="hidden lg:flex w-1/2 relative bg-black items-center justify-center overflow-hidden"
+            >
+                <Image
+                    src="/banner/banner-2.png" // You might want to pick a specific "auth" image
+                    alt="Fragrance Art"
+                    fill
+                    className="object-cover opacity-60 mix-blend-overlay"
+                    sizes="50vw"
+                    priority
+                />
+                <div className="relative z-10 p-12 text-white max-w-lg">
+                    <h2 className="text-5xl font-serif font-bold mb-6 leading-tight">
+                        Discover Your <br /> Signature Scent
+                    </h2>
+                    <p className="text-lg text-gray-200 font-light leading-relaxed">
+                        Join our community of fragrance enthusiasts and explore a world of curated perfumes crafted for every occasion.
                     </p>
+                    <div className="mt-8 flex gap-2">
+                        <div className="h-1 w-12 bg-primary rounded-full"></div>
+                        <div className="h-1 w-3 bg-white/30 rounded-full"></div>
+                        <div className="h-1 w-3 bg-white/30 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Right: Auth Form Panel */}
+            <div
+                ref={formPanelRef}
+                className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative"
+            >
+                {/* Background Pattern for mobile feel */}
+                <div className="lg:hidden absolute inset-0 z-0 opacity-5">
+                    <Image
+                        src="/assets/pattern.png" // Fallback or pattern
+                        alt="Background"
+                        fill
+                        className="object-cover"
+                    />
                 </div>
 
-                {/* Tab header */}
-                <div className="flex justify-center mb-6">
-                    <button
-                        onClick={() => setIsLogin(true)}
-                        className={`px-4 py-2 font-medium ${isLogin
-                            ? "border-b-2 border-gray-600 text-gray-600"
-                            : "text-gray-500"
-                            }`}
-                    >
-                        Login
-                    </button>
-                    <button
-                        onClick={() => setIsLogin(false)}
-                        className={`px-4 py-2 font-medium ${!isLogin
-                            ? "border-b-2 border-gray-600 text-gray-600"
-                            : "text-gray-500"
-                            }`}
-                    >
-                        Sign Up
-                    </button>
-                </div>
+                <div className="w-full max-w-md z-10 bg-white/80 backdrop-blur-xl sm:bg-white sm:backdrop-blur-none p-8 rounded-2xl shadow-2xl sm:shadow-none border sm:border-none border-white/20">
 
-                {/* Conditional Form */}
-                {isLogin ? (
-                    <>
-                        <LoginForm redirect={redirect} />
-                        {/* Forgot password */}
-                        <p className="mt-3 text-sm text-right">
-                            <a href="/forgot-password" className="text-blue-600 hover:underline">
-                                Forgot password?
-                            </a>
+                    {/* Header */}
+                    <div className="text-center mb-10 form-animate-item">
+                        <Link href="/home" className="inline-block mb-4 hover:scale-105 transition-transform">
+                            <Image
+                                src="/fragrance_kart_ecommerce_logo.png"
+                                alt="Logo"
+                                width={80}
+                                height={80}
+                                className="mx-auto object-contain"
+                            />
+                        </Link>
+                        <h1 className="text-3xl font-serif font-bold text-gray-900 mb-2">
+                            {viewState === 'login' && "Welcome Back"}
+                            {viewState === 'signup' && "Create Account"}
+                            {viewState === 'forgot-password' && "Reset Password"}
+                        </h1>
+                        <p className="text-gray-500 text-sm">
+                            {viewState === 'login' && "Enter your credentials to access your account"}
+                            {viewState === 'signup' && "Fill in your details to get started"}
+                            {viewState === 'forgot-password' && "Enter your email to receive a reset link"}
                         </p>
-                    </>
-                ) : (
-                    <>
-                        <SignupForm setIsLogin={setIsLogin} />
-                        {/* Terms & Privacy */}
-                        <p className="text-xs text-gray-500 mt-4 text-center">
-                            By signing up, you agree to our{" "}
-                            <a href="/terms" className="underline">
-                                Terms
-                            </a>{" "}
-                            &{" "}
-                            <a href="/privacy" className="underline">
-                                Privacy Policy
-                            </a>
-                            .
-                        </p>
-                    </>
-                )}
+                    </div>
 
-                {/* Divider */}
-                <div className="my-6 flex items-center">
-                    <div className="flex-grow border-t border-gray-300" />
-                    <span className="px-3 text-sm text-gray-400">or</span>
-                    <div className="flex-grow border-t border-gray-300" />
+                    {/* Tab Switcher - Only show for Login/Signup */}
+                    {viewState !== 'forgot-password' && (
+                        <div className="flex bg-gray-100 p-1 rounded-xl mb-8 relative form-animate-item">
+                            <button
+                                onClick={() => setViewState('login')}
+                                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${viewState === 'login'
+                                    ? "bg-white text-gray-900 shadow-sm"
+                                    : "text-gray-500 hover:text-gray-700"}`}
+                            >
+                                Log In
+                            </button>
+                            <button
+                                onClick={() => setViewState('signup')}
+                                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${viewState === 'signup'
+                                    ? "bg-white text-gray-900 shadow-sm"
+                                    : "text-gray-500 hover:text-gray-700"}`}
+                            >
+                                Sign Up
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Form Container */}
+                    <div className="auth-form-container form-animate-item">
+                        {viewState === 'login' && (
+                            <>
+                                <LoginForm redirect={redirect} />
+                                <div className="mt-4 text-right">
+                                    <button
+                                        type="button"
+                                        onClick={() => setViewState('forgot-password')}
+                                        className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                                    >
+                                        Forgot Password?
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
+                        {viewState === 'signup' && (
+                            <>
+                                <SignupForm setIsLogin={(val) => setViewState(val ? 'login' : 'signup')} />
+                                <p className="text-xs text-center text-gray-500 mt-6 px-4">
+                                    By creating an account, you agree to our{' '}
+                                    <Link href="/terms" className="text-gray-900 hover:underline">Terms of Service</Link>
+                                    {' '}and{' '}
+                                    <Link href="/privacy" className="text-gray-900 hover:underline">Privacy Policy</Link>.
+                                </p>
+                            </>
+                        )}
+
+                        {viewState === 'forgot-password' && (
+                            <form onSubmit={handleForgotSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                    <input
+                                        type="email"
+                                        value={forgotEmail}
+                                        onChange={(e) => setForgotEmail(e.target.value)}
+                                        required
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                                        placeholder="john@example.com"
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={isForgotLoading}
+                                    className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                                >
+                                    {isForgotLoading ? "Sending..." : "Send Reset Link"}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setViewState('login')}
+                                    className="w-full text-sm text-gray-500 hover:text-gray-900 mt-4 font-medium"
+                                >
+                                    Back to Login
+                                </button>
+                            </form>
+                        )}
+                    </div>
+
+                    {/* Social Divider */}
+                    {viewState === 'login' && (
+                        <div className="relative my-8 form-animate-item">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-gray-200"></div>
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-4 bg-white text-gray-500 uppercase tracking-wider text-xs font-medium">Or continue with</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Google Login */}
+                    {viewState === 'login' && (
+                        <div className="form-animate-item">
+                            <button
+                                type="button"
+                                onClick={() => window.location.href = "http://localhost:5005/auth/google"}
+                                className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-sm hover:shadow"
+                            >
+                                <Image
+                                    src="/icons/google_button_icon.png"
+                                    alt="Google"
+                                    width={20}
+                                    height={20}
+                                />
+                                <span>Google</span>
+                            </button>
+                        </div>
+                    )}
+
                 </div>
-
-                {/* Social Login (Google placeholder) */}
-                <button className="w-full flex items-center justify-center gap-2 border rounded-lg py-2 text-gray-700 hover:bg-gray-50">
-                    <img src="/google-icon.svg" alt="Google" className="h-5 w-5" />
-                    Continue with Google
-                </button>
             </div>
         </div>
     );
@@ -101,7 +264,11 @@ function AuthPageContent() {
 
 export default function AuthPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+        }>
             <AuthPageContent />
         </Suspense>
     );

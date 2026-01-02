@@ -41,6 +41,10 @@ export interface UserType {
         productId: string;
         quantity: number;
     }>;
+    avatar?: {
+        public_id: string;
+        url: string;
+    };
     is_deleted: boolean;
     created_at: Date;
     updated_at: Date;

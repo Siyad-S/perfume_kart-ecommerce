@@ -7,7 +7,7 @@ export const authApi = createApi({
     reducerPath: "authApi",
     baseQuery: customBaseQuery,
     endpoints: (builder) => ({
-        login: builder.mutation<{ user: { id: string; email: string } }, { email: string; password: string }>({
+        login: builder.mutation<{ user: { id: string; email: string; role: string } }, { email: string; password: string; portal?: string }>({
             query: (credentials) => ({
                 url: "/user/login",
                 method: "POST",
@@ -21,6 +21,7 @@ export const authApi = createApi({
                 body: userData,
             }),
         }),
+
         getCurrentUser: builder.query<{ data: { user: { id: string; email: string, role: string } } }, void>({
             query: () => "admin/user/me",
         }),

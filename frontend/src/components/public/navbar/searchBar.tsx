@@ -75,11 +75,10 @@ export function SearchBar() {
         e.preventDefault()
         if (!query) return
         setIsOpen(false)
-        console.log("Navigating to full search results for:", query)
+        router.push(`/products?search=${encodeURIComponent(query)}`)
     }
 
     const handleProductClick = (productId: string) => {
-        console.log("Navigating to product page ID:", productId)
         setIsOpen(false)
         setQuery("")
     }

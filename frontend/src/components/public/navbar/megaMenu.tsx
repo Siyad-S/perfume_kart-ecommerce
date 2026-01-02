@@ -4,6 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 // Import the new hook
 import { useCategoryNavigation } from "@/src/hooks/useCategoryNavigation";
 
@@ -43,6 +45,10 @@ interface MegaMenuProps {
 export function MegaMenu({ categories, brands, bestSellers, isLoading }: MegaMenuProps) {
     const [showMenu, setShowMenu] = React.useState(false);
 
+    // Refs for animation
+    const menuRef = React.useRef<HTMLDivElement>(null)
+    const containerRef = React.useRef<HTMLDivElement>(null)
+
     // Use the custom hook
     const { navigateToProducts } = useCategoryNavigation();
 
@@ -59,18 +65,32 @@ export function MegaMenu({ categories, brands, bestSellers, isLoading }: MegaMen
         setShowMenu(false);
     };
 
+    useGSAP(() => {
+        if (showMenu && menuRef.current) {
+            gsap.fromTo(menuRef.current,
+                { opacity: 0, y: 10 },
+                { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
+            )
+        }
+    }, { dependencies: [showMenu], scope: containerRef })
+
     return (
         <div
+            ref={containerRef}
             onMouseEnter={() => setShowMenu(true)}
             onMouseLeave={() => setShowMenu(false)}
             className="h-full flex items-center"
         >
-            <button className="flex items-center gap-1 text-sm font-medium uppercase tracking-wide hover:text-primary transition-colors h-full">
-                Perfumes <ChevronDown className="h-4 w-4" />
+            <button className="flex items-center gap-1 text-sm font-medium uppercase tracking-wide hover:text-primary transition-colors h-full px-2 group">
+                Perfumes
+                <ChevronDown className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" />
             </button>
 
             {showMenu && (
-                <div className="absolute left-0 top-full bg-white shadow-2xl border-b border-primary/10 py-10 z-50 w-screen">
+                <div
+                    ref={menuRef}
+                    className="absolute left-0 top-full bg-white shadow-2xl border-b border-primary/10 py-10 z-50 w-screen"
+                >
                     <div className="container mx-auto px-10">
                         <div className="grid grid-cols-12 gap-10">
 
@@ -84,22 +104,19 @@ export function MegaMenu({ categories, brands, bestSellers, isLoading }: MegaMen
                                 ) : (
                                     <ul className="space-y-4">
                                         {categories.slice(0, 6).map((cat) => (
-                                            <li key={cat._id} className="flex items-center gap-3">
-                                                <div className="relative w-8 h-8 rounded-md overflow-hidden bg-gray-100">
+                                            <li key={cat._id} className="flex items-center gap-3 group/item">
+                                                <div className="relative w-8 h-8 rounded-md overflow-hidden bg-gray-100 group-hover/item:shadow-md transition-all">
                                                     <Image
                                                         src={cat.image_url}
                                                         alt={cat.name}
                                                         fill
                                                         sizes="32px"
-                                                        className="object-cover"
+                                                        className="object-cover group-hover/item:scale-110 transition-transform duration-500"
                                                     />
                                                 </div>
-                                                {/* CHANGED: Replaced Link with button/div to use the hook.
-                           This ensures Redux state is set before navigating.
-                        */}
                                                 <button
                                                     onClick={() => handleCategoryClick(cat._id)}
-                                                    className="text-sm text-muted-foreground hover:text-primary transition text-left"
+                                                    className="text-sm text-muted-foreground hover:text-primary transition text-left font-medium"
                                                 >
                                                     {cat.name}
                                                 </button>
