@@ -23,7 +23,7 @@ interface Category {
   description?: string;
   image_file?: File;
   image_url?: string;
-  created_at?: string;
+  createdAt?: string;
 }
 
 export default function Categories(props: { from?: string }) {
@@ -35,7 +35,7 @@ export default function Categories(props: { from?: string }) {
     search: "",
     skip: 0,
     limit: 3,
-    sort: "created_at_asc",
+    sort: "createdAt_asc",
   });
 
   const categoriesData = [

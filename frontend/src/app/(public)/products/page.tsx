@@ -34,7 +34,7 @@ import { useGSAP } from "@gsap/react";
 
 export default function ProductsPage() {
     const [search, setSearch] = useState("");
-    const [sort, setSort] = useState("created_at_desc");
+    const [sort, setSort] = useState("createdAt_desc");
     const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<number[]>([0, 100000]);
 
@@ -77,13 +77,6 @@ export default function ProductsPage() {
 
     // GSAP Animation for initial load and list updates
     useGSAP(() => {
-        // Simple stagger for entering items
-        // We select items that haven't been animated yet if we wanted to be complex,
-        // but a simple "from" on the container children works for initial load.
-        // For infinite scroll, items are appended. 
-        // We can just rely on the CSS/GSAP in ProductCard for individual hover effects, 
-        // and here just do a page entry animation.
-
         if (productsData.length > 0 && !isFetching) {
             gsap.fromTo(".product-card-item",
                 { opacity: 0, y: 30 },
@@ -134,7 +127,7 @@ export default function ProductsPage() {
                                     <SelectValue placeholder="Sort" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="created_at_desc">Newest</SelectItem>
+                                    <SelectItem value="createdAt_desc">Newest</SelectItem>
                                     <SelectItem value="price_asc">Price: Low - High</SelectItem>
                                     <SelectItem value="price_desc">Price: High - Low</SelectItem>
                                     <SelectItem value="name_asc">Name: A - Z</SelectItem>

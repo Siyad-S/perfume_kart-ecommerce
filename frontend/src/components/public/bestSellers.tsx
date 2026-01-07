@@ -10,7 +10,7 @@ export default function BestSellers() {
         search: "",
         skip: 0,
         limit: 5,
-        sort: `created_at_desc`,
+        sort: `createdAt_desc`,
         filter: { best_seller: true },
     });
 

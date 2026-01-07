@@ -8,7 +8,7 @@ interface ListRequestType {
     limit?: number | null;
     sort?:
     'order_date_asc' | 'order_date_desc'
-    | 'created_at_asc' | 'created_at_desc'
+    | 'createdAt_asc' | 'createdAt_desc'
     | 'total_price_asc' | 'total_price_desc'
     | 'paid_at_asc' | 'paid_at_desc'
     | 'total_amount_asc' | 'total_amount_desc'

@@ -12,8 +12,8 @@ import { useFileUpload } from "@/src/hooks/useFileUpload";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import Image from "next/image";
 
-type SortColumn = "name" | "created_at";
-type SortValue = "name_asc" | "name_desc" | "created_at_asc" | "created_at_desc" | undefined;
+type SortColumn = "name" | "createdAt";
+type SortValue = "name_asc" | "name_desc" | "createdAt_asc" | "createdAt_desc" | undefined;
 
 interface Brand {
     _id?: string;
@@ -22,13 +22,13 @@ interface Brand {
     origin?: string;
     logo_file?: File;
     logo_url?: string;
-    created_at?: string;
+    createdAt?: string;
 }
 
 export default function BrandsPage() {
     const [currentPage, setCurrentPage] = React.useState(1);
     const [searchTerm, setSearchTerm] = React.useState("");
-    const [sortColumn, setSortColumn] = React.useState<SortColumn>("created_at");
+    const [sortColumn, setSortColumn] = React.useState<SortColumn>("createdAt");
     const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">("desc");
     const [openAddEdit, setOpenAddEdit] = React.useState<boolean>(false);
     const [editBrand, setEditBrand] = React.useState<Brand | null>(null);
@@ -131,11 +131,11 @@ export default function BrandsPage() {
                     { key: "name", label: "Brand Name", sortable: true },
                     { key: "origin", label: "Origin", sortable: true },
                     {
-                        key: "created_at",
+                        key: "createdAt",
                         label: "Created At",
                         sortable: true,
                         render: (item: Brand) =>
-                            item.created_at ? new Date(item.created_at).toLocaleDateString() : "N/A",
+                            item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
                     },
                 ]}
                 searchTerm={searchTerm}

@@ -25,7 +25,7 @@ export default function ProductScroller() {
         search: "",
         skip: 0,
         limit: 3,
-        sort: `created_at_desc`,
+        sort: `createdAt_desc`,
         filter: { new_launch: true },
     });
 
@@ -33,7 +33,7 @@ export default function ProductScroller() {
         search: "",
         skip: 0,
         limit: 1,
-        sort: `created_at_desc`,
+        sort: `createdAt_desc`,
     });
 
     const productsData = products?.data?.data || [];

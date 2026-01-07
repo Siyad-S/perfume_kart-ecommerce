@@ -19,8 +19,8 @@ import { useFileUpload } from "@/src/hooks/useFileUpload";
 import { useAdminGetProductsQuery } from "@/src/redux/apis/adminProducts";
 import { useAdminGetCategoriesQuery } from "@/src/redux/apis/adminCategories";
 
-type SortColumn = "created_at";
-type SortValue = "created_at_asc" | "created_at_desc" | undefined;
+type SortColumn = "createdAt";
+type SortValue = "createdAt_asc" | "createdAt_desc" | undefined;
 
 interface Banner {
     _id?: string;
@@ -32,7 +32,7 @@ interface Banner {
     home_sub?: boolean;
     category_listing?: boolean;
     category_id?: string;
-    created_at?: Date;
+    createdAt?: Date;
     banner_file?: File;
 }
 
@@ -49,7 +49,7 @@ interface Category {
 export default function BannersPage() {
     const [currentPage, setCurrentPage] = React.useState(1);
     const [searchTerm, setSearchTerm] = React.useState("");
-    const [sortColumn, setSortColumn] = React.useState<SortColumn>("created_at");
+    const [sortColumn, setSortColumn] = React.useState<SortColumn>("createdAt");
     const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">("desc");
     const [openAddEdit, setOpenAddEdit] = React.useState<boolean>(false);
     const [editBanner, setEditBanner] = React.useState<Banner | null>(null);
@@ -209,11 +209,11 @@ export default function BannersPage() {
                         render: (item: Banner) => categoryMap[item.category_id!] || "N/A",
                     },
                     {
-                        key: "created_at",
+                        key: "createdAt",
                         label: "Created At",
                         sortable: true,
                         render: (item: Banner) =>
-                            item.created_at ? new Date(item.created_at).toLocaleDateString() : "N/A",
+                            item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
                     },
                 ]}
                 searchTerm={searchTerm}

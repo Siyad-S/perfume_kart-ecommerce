@@ -15,7 +15,7 @@ interface ListRequestType {
     search?: string;
     skip?: number | null;
     limit?: number | null;
-    sort?: 'name_asc' | 'name_desc' | 'created_at_asc' | 'created_at_desc';
+    sort?: 'name_asc' | 'name_desc' | 'createdAt_asc' | 'createdAt_desc';
     filter?: Record<string, any>;
 }
 

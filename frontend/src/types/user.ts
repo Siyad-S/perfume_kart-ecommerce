@@ -31,21 +31,18 @@ export interface UserType {
     role: string;
     cart: CartType[];
     viewedProducts: Array<{
-        productId: string;
+        product_id: string;
     }>;
     languagePreferences: "en" | "ar";
     favourites: Array<{
-        productId: string;
+        product_id: string;
     }>;
-    wishlist: Array<{
-        productId: string;
-        quantity: number;
-    }>;
+    wishlist: CartType[];
     avatar?: {
         public_id: string;
         url: string;
     };
     is_deleted: boolean;
-    created_at: Date;
-    updated_at: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }

@@ -10,7 +10,7 @@ export default function Trendings() {
         search: "",
         skip: 0,
         limit: 5, // show 3 trending items initially
-        sort: `created_at_desc`,
+        sort: `createdAt_desc`,
         filter: {
             trending: true,
         },

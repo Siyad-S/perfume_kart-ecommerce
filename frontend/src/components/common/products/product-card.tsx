@@ -5,9 +5,13 @@ import React, { useRef } from "react";
 import { Button } from "../../ui/button";
 import Link from "next/link";
 import { useCart } from "@/src/hooks/useCartProducts";
+import { useWishlist } from "@/src/hooks/useWishlist";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Heart } from "lucide-react";
+import { useTypedSelector } from "@/src/redux/store";
+import { useToggleWishlistMutation } from "@/src/redux/apis/users";
+import { toast } from "sonner";
 
 type ProductCardProps = {
     product: {
@@ -28,6 +32,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const cardRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
     const buttonRef = useRef<HTMLDivElement>(null);
+    const wishlistRef = useRef<HTMLButtonElement>(null);
+
+    const { toggleWishlist, isInWishlist, isToggling } = useWishlist();
+
+    const isProductInWishlist = isInWishlist(_id);
 
     const { contextSafe } = useGSAP({ scope: cardRef });
 
@@ -46,6 +55,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         gsap.to(buttonRef.current, {
             y: 0,
             opacity: 1,
+            duration: 0.3,
+            ease: "back.out(1.7)",
+        });
+        gsap.to(wishlistRef.current, {
+            opacity: 1,
+            x: 0,
             duration: 0.3,
             ease: "back.out(1.7)",
         });
@@ -69,11 +84,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
             duration: 0.3,
             ease: "power2.out",
         });
+        gsap.to(wishlistRef.current, {
+            opacity: 0,
+            x: 10,
+            duration: 0.3,
+            ease: "power2.out",
+        });
     });
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
         addToCart({ _id, name, price, image_urls }, 1);
+    };
+
+    const handleWishlistToggle = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        await toggleWishlist({
+            _id,
+            name,
+            price,
+            image_urls,
+        });
     };
 
     return (
@@ -83,28 +116,42 @@ const ProductCard: React.FC<ProductCardProps> = ({
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <Link href={`/products/${_id}`} className="block relative aspect-[3/4] overflow-hidden bg-neutral-100">
-                <Image
-                    ref={imageRef}
-                    src={image_urls[0]}
-                    alt={name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    priority={false}
-                />
-
-                {/* Secondary Image for Hover (Optional, handled via CSS opacity or GSAP if needed. Keeping simple via CSS for swap is often fine, but let's stick to the primary one scaling for now to match the GSAP plan) */}
-                {image_urls[1] && (
+            <div className="block relative aspect-[3/4] overflow-hidden bg-neutral-100">
+                <Link href={`/products/${_id}`}>
                     <Image
-                        src={image_urls[1]}
+                        ref={imageRef}
+                        src={image_urls[0]}
                         alt={name}
                         fill
-                        className="object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500 absolute inset-0"
+                        className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority={false}
                     />
-                )}
-            </Link>
+
+                    {/* Secondary Image for Hover */}
+                    {image_urls[1] && (
+                        <Image
+                            src={image_urls[1]}
+                            alt={name}
+                            fill
+                            className="object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500 absolute inset-0"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                    )}
+                </Link>
+                {/* Wishlist Button */}
+                <button
+                    ref={wishlistRef}
+                    onClick={handleWishlistToggle}
+                    className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-neutral-900 shadow-sm hover:bg-white transition-colors opacity-0 translate-x-4"
+                    disabled={isToggling}
+                >
+                    <Heart
+                        className={`w-5 h-5 transition-colors ${isProductInWishlist ? "fill-red-500 text-red-500" : "text-neutral-900"
+                            }`}
+                    />
+                </button>
+            </div>
 
             <div className="p-4 flex flex-col gap-2">
                 <h3 className="text-base font-medium text-neutral-900 line-clamp-1">{name}</h3>

@@ -6,7 +6,7 @@ import { UserType, CartType, AddressType } from "@/src/types/user";
 export const userApi = createApi({
     reducerPath: "userApi",
     baseQuery: customBaseQuery,
-    tagTypes: ["User", "Cart", "Addresses"],
+    tagTypes: ["User", "Cart", "Addresses", "Wishlist"],
     endpoints: (builder) => ({
         // Get logged-in user
         getUser: builder.query<{ data: { user: UserType } }, string | void>({
@@ -35,6 +35,12 @@ export const userApi = createApi({
             providesTags: ["Cart"],
         }),
 
+        //get wishlist data
+        getWishlist: builder.query<{ data: CartType[] }, string>({
+            query: (id) => `user/wishlist/${id}`,
+            providesTags: ["Wishlist"],
+        }),
+
         // Get user addresses
         getAddresses: builder.query<{ data: AddressType[] }, string>({
             query: (id) => `user/addresses/${id}`,
@@ -58,6 +64,15 @@ export const userApi = createApi({
                 body: { password },
             }),
         }),
+        // Toggle Wishlist
+        toggleWishlist: builder.mutation<{ message: string; wishlist: CartType[] }, { id: string; productId: string }>({
+            query: ({ id, productId }) => ({
+                url: `user/wishlist/${id}`,
+                method: "PATCH",
+                body: { productId },
+            }),
+            invalidatesTags: ["Wishlist", "User"],
+        }),
     }),
 });
 
@@ -65,7 +80,9 @@ export const {
     useGetUserQuery,
     useUpdateUserMutation,
     useGetCartQuery,
+    useGetWishlistQuery,
     useGetAddressesQuery,
     useForgotPasswordMutation,
     useResetPasswordMutation,
+    useToggleWishlistMutation,
 } = userApi;
