@@ -1,163 +1,190 @@
-# Fragrance Kart - Premium Perfume E-Commerce Platform
+# 🌸 Fragrance Kart
 
-A modern, full-stack e-commerce application for premium fragrances, built with the MERN stack (MongoDB, Express, React/Next.js, Node.js) and TypeScript.
+<div align="center">
 
-![Project Status](https://img.shields.io/badge/status-active-success.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Project Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?logo=docker&style=for-the-badge)
+![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js&style=for-the-badge)
+![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript&style=for-the-badge)
 
-## 🚀 Features
+**A premium, full-stack e-commerce experience tailored for luxury perfumes.**  
+*Built with modern web standards, strict type safety, and a hybrid cloud architecture.*
 
-### User Features
-- **Authentication**: Secure login/signup including Google OAuth integration.
-- **Product Browsing**: Advanced filtering (brands, price, categories), searching, and sorting.
-- **Shopping Experience**: 
-  - Dynamic Cart management (Guest & User).
-  - Infinite scroll product listing.
-  - Seamless Checkout process.
-- **Account Management**: 
-  - Manage multiple shipping addresses.
-  - Order history and tracking.
-  - Profile updates.
-- **Support**: Integrated support request system via email.
+[View Demo](https://perfume-ecommerce.vercel.app) · [Report Bug](#) · [Request Feature](#)
 
-### Admin Features
-- **Dashboard**: Overview of sales, orders, and user statistics.
-- **Product Management**: Create, edit, delete products with image uploads (Cloudinary).
-- **Order Management**: View and update order statuses (Processing, Shipped, Delivered, Cancelled).
-- **Banner Management**: Dynamic homepage banner configuration.
-- **User Management**: View and manage customer accounts.
+</div>
 
-### Technical Highlights
-- **Modern UI**: Built with Next.js 15, TailwindCSS v4, and Radix UI primitives.
-- **Animations**: Smooth transitions and scrolling effects using GSAP.
-- **State Management**: Redux Toolkit & RTK Query for efficient data fetching and caching.
-- **Payments**: Razorpay integration for secure transactions.
-- **Email Service**: Transactional emails (Order confirmation, Password Reset, Support) using Nodemailer & EJS templates.
-- **Type Safety**: Full TypeScript support across frontend and backend.
+---
 
-## 🛠️ Tech Stack
+## 📖 About The Project
 
-### Frontend
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript
-- **Styling**: TailwindCSS, Shadcn/UI (Radix)
-- **State Management**: Redux Toolkit, RTK Query
-- **Animations**: GSAP
-- **Forms**: Formik, Yup
-- **Utilities**: Sonner (Toast), Lucide React (Icons)
+Fragrance Kart isn't just another shopping cart; it's a fully integrated e-commerce platform designed to mimic real-world scale and complexity. It features a high-performance **Next.js** frontend with smooth **GSAP** animations, backed by a robust **Express/MongoDB** backend.
 
-### Backend
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: MongoDB (Mongoose ODM)
-- **Authentication**: Passport.js, JWT
-- **File Storage**: Cloudinary
-- **Email**: Nodemailer
+I built this project to master the **Monorepo** architecture and demonstrate advanced DevOps skills, including **Docker containerization** and **Hybrid Cloud Deployment** (Vercel + Render).
 
-## 📦 Installation & Setup
+### ✨ Key Features
+
+| **User Experience** | **Admin Power** | **Technical Excellence** |
+| :--- | :--- | :--- |
+| 🛍️ **Smart Filtering**: Filter by brand, price, and category. | 📊 **Dashboard**: Real-time sales analytics and charts. | 🐳 **Dockerized**: Full environment setup with one command. |
+| ⚡ **Optimized UI**: Infinite scroll & skeleton loading. | 📦 **Product Mgr**: CRUD operations with image upload. | 🛡️ **Secure**: JWT + Refresh Tokens & Zod Validation. |
+| 🛒 **Dynamic Cart**: Guest & User cart syncing. | 🚚 **Order Ops**: Update status from Processing to Delivered. | ☁️ **Hybrid Cloud**: Best-of-breed hosting (Vercel + Render). |
+| 💳 **Checkout**: Razorpay integration for payments. | 📢 **Banners**: Customize homepage visuals dynamically. | 📧 **Email System**: Transactional emails via Nodemailer. |
+
+---
+
+## 🛠️ Tech Stack Deep Dive
+
+### 🎨 Frontend (Client)
+*   **Framework:** Next.js 15 (App Router)
+*   **State Management:**
+    *   **Redux Toolkit**: Global state for Cart and User Session.
+    *   **RTK Query**: Efficient data fetching with automatic caching and re-validation.
+*   **UI & Styling:**
+    *   **TailwindCSS v4**: Utility-first styling.
+    *   **Shadcn UI**: Accessible, reusable components built on Radix Primitives.
+    *   **GSAP**: High-performance animations for a premium feel.
+*   **Forms**: Formik + Yup for robust form handling and validation.
+
+### 🔌 Backend (Server)
+*   **Runtime:** Node.js + Express.js
+*   **Database:** MongoDB Atlas (Mongoose ODM).
+*   **Authentication:**
+    *   **Passport.js**: Google OAuth strategy.
+    *   **JWT**: Custom Access/Refresh token rotation for secure, persistent sessions.
+*   **Validation:** **Zod** schema validation for all API inputs (Runtime safety).
+*   **Security:** `helmet` for headers, `express-rate-limit` for DDoS protection, and `mongo-sanitize`.
+
+---
+
+## 🚀 Getting Started
+
+You can run this project locally in two ways: **The Docker Way** (Recommended) or **Manual Setup**.
 
 ### Prerequisites
-- Node.js (v18+)
-- MongoDB (Local or Atlas)
-- Cloudinary Account
-- Razorpay Account
-- Google Cloud Console Project (for OAuth)
+*   Node.js 18+
+*   Docker Desktop (for Docker method)
+*   MongoDB URI (Local or Atlas)
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/yourusername/fragrance-kart.git
-cd perfume-ecommerce
-```
+### Option 1: The Docker Way (Fastest) 🐳
+Run the entire stack (Frontend + Backend + DB) with a single command.
 
-### 2. Backend Setup
-Navigate to the backend directory and install dependencies:
-```bash
-cd backend
-npm install
-```
+1.  **Clone the repo**
+    ```bash
+    git clone https://github.com/yourusername/fragrance-kart.git
+    cd perfume-ecommerce
+    ```
 
-Create a `.env` file in the `backend` directory:
+2.  **Configure Environment**
+    Create a `.env` file in `backend/` and `frontend/` (see "Environment Variables" below) or modify `docker-compose.yml` directly.
+
+3.  **Launch**
+    ```bash
+    docker-compose up --build
+    ```
+    *   **Frontend**: `http://localhost:3000`
+    *   **Backend**: `http://localhost:5000`
+
+### Option 2: Manual Setup
+
+<details>
+<summary>Click to view manual installation steps</summary>
+
+1.  **Backend Setup**
+    ```bash
+    cd backend
+    npm install
+    # Setup .env file
+    npm run dev
+    ```
+
+2.  **Frontend Setup**
+    ```bash
+    cd frontend
+    npm install
+    # Setup .env file
+    npm run dev
+    ```
+</details>
+
+---
+
+## 🔐 Environment Variables
+
+You need to create `.env` files in both directories.
+
+**Backend (`backend/.env`)**
 ```env
-PORT=4000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+PORT=5000
+CONNECTION_URL=mongodb+srv://... (or mongodb://mongo:27017/perfume_db for Docker)
+JWT_SECRET=complex_secret_key
+REFRESH_SECRET=complex_refresh_key
 CLIENT_URL=http://localhost:3000
-
-# Cloudinary
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-
-# Email (SMTP)
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
 SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_password
-SUPPORT_MAIL=support@fragrancekart.com
-
-# Google OAuth
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-# Razorpay
-RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+SMTP_USER=...
+SMTP_PASS=...
 ```
 
-Start the backend server:
-```bash
-npm run dev
-```
-
-### 3. Frontend Setup
-Navigate to the frontend directory and install dependencies:
-```bash
-cd ../frontend
-npm install
-```
-
-Create a `.env` file in the `frontend` directory:
+**Frontend (`frontend/.env`)**
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:4000/api
-NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
+NEXT_PUBLIC_API_URL=http://localhost:5000 (or your Render URL)
+NEXT_PUBLIC_RAZORPAY_KEY_ID=...
 ```
 
-Start the frontend development server:
+---
+
+## ☁️ Deployment Architecture
+
+This project uses a **Hybrid Deployment** strategy to optimize for performance and cost.
+
+*   **Frontend (Vercel)**:
+    *   Chosen for its global CDN and optimized Next.js build pipeline.
+    *   Configured via `vercel.json` to ignore backend changes.
+*   **Backend (Render)**:
+    *   Chosen for its native Docker support.
+    *   Deployed via `render.yaml` Blueprint which builds the backend container from the root context.
+
+---
+
+## 📂 Project Structure (Monorepo)
+
 ```bash
-npm run dev
-```
-
-Visit `http://localhost:3000` to view the application.
-
-## 📂 Project Structure
-
-```
 perfume-ecommerce/
-├── backend/            # Express.js API
+├── backend/                # Express API
 │   ├── src/
-│   │   ├── controllers/# Route controllers
-│   │   ├── models/     # Mongoose models
-│   │   ├── routes/     # API routes
-│   │   ├── services/   # Business logic (Email, etc.)
-│   │   ├── templates/  # EJS Email templates
-│   │   └── utils/      # Helper functions
-│   └── ...
-└── frontend/           # Next.js Application
-    ├── src/
-    │   ├── app/        # App Router pages
-    │   │   ├── (admin) # Admin routes
-    │   │   └── (public)# Public store routes
-    │   ├── components/
-    │   │   ├── admin/  # Admin UI components
-    │   │   ├── public/ # Public UI components
-    │   │   └── ui/     # Reusable UI elements
-    │   ├── redux/      # Global state
-    │   └── ...
-    └── ...
+│   │   ├── controllers/    # Request handlers
+│   │   ├── models/         # Mongoose Schemas
+│   │   ├── services/       # Business Logic Layer
+│   │   └── utils/          # Error handling & Helpers
+│   └── Dockerfile          # Backend container config
+├── frontend/               # Next.js App
+│   ├── src/
+│   │   ├── app/            # Next.js App Router
+│   │   ├── components/     # UI Components (Shadcn/Public)
+│   │   └── redux/          # State Slices & APIs
+│   ├── Dockerfile          # Frontend container config
+│   └── vercel.json         # Vercel deployment rules
+├── docker-compose.yml      # Local development orchestration
+├── render.yaml             # Render Blueprint for Production
+└── README.md               # You are here!
 ```
 
 ## 🤝 Contributing
-Contributions, issues, and feature requests are welcome!
 
-## 📄 License
-This project is licensed under the MIT License.
+Contributions are what make the open source community such an amazing place to learn.
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
+---
+
+<div align="center">
+Built with ❤️ by <b>Siyad</b>
+</div>

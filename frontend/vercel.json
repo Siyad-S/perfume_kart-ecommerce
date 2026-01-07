@@ -1,0 +1,4 @@
+{
+  "framework": "nextjs",
+  "ignoredBuildStep": "git diff --quiet HEAD^ HEAD ./frontend"
+}
