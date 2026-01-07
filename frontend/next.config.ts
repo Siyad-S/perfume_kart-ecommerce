@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
@@ -25,6 +22,15 @@ const nextConfig = {
         hostname: "via.placeholder.com",
       },
     ],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/home",
+        permanent: true,
+      },
+    ];
   },
 };
 
