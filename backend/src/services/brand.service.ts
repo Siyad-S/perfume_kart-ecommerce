@@ -94,7 +94,7 @@ export const megaMenuBrands = async () => {
       },
     },
     {
-      $sort: { created_at: -1 },
+      $sort: { createdAt: -1 },
     },
     {
       $limit: 6,
@@ -112,7 +112,7 @@ export const megaMenuBrands = async () => {
             },
           },
           {
-            $sort: { created_at: -1 }
+            $sort: { createdAt: -1 }
           },
           {
             $limit: 3,

@@ -17,9 +17,6 @@ export const ReviewRatingSchema = new mongoose.Schema<ReviewRatingType>(
     review_text: { type: String, required: true },
     sentiment_score: { type: Number, default: 0 },
     is_verified: { type: Boolean, default: false },
-    is_deleted: { type: Boolean, default: false },
-    created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date, default: Date.now },
   },
   {
     collection: 'review_ratings',

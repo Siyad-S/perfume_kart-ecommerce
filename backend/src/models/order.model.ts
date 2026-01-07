@@ -53,25 +53,14 @@ const orderSchema = new mongoose.Schema<OrderType>(
       type: Boolean,
       default: false,
     },
-    created_at: {
-      type: Date,
-      default: Date.now,
-    },
-    updated_at: {
-      type: Date,
-      default: Date.now,
-    },
   },
   {
     collection: "orders",
-    timestamps: false,
+    timestamps: true,
   }
 );
 
-orderSchema.pre("save", function (next) {
-  this.updated_at = new Date();
-  next();
-});
+
 
 export const Order: mongoose.Model<OrderType> =
   mongoose.models.Order || mongoose.model<OrderType>("orders", orderSchema);

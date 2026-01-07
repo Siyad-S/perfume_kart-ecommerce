@@ -16,12 +16,12 @@ import Loader from "@/src/components/common/loader";
 import { AddEditCategory } from "@/src/components/admin/Category/addEditCategory";
 import Image from "next/image";
 
-type SortColumn = "name" | "created_at";
+type SortColumn = "name" | "createdAt";
 type SortValue =
     | "name_asc"
     | "name_desc"
-    | "created_at_asc"
-    | "created_at_desc"
+    | "createdAt_asc"
+    | "createdAt_desc"
     | undefined;
 
 interface Category {
@@ -30,14 +30,14 @@ interface Category {
     description?: string;
     image_file?: File;
     image_url?: string;
-    created_at?: string;
+    createdAt?: string;
 }
 
 export default function CategoriesPage() {
     const [currentPage, setCurrentPage] = React.useState(1);
     const [searchTerm, setSearchTerm] = React.useState("");
     const [sortColumn, setSortColumn] =
-        React.useState<SortColumn>("created_at");
+        React.useState<SortColumn>("createdAt");
     const [sortDirection, setSortDirection] =
         React.useState<"asc" | "desc">("desc");
     const [openAddEdit, setOpenAddEdit] =
@@ -163,12 +163,12 @@ export default function CategoriesPage() {
                         sortable: true,
                     },
                     {
-                        key: "created_at",
+                        key: "createdAt",
                         label: "Created At",
                         sortable: true,
                         render: (item: Category) =>
-                            item.created_at
-                                ? new Date(item.created_at).toLocaleDateString()
+                            item.createdAt
+                                ? new Date(item.createdAt).toLocaleDateString()
                                 : "N/A",
                     },
                 ]}

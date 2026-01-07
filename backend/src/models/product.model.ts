@@ -32,12 +32,10 @@ const productSchema = new mongoose.Schema<ProductType>(
     trending: { type: Boolean, default: false },
     new_launch: { type: Boolean, default: false },
     is_deleted: { type: Boolean, default: false },
-    created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date, default: Date.now },
   },
   {
     collection: 'products',
-    timestamps: false,
+    timestamps: true,
   },
 );
 

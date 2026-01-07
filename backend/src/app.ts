@@ -2,27 +2,33 @@ import express from 'express';
 import path from 'path';
 import { errorHandler } from './middlewares/errorHandler.middleware';
 import dotenv from 'dotenv';
-import connectToDB from './config/connection';
+
 import cors from 'cors';
 import routes from './routes'
-import { authMiddleware, adminAuthMiddleware } from './middlewares/auth.middleware';
+import { adminAuthMiddleware } from './middlewares/auth.middleware';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
+import helmet from 'helmet';
+import { globalLimiter } from './middlewares/security.middleware';
+import config from './config/config';
 
-dotenv.config();
-connectToDB();
 const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// app.use(helmet());
+// app.use(globalLimiter);
+
 const corsOptions = {
-    origin: process.env.CLIENT_URL,
+    origin: config.clientUrl,
     credentials: true,
 }
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(passport.initialize());
-import './config/passport';
 
 //user routes
 app.use("/", routes);

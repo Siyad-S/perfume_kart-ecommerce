@@ -1,75 +1,67 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import { responseFormatter } from "../utils/responseFormatter";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { AppError } from "../utils/AppError";
+import config from '../config/config';
+
+interface CustomJwtPayload extends JwtPayload {
+  _id: string;
+  role: string;
+}
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    if ((req as any).user) {
-      return next();
-    }
-    const token =
-      req.cookies?.accessToken ||
-      (req.headers.authorization?.startsWith("Bearer ") &&
-        req.headers.authorization.split(" ")[1]);
-    if (!token) {
-      return responseFormatter(res, null, "No token provided", 401);
-    }
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.accessToken) {
+    token = req.cookies.accessToken;
+  }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-    (req as any).user = decoded;
+  if (!token) {
+    return next(new AppError('You are not logged in! Please log in to get access.', 401));
+  }
+
+  try {
+    const decoded = jwt.verify(token, config.jwtSecret) as CustomJwtPayload;
+    req.user = decoded;
     next();
-  } catch (error) {
-    return responseFormatter(res, null, "Unauthorized", 401);
+  } catch (err) {
+    return next(new AppError('Invalid token. Please log in again!', 401));
   }
 };
 
 export const optionalAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    if ((req as any).user) {
-      return next();
-    }
-    const token =
-      req.cookies?.accessToken ||
-      (req.headers.authorization?.startsWith("Bearer ") &&
-        req.headers.authorization.split(" ")[1]);
-
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-        (req as any).user = decoded;
-      } catch (error) {
-        console.error("Optional auth: Token invalid", error);
-      }
-    }
-    next();
-  } catch (error) {
-    console.error("Optional auth: Token invalid", error);
-    next();
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.accessToken) {
+    token = req.cookies.accessToken;
   }
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, config.jwtSecret) as CustomJwtPayload;
+      req.user = decoded;
+    } catch (error) {
+      // Token invalid, but it's optional, so just proceed without user
+    }
+  }
+  next();
 };
 
 export const adminAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const token =
-      req.cookies?.adminAccessToken ||
-      (req.headers.authorization?.startsWith("Bearer ") &&
-        req.headers.authorization.split(" ")[1]);
-
-    if (!token) {
-      return responseFormatter(res, null, "No admin token provided", 401);
+  authMiddleware(req, res, () => {
+    if (req.user && req.user.role === 'admin') {
+      next();
+    } else {
+      next(new AppError('You do not have permission to perform this action', 403));
     }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-
-    if (decoded.role !== 'admin') {
-      return responseFormatter(res, null, "Not authorized as admin", 403);
-    }
-
-    (req as any).user = decoded;
-    next();
-  } catch (error) {
-    console.error("Admin JWT verify failed:", error);
-    return responseFormatter(res, null, "Unauthorized", 401);
-  }
+  });
 };
+
 

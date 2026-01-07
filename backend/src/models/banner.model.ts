@@ -12,12 +12,10 @@ const bannerSchema = new mongoose.Schema<BannerType>(
         home_sub: { type: Boolean, default: false },
         category_listing: { type: Boolean, default: false },
         is_deleted: { type: Boolean, default: false },
-        created_at: { type: Date, default: Date.now() },
-        updated_at: { type: Date, default: Date.now() },
     },
     {
         collection: 'banners',
-        timestamps: false,
+        timestamps: true,
     },
 );
 

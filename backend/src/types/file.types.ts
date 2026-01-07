@@ -1,4 +1,3 @@
-import { FileUploadConfig } from "@/utils/cloudinary";
 import mongoose from "mongoose";
 
 export interface FileType {
@@ -8,7 +7,6 @@ export interface FileType {
     required: true,
   },
   is_deleted: boolean;
-  created_at: Date;
-  updated_at: Date;
-  uploadConfig?: FileUploadConfig
+  createdAt: Date;
+  updatedAt: Date;
 }

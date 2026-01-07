@@ -13,7 +13,7 @@ interface ListRequestType {
     search?: string;
     skip?: number | null;
     limit?: number | null;
-    sort?: 'name_asc' | 'name_desc' | 'created_at_asc' | 'created_at_desc';
+    sort?: 'name_asc' | 'name_desc' | 'createdAt_asc' | 'createdAt_desc';
     filter?: Record<string, any>;
 }
 
@@ -30,7 +30,7 @@ export const categoriesApi = createApi({
                     search: params.search || '',
                     skip: params.skip || null,
                     limit: params.limit || null,
-                    sort: params.sort || 'created_at_desc',
+                    sort: params.sort || 'createdAt_desc',
                     filter: { ...params.filter },
                 },
             }),

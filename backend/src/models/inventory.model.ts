@@ -11,9 +11,6 @@ const inventorySchema = new mongoose.Schema<InventoryType>(
     stock_quantity: { type: Number, required: true },
     restock_date: { type: Date, required: true },
     low_stock_threshold: { type: Number, required: true },
-    is_deleted: { type: Boolean, default: false },
-    created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date, default: Date.now },
   },
   {
     collection: 'inventory',

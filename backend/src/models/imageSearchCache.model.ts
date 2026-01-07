@@ -10,12 +10,10 @@ const imageSearchCacheSchema = new mongoose.Schema<ImageSearchCacheType>(
       ref: 'products',
     },
     is_deleted: { type: Boolean, default: false },
-    created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date, default: Date.now },
   },
   {
     collection: 'image_search_caches',
-    timestamps: false,
+    timestamps: true,
   },
 );
 

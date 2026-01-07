@@ -43,25 +43,14 @@ const paymentSchema = new mongoose.Schema<PaymentType>(
       type: Boolean,
       default: false,
     },
-    created_at: {
-      type: Date,
-      default: Date.now,
-    },
-    updated_at: {
-      type: Date,
-      default: Date.now,
-    },
   },
   {
     collection: "payments",
-    timestamps: false,
+    timestamps: true,
   }
 );
 
-paymentSchema.pre("save", function (next) {
-  this.updated_at = new Date();
-  next();
-});
+
 
 export const Payment: mongoose.Model<PaymentType> =
   mongoose.models.Payment || mongoose.model<PaymentType>("payments", paymentSchema);

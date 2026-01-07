@@ -10,10 +10,10 @@ import Loader from "@/src/components/common/loader";
 import { getErrorMessage } from "@/src/lib/utils";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
-type SortColumn = "created_at" | "amount";
+type SortColumn = "createdAt" | "amount";
 type SortValue =
-    | "created_at_asc"
-    | "created_at_desc"
+    | "createdAt_asc"
+    | "createdAt_desc"
     | "amount_asc"
     | "amount_desc"
     | undefined;
@@ -29,14 +29,15 @@ interface Payment {
     payment_status?: string;
     order_id?: string;
     payment_id?: string;
-    created_at?: string;
+    created_at?: string; // Wait, I should rename this to createdAt
+    createdAt?: string;
 }
 
 export default function PaymentsPage() {
     const [currentPage, setCurrentPage] = React.useState(1);
     const [searchTerm, setSearchTerm] = React.useState("");
     const [sortColumn, setSortColumn] =
-        React.useState<SortColumn>("created_at");
+        React.useState<SortColumn>("createdAt");
     const [sortDirection, setSortDirection] =
         React.useState<"asc" | "desc">("desc");
     const [statusFilter, setStatusFilter] = React.useState<string>("all");
@@ -155,12 +156,12 @@ export default function PaymentsPage() {
                         render: (item: Payment) => item.payment_id || "N/A",
                     },
                     {
-                        key: "created_at",
+                        key: "createdAt",
                         label: "Date",
                         sortable: true,
                         render: (item: Payment) =>
-                            item.created_at
-                                ? new Date(item.created_at).toLocaleDateString()
+                            item.createdAt
+                                ? new Date(item.createdAt).toLocaleDateString()
                                 : "N/A",
                     },
                 ]}

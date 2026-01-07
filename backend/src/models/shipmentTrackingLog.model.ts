@@ -24,9 +24,6 @@ const shipmentTrackingLogSchema = new mongoose.Schema<shipmentTrackingLogType>(
         arrived_at: { type: Date, required: true },
       },
     ],
-    is_deleted: { type: Boolean, default: false },
-    updated_at: { type: Date, default: Date.now },
-    created_at: { type: Date, default: Date.now },
   },
   {
     collection: 'shipment_tracking_logs',

@@ -17,14 +17,14 @@ import {
 import { AddEditProduct } from "@/src/components/admin/product/addEditProduct";
 import { useFileUpload } from "@/src/hooks/useFileUpload";
 
-type SortColumn = "name" | "price" | "created_at";
+type SortColumn = "name" | "price" | "createdAt";
 type SortValue =
   | "name_asc"
   | "name_desc"
   | "price_asc"
   | "price_desc"
-  | "created_at_asc"
-  | "created_at_desc";
+  | "createdAt_asc"
+  | "createdAt_desc";
 
 interface Product {
   _id?: string;
@@ -33,7 +33,7 @@ interface Product {
   price: number;
   image_urls?: string[];
   banner_url?: string;
-  created_at?: Date | string;
+  createdAt?: Date | string;
   brand_id?: string;
   category_id?: string;
   discount_price?: number;
@@ -55,7 +55,7 @@ interface Product {
 export default function ProductsListingPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [sortColumn, setSortColumn] = React.useState<SortColumn>("created_at");
+  const [sortColumn, setSortColumn] = React.useState<SortColumn>("createdAt");
   const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">(
     "desc"
   );
@@ -209,12 +209,12 @@ export default function ProductsListingPage() {
             render: (item: Product) => `₹${item.price}`,
           },
           {
-            key: "created_at",
+            key: "createdAt",
             label: "Created At",
             sortable: true,
             render: (item: Product) =>
-              item.created_at
-                ? new Date(item.created_at).toLocaleDateString()
+              item.createdAt
+                ? new Date(item.createdAt).toLocaleDateString()
                 : "N/A",
           },
         ]}

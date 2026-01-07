@@ -6,6 +6,6 @@ export interface CategoryType {
   description: string;
   image_url: string;
   is_deleted: boolean;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

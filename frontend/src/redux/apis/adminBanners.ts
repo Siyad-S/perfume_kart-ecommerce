@@ -10,15 +10,15 @@ interface Banner {
     home_sub?: boolean;
     category_listing?: boolean;
     is_deleted?: boolean;
-    created_at?: Date;
-    updated_at?: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 interface ListRequestType {
     search?: string;
     skip?: number | null;
     limit?: number | null;
-    sort?: "created_at_asc" | "created_at_desc";
+    sort?: "createdAt_asc" | "createdAt_desc";
     filter?: Record<string, any>;
 }
 

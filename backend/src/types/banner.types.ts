@@ -11,6 +11,6 @@ export interface BannerType {
   home_sub: boolean,
   category_listing: boolean,
   is_deleted?: boolean;
-  created_at?: Date;
-  updated_at?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

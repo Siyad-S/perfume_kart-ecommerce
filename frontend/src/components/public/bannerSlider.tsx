@@ -20,7 +20,7 @@ export default function BannerSlider() {
         search: "",
         skip: null,
         limit: 5,
-        sort: "created_at_desc",
+        sort: "createdAt_desc",
     })
 
     const bannerData = banners?.data?.data || []

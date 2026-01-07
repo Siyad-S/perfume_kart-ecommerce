@@ -6,7 +6,7 @@ interface ListRequestType {
     skip?: number | null;
     limit?: number | null;
     sort?:
-    | 'created_at_asc' | 'created_at_desc'
+    | 'createdAt_asc' | 'createdAt_desc'
     | 'amount_asc' | 'amount_desc'
     filter?: Record<string, any>;
 }
