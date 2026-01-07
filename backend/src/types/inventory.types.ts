@@ -6,6 +6,6 @@ export interface InventoryType {
   restock_date: Date;
   low_stock_threshold: number;
   is_deleted: boolean;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

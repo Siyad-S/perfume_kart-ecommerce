@@ -31,6 +31,6 @@ export interface OrderType extends Document {
   };
   paid_at?: Date | null;
   is_deleted: boolean;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

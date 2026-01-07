@@ -1,14 +1,15 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { generateTokens } from '../utils/token.utils';
+import config from '../config/config';
+import { catchAsync } from '../utils/catchAsync';
+import { AppError } from '../utils/AppError';
 
 //Google callback
-export const googleCallback = async (req: Request, res: Response) => {
+export const googleCallback = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user as any;
 
     if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
-        console.error('JWT_SECRET or REFRESH_SECRET is missing!');
-        res.status(500).send('Internal Server Error');
-        return;
+        return next(new AppError('JWT_SECRET or REFRESH_SECRET is missing!', 500));
     }
 
     const payload = { id: user._id, email: user.email, role: user.role };
@@ -28,6 +29,5 @@ export const googleCallback = async (req: Request, res: Response) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    const clientUrl = process.env.CLIENT_URL;
-    res.redirect(`${clientUrl}/auth/success`);
-};
+    res.redirect(`${config.clientUrl}/auth/success`);
+});

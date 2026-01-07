@@ -43,8 +43,8 @@ export interface UserType extends Document {
   is_deleted: boolean;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface LoginRegisterType {

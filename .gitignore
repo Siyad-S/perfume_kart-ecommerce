@@ -3,6 +3,7 @@
 # ==========================
 # Dependencies (Crucial: ignores the heavy folder shown in your screenshot)
 node_modules/
+package-lock.json
 
 # Environment Variables (Crucial: hides your secrets)
 .env

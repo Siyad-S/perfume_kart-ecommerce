@@ -8,6 +8,6 @@ export interface ReviewRatingType {
   sentiment_score: number;
   is_verified: boolean;
   is_deleted: boolean;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

@@ -51,12 +51,10 @@ const userSchema: mongoose.Schema<UserType> = new mongoose.Schema<UserType>(
     is_deleted: { type: Boolean, default: false },
     resetPasswordToken: { type: String, required: false },
     resetPasswordExpires: { type: Date, required: false },
-    created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date, default: Date.now },
   },
   {
     collection: 'users',
-    timestamps: false,
+    timestamps: true,
   },
 );
 

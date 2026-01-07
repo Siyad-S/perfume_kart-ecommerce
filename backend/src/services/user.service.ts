@@ -146,6 +146,48 @@ const list = async (
             },
             { $project: { cartProducts: 0 } }
           );
+          break
+        case 'wishlist':
+          dataPipeline.push(
+            {
+              $lookup: {
+                from: "products",
+                localField: "wishlist.product_id",
+                foreignField: "_id",
+                as: "wishlistProducts"
+              }
+            },
+            {
+              $addFields: {
+                wishlist: {
+                  $map: {
+                    input: "$wishlist",
+                    as: "w",
+                    in: {
+                      $mergeObjects: [
+                        "$$w",
+                        {
+                          product: {
+                            $arrayElemAt: [
+                              {
+                                $filter: {
+                                  input: "$wishlistProducts",
+                                  as: "p",
+                                  cond: { $eq: ["$$p._id", "$$w.product_id"] }
+                                }
+                              },
+                              0
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            { $project: { wishlistProducts: 0 } }
+          );
           break;
       }
     })
@@ -170,7 +212,7 @@ const list = async (
 };
 
 // Update user
-const update = async (id: mongoose.Types.ObjectId, updateData: Partial<UserType>) => {
+const update = async (id: mongoose.Types.ObjectId, updateData: any) => {
   await User.findByIdAndUpdate(id, updateData, { new: true }).exec();
 
   const result = await User.aggregate([

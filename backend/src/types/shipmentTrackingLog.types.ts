@@ -14,6 +14,6 @@ export interface shipmentTrackingLogType extends Document {
     },
   ];
   is_deleted: boolean;
-  updated_at: Date;
-  created_at: Date;
+  updatedAt: Date;
+  createdAt: Date;
 }
