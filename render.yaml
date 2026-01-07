@@ -1,0 +1,29 @@
+services:
+  # -----------------------------
+  # BACKEND SERVICE
+  # -----------------------------
+  - type: web
+    name: perfume-backend
+    runtime: docker
+    region: singapore # Choose a region close to you
+    plan: free # Use free tier
+    
+    # Build Context
+    rootDir: .
+    dockerfilePath: backend/Dockerfile
+
+    # Environment Variables
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+      # You must add these manually in the Render Dashboard securely!
+      - key: CONNECTION_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: REFRESH_SECRET
+        sync: false
+      - key: CLIENT_URL
+        sync: false # Set this to your Vercel URL manually
