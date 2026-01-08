@@ -95,7 +95,7 @@ export default function ProductScroller() {
                 {/* Left static banner (2 cols on lg) */}
                 <div
                     ref={bannerRef}
-                    className="relative h-[500px] w-full rounded-2xl overflow-hidden shadow-xl lg:col-span-2 group opacity-0"
+                    className="relative h-[350px] sm:h-[450px] lg:h-[500px] w-full rounded-2xl overflow-hidden shadow-xl lg:col-span-2 group opacity-0"
                 >
                     {isBannerLoading ? (
                         <Skeleton className="w-full h-full bg-neutral-200" />
@@ -110,11 +110,11 @@ export default function ProductScroller() {
                                 priority
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
-                            <div className="absolute bottom-8 left-8 right-8 z-10">
-                                <h3 className="text-white text-3xl font-serif font-bold mb-4 drop-shadow-md">
+                            <div className="absolute bottom-6 left-6 right-6 md:bottom-8 md:left-8 md:right-8 z-10">
+                                <h3 className="text-white text-2xl md:text-3xl font-serif font-bold mb-3 md:mb-4 drop-shadow-md">
                                     {banner.title || "Latest Collection"}
                                 </h3>
-                                <Button size="lg" className="bg-white text-black border-none hover:bg-gray-200 rounded-full px-8 shadow-lg transition-transform hover:-translate-y-1">
+                                <Button size="lg" className="bg-white text-black text-sm md:text-base border-none hover:bg-gray-200 rounded-full px-6 md:px-8 shadow-lg transition-transform hover:-translate-y-1">
                                     Shop Now
                                 </Button>
                             </div>
@@ -129,7 +129,7 @@ export default function ProductScroller() {
                 {/* Right product grid (3 cols on lg) */}
                 <div
                     ref={productsRef}
-                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 lg:col-span-3"
+                    className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 lg:col-span-3"
                 >
                     {isLoading ? (
                         Array.from({ length: 3 }).map((_, i) => (

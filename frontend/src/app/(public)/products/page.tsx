@@ -37,6 +37,9 @@ export default function ProductsPage() {
     const [sort, setSort] = useState("createdAt_desc");
     const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<number[]>([0, 100000]);
+    const [bestSeller, setBestSeller] = useState(false);
+    const [trending, setTrending] = useState(false);
+    const [newLaunch, setNewLaunch] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -57,6 +60,9 @@ export default function ProductsPage() {
         ...(category ? { category_id: category } : {}),
         ...(selectedBrands.length ? { brand: selectedBrands } : {}),
         ...(priceRange[1] > priceRange[0] ? { price: { min: priceRange[0], max: priceRange[1] } } : {}),
+        ...(bestSeller ? { best_seller: true } : {}),
+        ...(trending ? { trending: true } : {}),
+        ...(newLaunch ? { new_launch: true } : {}),
     };
 
     // Infinite Scroll Hook
@@ -185,6 +191,43 @@ export default function ProductsPage() {
                                                 ))}
                                             </div>
                                         </div>
+
+                                        {/* Special Tags */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-sm font-semibold">Special</h3>
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-3">
+                                                    <Checkbox
+                                                        id="filter-best-seller"
+                                                        checked={bestSeller}
+                                                        onCheckedChange={(checked) => setBestSeller(checked as boolean)}
+                                                    />
+                                                    <label htmlFor="filter-best-seller" className="text-sm cursor-pointer select-none">
+                                                        Best Seller
+                                                    </label>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <Checkbox
+                                                        id="filter-trending"
+                                                        checked={trending}
+                                                        onCheckedChange={(checked) => setTrending(checked as boolean)}
+                                                    />
+                                                    <label htmlFor="filter-trending" className="text-sm cursor-pointer select-none">
+                                                        Trending
+                                                    </label>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <Checkbox
+                                                        id="filter-new-launch"
+                                                        checked={newLaunch}
+                                                        onCheckedChange={(checked) => setNewLaunch(checked as boolean)}
+                                                    />
+                                                    <label htmlFor="filter-new-launch" className="text-sm cursor-pointer select-none">
+                                                        New Launch
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -218,7 +261,7 @@ export default function ProductsPage() {
                         No products found matching your criteria.
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-10">
                         {productsData.map((product: any, index: number) => (
                             <div key={`${product?._id}-${index}`} className="product-card-item">
                                 <ProductCard product={product} />

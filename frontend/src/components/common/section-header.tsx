@@ -23,7 +23,7 @@ export default function SectionHeader({
     const actionProps = href ? { href } : { onClick: onViewAll };
 
     return (
-        <div className={`flex flex-col md:flex-row justify-between items-end mb-8 md:mb-12 ${className || ""}`}>
+        <div className={`flex flex-col md:flex-row justify-between items-start mb-8 md:mb-12 ${className || ""}`}>
             <div className="max-w-2xl">
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900 leading-tight">
                     {title}
@@ -35,7 +35,7 @@ export default function SectionHeader({
                 )}
             </div>
 
-            {(href || onViewAll) && (
+            {onViewAll && (
                 // @ts-ignore - Link vs button typing issue (simplified for this snippet)
                 <ActionWrapper
                     {...actionProps}

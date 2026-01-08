@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useRef, useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image" // Added Image import
 import { Search, Heart, ShoppingCart, User, X, ChevronDown, ChevronRight, Loader2 } from "lucide-react"
 import { Input } from "../../ui/input"
@@ -51,6 +51,7 @@ export function MobileMenu({
     const pathname = usePathname()
     const [openCategory, setOpenCategory] = useState(false)
     const [openBrand, setOpenBrand] = useState(false)
+    const router = useRouter()
 
     // Helper for active link styles
     const getLinkClass = (path: string) => {
@@ -178,7 +179,7 @@ export function MobileMenu({
             {/* Side Drawer */}
             <div
                 ref={drawerRef}
-                className="fixed top-0 left-0 h-full w-[85%] max-w-[350px] bg-white shadow-2xl overflow-hidden flex flex-col -translate-x-full"
+                className="fixed top-0 left-0 h-full w-[85%] max-w-[350px] bg-white z-[201] shadow-2xl overflow-hidden flex flex-col -translate-x-full"
             >
                 {/* Header */}
                 <div className="flex items-center justify-between p-5 border-b shrink-0">
@@ -353,7 +354,10 @@ export function MobileMenu({
 
                 {/* Footer */}
                 <div className="p-4 border-t bg-gray-50 shrink-0">
-                    <Button className="w-full rounded-full py-6 text-base font-semibold shadow-lg shadow-primary/20" onClick={onClose}>
+                    <Button className="w-full rounded-full py-6 text-base font-semibold shadow-lg shadow-primary/20" onClick={() => {
+                        onClose()
+                        router.push("/login")
+                    }}>
                         Login / Sign Up
                     </Button>
                 </div>

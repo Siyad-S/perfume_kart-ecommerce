@@ -85,11 +85,6 @@ export default function Categories(props: { from?: string }) {
         <SectionHeader
           title="Curated Collections"
           subtitle="Explore our finest selection of fragrances, categorized for your unique taste."
-          onViewAll={() => {
-            if (props.from === 'home') navigateToProducts({ category_id: "" });
-            else handleCategory("");
-          }}
-          actionText="View All Collections"
           className="mb-0"
         />
       </div>
@@ -98,7 +93,7 @@ export default function Categories(props: { from?: string }) {
         {!categoriesData.length && isLoading ? (
           <CategoryGridSkeleton />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {categoriesData?.map((category: Category) => (
               <div
                 key={category._id}

@@ -66,13 +66,14 @@ export function Navbar() {
     });
 
     // Entrance Animation
-    gsap.from(headerRef.current, {
-      y: -100,
-      opacity: 0,
+    gsap.set(headerRef.current, { y: -100, opacity: 0 });
+    gsap.to(headerRef.current, {
+      y: 0,
+      opacity: 1,
       duration: 0.8,
       ease: "power3.out",
       delay: 0.2
-    })
+    });
 
     // Refresh ScrollTrigger on route change to account for new page height
     ScrollTrigger.refresh();
@@ -83,7 +84,7 @@ export function Navbar() {
     <>
       <header
         ref={headerRef}
-        className="fixed top-0 left-0 right-0 z-50 bg-white/100 backdrop-blur-md border-b shadow-md transition-all duration-300"
+        className="fixed top-0 left-0 right-0 z-50 bg-white border-b shadow-md transition-all duration-300"
       >
         <div className="container mx-auto flex h-[80px] items-center justify-between px-4 gap-6">
           {/* Logo */}
@@ -128,8 +129,7 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Spacer to prevent content jump since header is fixed */}
-      <div className="h-[130px]" />
+      <div className={`h-[80px] md:h-[130px] ${isOpen ? "hidden" : ""}`} />
 
       {/* Mobile Menu Drawer */}
       <MobileMenu
