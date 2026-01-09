@@ -13,7 +13,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     const dispatch = useTypedDispatch();
     const path = usePathname();
     const isAdmin = path.startsWith("/admin");
-    const { data: userData, isSuccess } = useGetUserQuery(isAdmin ? "admin/user/me" : "user/me", {
+    const { data: userData, isSuccess, isLoading } = useGetUserQuery(isAdmin ? "admin/user/me" : "user/me", {
         refetchOnMountOrArgChange: true,
     });
     const user = userData?.data?.user
@@ -54,8 +54,10 @@ export default function UserProvider({ children }: { children: React.ReactNode }
             if (user?._id) {
                 syncGuestCart(user);
             }
+        } else if (!isLoading && !user) {
+            dispatch(setUser(null));
         }
-    }, [isSuccess, userData, dispatch, updateUser]);
+    }, [isSuccess, userData, dispatch, updateUser, isLoading, user]);
 
     return <>{children}</>;
 }

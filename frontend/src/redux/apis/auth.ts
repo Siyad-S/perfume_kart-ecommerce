@@ -1,7 +1,6 @@
 // src/redux/apis/authApi.ts
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { customBaseQuery } from "@/src/lib/customBaseQuery";
-import { addConfiguredExperimentalFeature } from "next/dist/server/config";
 
 export const authApi = createApi({
     reducerPath: "authApi",
@@ -23,7 +22,7 @@ export const authApi = createApi({
         }),
 
         getCurrentUser: builder.query<{ data: { user: { id: string; email: string, role: string } } }, void>({
-            query: () => "admin/user/me",
+            query: () => "/user/me",
         }),
         logout: builder.mutation<void, void>({
             query: () => ({

@@ -9,7 +9,8 @@ const env = cleanEnv(process.env, {
   CONNECTION_URL: str(),
   JWT_SECRET: str(),
   REFRESH_SECRET: str(),
-  CLIENT_URL: url(),
+  CLIENT_URL: url({ default: `${process.env.CLIENT_URL}` }),
+  SERVER_URL: url({ default: `${process.env.SERVER_URL}` }),
 });
 
 interface Config {
@@ -19,6 +20,7 @@ interface Config {
   jwtSecret: string;
   refreshSecret: string;
   clientUrl: string;
+  serverUrl: string;
 }
 
 const config: Config = {
@@ -28,6 +30,7 @@ const config: Config = {
   jwtSecret: env.JWT_SECRET,
   refreshSecret: env.REFRESH_SECRET,
   clientUrl: env.CLIENT_URL,
+  serverUrl: env.SERVER_URL,
 };
 
 export default config;

@@ -10,6 +10,7 @@ router.get(
     passport.authenticate('google', {
         session: false,
         scope: ['profile', 'email'],
+        prompt: 'select_account',
     })
 );
 

@@ -19,17 +19,20 @@ import { useLogoutMutation } from "@/src/redux/apis/auth"
 import { toast } from "sonner"
 import { useDispatch } from "react-redux"
 
+import { useTypedSelector } from "@/src/redux/store";
+import { setUser } from "@/src/redux/slices/auth";
+
 export function ProfileMenu() {
-    const { data: userData } = useGetUserQuery();
-    const user = userData?.data?.user;
+    const user = useTypedSelector((state) => state.auth.user);
     const router = useRouter();
     const [logout, { isLoading }] = useLogoutMutation();
     const dispatch = useDispatch();
 
     const handleLogout = async () => {
         await logout();
-        toast.success("Logged out successfully");
-        dispatch(userApi.util.invalidateTags(["User"]));
+        dispatch(setUser(null));
+        dispatch(userApi.util.resetApiState());
+        toast.success("Logged out successfully!");
         router.push("/home");
     }
 
@@ -40,7 +43,7 @@ export function ProfileMenu() {
             : <User className="h-4 w-4" />;
 
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <Avatar className="h-9 w-9">

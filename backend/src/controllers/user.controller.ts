@@ -329,7 +329,8 @@ export const getUserProfile = catchAsync(async (req: Request, res: Response, nex
     return next(new AppError("Guest user", 401));
   }
 
-  const user = await UserModel.findById(req.user._id).select("-password"); // Changed .id to ._id
+  const userId = new mongoose.Types.ObjectId(req.user.id)
+  const user = await UserModel.findById(userId).select("-password"); // Changed .id to ._id
 
   if (!user) {
     return next(new AppError("User not found", 404));

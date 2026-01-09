@@ -8,6 +8,7 @@ import routes from './routes'
 import { adminAuthMiddleware } from './middlewares/auth.middleware';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
+import './config/passport';
 import helmet from 'helmet';
 import { globalLimiter } from './middlewares/security.middleware';
 import config from './config/config';
