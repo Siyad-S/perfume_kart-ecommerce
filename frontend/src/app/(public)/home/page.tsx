@@ -3,7 +3,6 @@ import About from "@/src/components/public/about";
 import BannerSlider from "@/src/components/public/bannerSlider";
 import BestSellers from "@/src/components/public/bestSellers";
 import Categories from "@/src/components/public/categories";
-import Footer from "@/src/components/public/footer";
 import ProductScroller from "@/src/components/public/productScroller";
 import Trendings from "@/src/components/public/trendings";
 

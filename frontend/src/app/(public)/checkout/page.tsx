@@ -3,16 +3,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@/src/components/ui/button";
-import { useGetCartQuery } from "@/src/redux/apis/users";
+import { useGetCartQuery, useUpdateUserMutation } from "@/src/redux/apis/users";
 import { useTypedSelector } from "@/src/redux/store";
-import { getGuestCart } from "@/src/utils/guestCart";
+import { getGuestCart, setGuestCart } from "@/src/utils/guestCart";
 import { CartType } from "@/src/types/user";
 import AddressSection from "@/src/components/public/checkout/addressSection";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCreateOrderMutation } from "@/src/redux/apis/orders";
 import { useVerifyPaymentMutation } from "@/src/redux/apis/payments";
-import { ShieldCheck, Truck, CreditCard, Lock } from "lucide-react";
+import { ShieldCheck, Truck, CreditCard, Lock, Trash } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
@@ -69,12 +69,18 @@ export default function CheckoutPage() {
     const router = useRouter();
     const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
     const [verifyPayment, { isLoading: isVerifyLoading }] = useVerifyPaymentMutation();
+    const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Fetch cart data if logged in, else use guest cart
     const { data } = useGetCartQuery(user?._id || "", {
         skip: !isLoggedIn,
     });
+
+    useEffect(() => {
+        if (!isLoggedIn) {
+            router.replace("/home");
+        }
+    }, [isLoggedIn]);
 
     useEffect(() => {
         if (isLoggedIn && data?.data) {
@@ -85,10 +91,8 @@ export default function CheckoutPage() {
         }
     }, [isLoggedIn, data]);
 
-    // Address state
     const [selectedAddress, setSelectedAddress] = useState({} as ShippingAddressType);
 
-    // Order total calculation
     const subtotal = cart.reduce(
         (sum, item) => sum + (item.product?.price || 0) * item.quantity,
         0
@@ -132,15 +136,35 @@ export default function CheckoutPage() {
         });
     };
 
+    const handleRemove = async (productId: string) => {
+        const updatedCart = cart.filter((item) => item.product_id !== productId);
+        setCart(updatedCart);
+
+        if (isLoggedIn) {
+            try {
+                await updateUser({ id: user!._id, updates: { cart: updatedCart } }).unwrap();
+                toast.success("Item removed from cart");
+            } catch (error) {
+                toast.error("Failed to remove item");
+            }
+        } else {
+            setGuestCart(updatedCart);
+            toast.success("Item removed from cart");
+        }
+    };
+
     const handlePlaceOrder = async () => {
         try {
-            // 1️⃣ Validate address
+            if (!isLoggedIn) {
+                toast.error("Please login to place an order.");
+                return;
+            }
+
             if (!selectedAddress.fullName || !selectedAddress.street) {
                 toast.error("Please provide a valid shipping address.");
                 return;
             }
 
-            // 2️⃣ Create order on backend
             const orderPayload = {
                 user_id: user?._id || "",
                 total_amount: total,
@@ -159,26 +183,26 @@ export default function CheckoutPage() {
             const order = responseData?.order;
             const payment = responseData?.payment;
 
-            if (!order?._id || !payment?.razorpay?.order_id) {
-                toast.error("Order creation failed!");
+            const razorpayOrderId = order?.razorpay?.order_id || payment?.razorpay?.order_id;
+
+            if (!order?._id || !razorpayOrderId) {
+                toast.error("Order creation failed! Missing Order ID.");
                 return;
             }
 
-            // 3️⃣ Load Razorpay SDK
             const scriptLoaded = await loadRazorpayScript();
             if (!scriptLoaded) {
                 toast.error("Failed to load Razorpay SDK. Please refresh and try again.");
                 return;
             }
 
-            // 4️⃣ Configure Razorpay options
             const options: RazorpayOptions = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
                 amount: total * 100,
                 currency: "INR",
                 name: "Fragrance Kart",
                 description: "Order Payment",
-                order_id: payment.razorpay.order_id,
+                order_id: razorpayOrderId,
 
                 handler: async (response: any) => {
                     try {
@@ -187,7 +211,7 @@ export default function CheckoutPage() {
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,
                             order_id: order._id,
-                            payment_id: payment._id,
+                            payment_id: payment?._id,
                             payment_method: "razorpay",
                             payment_status: "completed",
                         }).unwrap();
@@ -214,10 +238,8 @@ export default function CheckoutPage() {
                 },
             } as any;
 
-            // 6️⃣ Initialize Razorpay instance
             const rzp = new window.Razorpay(options);
 
-            // 7️⃣ Explicitly handle failed transactions
             rzp.on("payment.failed", async (response: any) => {
                 console.log("Payment failed:", response.error);
                 toast.error("Payment failed: " + response.error.description);
@@ -236,10 +258,8 @@ export default function CheckoutPage() {
                 router.push(`/order-failed/${order._id}`);
             });
 
-            // 8️⃣ Open Razorpay modal
             rzp.open();
         } catch (error: any) {
-            console.log("Error placing order:", error);
             toast.error("Something went wrong: " + error.message);
         }
     };
@@ -302,7 +322,7 @@ export default function CheckoutPage() {
                             {/* Items List (Compact) */}
                             <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                                 {cart.map((item, index) => (
-                                    <div key={item.product_id || index} className="flex gap-4 items-start">
+                                    <div key={item.product_id || index} className="flex gap-4 items-start group">
                                         <div className="relative w-16 h-16 bg-gray-50 rounded-lg overflow-hidden shrink-0 border border-gray-100">
                                             <Image
                                                 src={item.product?.image_urls?.[0] || "/placeholder.jpg"}
@@ -312,9 +332,19 @@ export default function CheckoutPage() {
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-900 truncate">
-                                                {item.product?.name}
-                                            </p>
+                                            <div className="flex justify-between items-start">
+                                                <p className="text-sm font-medium text-gray-900 truncate pr-2">
+                                                    {item.product?.name}
+                                                </p>
+                                                <button
+                                                    onClick={() => handleRemove(item.product_id)}
+                                                    disabled={isUpdating}
+                                                    className="text-gray-400 hover:text-red-500 transition-colors p-0.5 opacity-0 group-hover:opacity-100"
+                                                    title="Remove Item"
+                                                >
+                                                    <Trash className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                             <p className="text-xs text-gray-500 mt-1">
                                                 Qty: {item.quantity}
                                             </p>

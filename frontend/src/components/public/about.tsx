@@ -16,27 +16,30 @@ export default function About() {
     const textRef = useRef<HTMLDivElement>(null)
 
     useGSAP(() => {
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top 70%", // Start animation when top of section hits 70% viewport height
-                toggleActions: "play none none reverse",
-            }
-        })
+        const mm = gsap.matchMedia();
 
-        // Image Parallax / Scale Reveal
-        tl.fromTo(imageRef.current,
-            { scale: 1.2, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 1.2, ease: "power3.out" }
-        )
+        mm.add("(min-width: 768px)", () => {
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: containerRef.current,
+                    start: "top 80%", // Start animation when top of section hits 80% viewport height
+                    toggleActions: "play none none none",
+                }
+            })
 
-        // Text Stagger Reveal
-        tl.fromTo(textRef.current?.children || [],
-            { y: 30, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" },
-            "-=0.8" // Overlap with image animation
-        )
+            // Image Parallax / Scale Reveal
+            tl.fromTo(imageRef.current,
+                { scale: 1.2, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 1.2, ease: "power3.out" }
+            )
 
+            // Text Stagger Reveal
+            tl.fromTo(textRef.current?.children || [],
+                { y: 30, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" },
+                "-=0.8" // Overlap with image animation
+            )
+        });
     }, { scope: containerRef })
 
     return (

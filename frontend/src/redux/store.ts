@@ -20,6 +20,7 @@ import { adminPaymentApi } from "./apis/adminPayments";
 import { adminAnalyticsApi } from "./apis/adminAnalytics";
 import { supportApi } from "./apis/support";
 import brandsReducer from "./slices/brands";
+import productsReducer from "./slices/products";
 
 export const store = configureStore({
     reducer: {
@@ -43,6 +44,7 @@ export const store = configureStore({
         auth: authReducer,
         categories: categoriesReducer,
         brands: brandsReducer,
+        products: productsReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()

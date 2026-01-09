@@ -26,6 +26,8 @@ export function LoginForm({ redirect = "/home" }: { redirect: string }) {
 
                 const res: any = await login(payload).unwrap();
                 toast.success("Logged in successfully");
+                
+                console.log("resdata", res.data);
 
                 if (isAdminPath) {
                     router.push("/admin");

@@ -18,33 +18,37 @@ export default function Footer() {
 
     useGSAP(() => {
 
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: footerRef.current,
-                start: "top 90%", // Start animating when footer is near bottom of viewport
-                toggleActions: "play none none reverse",
+        const mm = gsap.matchMedia();
+
+        mm.add("(min-width: 768px)", () => {
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: footerRef.current,
+                    start: "top 95%", // Start animating when top of footer enters viewport
+                    toggleActions: "play none none none",
+                }
+            });
+
+            // 1. Staggered reveal of columns
+            if (topSectionRef.current) {
+                // Reset state
+                gsap.set(topSectionRef.current.children, { y: 30, opacity: 0 });
+
+                tl.to(topSectionRef.current.children,
+                    { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" }
+                );
+            }
+
+            // 2. Fade in bottom bar
+            if (bottomSectionRef.current) {
+                // Reset state
+                gsap.set(bottomSectionRef.current, { opacity: 0 });
+
+                tl.to(bottomSectionRef.current,
+                    { opacity: 1, duration: 0.5, delay: 0.2 }
+                );
             }
         });
-
-        // 1. Staggered reveal of columns
-        if (topSectionRef.current) {
-            // Reset state
-            gsap.set(topSectionRef.current.children, { y: 30, opacity: 0 });
-
-            tl.to(topSectionRef.current.children,
-                { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" }
-            );
-        }
-
-        // 2. Fade in bottom bar
-        if (bottomSectionRef.current) {
-            // Reset state
-            gsap.set(bottomSectionRef.current, { opacity: 0 });
-
-            tl.to(bottomSectionRef.current,
-                { opacity: 1, duration: 0.5, delay: 0.2 }
-            );
-        }
 
     }, { scope: footerRef });
 

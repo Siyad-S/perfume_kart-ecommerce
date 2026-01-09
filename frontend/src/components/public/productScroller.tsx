@@ -12,6 +12,9 @@ import SectionHeader from "../common/section-header";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { setFilter } from "@/src/redux/slices/products";
+import { useTypedDispatch } from "@/src/redux/store";
+import { useRouter } from "next/navigation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,6 +23,8 @@ export default function ProductScroller() {
     const headerRef = useRef<HTMLDivElement>(null);
     const bannerRef = useRef<HTMLDivElement>(null);
     const productsRef = useRef<HTMLDivElement>(null);
+    const dispatch = useTypedDispatch();
+    const router = useRouter();
 
     const { data: products, isLoading } = useGetProductsQuery({
         search: "",
@@ -43,50 +48,59 @@ export default function ProductScroller() {
         // Wait for data to load
         if (isLoading || isBannerLoading) return;
 
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top 75%", // Triggers when top of section hits 75% of viewport
-                toggleActions: "play none none reverse",
+        const mm = gsap.matchMedia();
+
+        mm.add("(min-width: 768px)", () => {
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: containerRef.current,
+                    start: "top 75%",
+                    toggleActions: "play none none none",
+                }
+            });
+
+            // 1. Header Animation
+            if (headerRef.current) {
+                tl.fromTo(headerRef.current,
+                    { y: 30, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }
+                );
+            }
+
+            // 2. Banner Animation (Left)
+            if (bannerRef.current) {
+                tl.fromTo(bannerRef.current,
+                    { x: -50, opacity: 0 },
+                    { x: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+                    "-=0.4"
+                );
+            }
+
+            // 3. Products Stagger (Right)
+            if (productsRef.current && productsRef.current.children.length > 0) {
+                tl.fromTo(productsRef.current.children,
+                    { y: 50, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.6, stagger: 0.15, ease: "power2.out" },
+                    "-=0.6"
+                );
             }
         });
 
-        // 1. Header Animation
-        if (headerRef.current) {
-            tl.fromTo(headerRef.current,
-                { y: 30, opacity: 0 },
-                { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }
-            );
-        }
-
-        // 2. Banner Animation (Left)
-        if (bannerRef.current) {
-            tl.fromTo(bannerRef.current,
-                { x: -50, opacity: 0 },
-                { x: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-                "-=0.4"
-            );
-        }
-
-        // 3. Products Stagger (Right)
-        if (productsRef.current && productsRef.current.children.length > 0) {
-            tl.fromTo(productsRef.current.children,
-                { y: 50, opacity: 0 },
-                { y: 0, opacity: 1, duration: 0.6, stagger: 0.15, ease: "power2.out" },
-                "-=0.6"
-            );
-        }
-
     }, { scope: containerRef, dependencies: [isLoading, isBannerLoading, productsData, banner] });
+
+    const handleViewAll = () => {
+        dispatch(setFilter({ trending: false, best_seller: false, new_launch: true }));
+        router.push("/products");
+    };
 
     return (
         <section ref={containerRef} className="px-4 md:px-8 py-16 md:py-24 bg-gray-50/50">
             {/* Title + Show More */}
-            <div ref={headerRef} className="opacity-0">
+            <div ref={headerRef} className="">
                 <SectionHeader
                     title="New Arrivals"
                     subtitle="Fresh scents just in for you."
-                    onViewAll={() => { }}
+                    onViewAll={handleViewAll}
                     actionText="View New Arrivals"
                 />
             </div>
@@ -95,7 +109,7 @@ export default function ProductScroller() {
                 {/* Left static banner (2 cols on lg) */}
                 <div
                     ref={bannerRef}
-                    className="relative h-[350px] sm:h-[450px] lg:h-[500px] w-full rounded-2xl overflow-hidden shadow-xl lg:col-span-2 group opacity-0"
+                    className="relative h-[350px] sm:h-[450px] lg:h-[500px] w-full rounded-2xl overflow-hidden shadow-xl lg:col-span-2 group"
                 >
                     {isBannerLoading ? (
                         <Skeleton className="w-full h-full bg-neutral-200" />
@@ -139,7 +153,7 @@ export default function ProductScroller() {
                         ))
                     ) : productsData.length > 0 ? (
                         productsData.map((product: any) => (
-                            <div key={product._id} className="product-card opacity-0 translate-y-8">
+                            <div key={product._id} className="product-card translate-y-8">
                                 <ProductCard product={product} />
                             </div>
                         ))

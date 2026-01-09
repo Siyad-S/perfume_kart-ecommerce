@@ -70,9 +70,19 @@ export const list = catchAsync(async (
     }
 
     const includes = ['category', 'product'];
-    // const projectArray = []
 
-    const bannerList = await Banner.list(skip || null, limit || null, filter, includes);
+    const isPublicRequest = !req.originalUrl.startsWith('/admin');
+    const projectArray = isPublicRequest
+        ? ['_id', 'banner_url', 'banner_text', 'description']
+        : [];
+
+    const bannerList = await Banner.list(
+        skip || null,
+        limit || null,
+        filter,
+        includes,
+        projectArray
+    );
 
     return responseFormatter(res, bannerList, "Banner listing success", 200);
 });
@@ -94,7 +104,18 @@ export const banner = catchAsync(async (
         return next(new AppError('Banner not found', 404));
     }
 
-    const result = await Banner.list(0, 1, { _id: id })
+    const result = await Banner.list(
+        0,
+        1,
+        { _id: id },
+        ['category', 'product'],
+        [
+            '_id',
+            'banner_url',
+            'banner_text',
+            'description'
+        ]
+    );
 
     const banner = result;
 

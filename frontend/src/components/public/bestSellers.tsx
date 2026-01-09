@@ -5,9 +5,12 @@ import { ArrowRight } from "lucide-react";
 import { ProductGridSkeleton } from "@/src/components/skeletons/product-card-skeleton";
 import SectionHeader from "../common/section-header";
 import { useRouter } from "next/navigation";
+import { useTypedDispatch } from "@/src/redux/store";
+import { setFilter } from "@/src/redux/slices/products";
 
 export default function BestSellers() {
-    const router = useRouter()
+    const router = useRouter();
+    const dispatch = useTypedDispatch();
     const { data: products, isLoading } = useGetProductsQuery({
         search: "",
         skip: 0,
@@ -18,8 +21,9 @@ export default function BestSellers() {
 
     const productsData = products?.data?.data || [];
 
-    const handleAddToCart = (id: string) => {
-        // TODO: Add to cart logic
+    const handleViewAll = () => {
+        dispatch(setFilter({ best_seller: true, trending: false, new_launch: false }));
+        router.push("/products");
     };
 
     return (
@@ -28,8 +32,8 @@ export default function BestSellers() {
                 <SectionHeader
                     title="Best Sellers"
                     subtitle="Our most popular fragrances loved by everyone."
-                    onViewAll={() => { router.push("/products") }}
-                    actionText="View All"
+                    onViewAll={handleViewAll}
+                    actionText="View Best Sellers"
                     className="mb-0"
                 />
             </div>

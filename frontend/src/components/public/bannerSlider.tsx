@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import Image from "next/image"
 import { Swiper, SwiperSlide } from "swiper/react"
 import { Pagination, Autoplay, Navigation, EffectFade } from "swiper/modules"
@@ -14,14 +14,21 @@ import { Skeleton } from "@/src/components/ui/skeleton"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 import Link from "next/link"
+import { useTypedDispatch } from "@/src/redux/store"
+import { setFilter } from "@/src/redux/slices/products"
 
 export default function BannerSlider() {
+    const dispatch = useTypedDispatch()
     const { data: banners, isLoading } = useGetBannersQuery({
         search: "",
         skip: null,
         limit: 5,
         sort: "createdAt_desc",
     })
+
+    useEffect(() => {
+        dispatch(setFilter({ trending: false, best_seller: false, new_launch: false }));
+    }, [])
 
     const bannerData = banners?.data?.data || []
 

@@ -242,7 +242,7 @@ function AuthPageContent() {
                         <div className="form-animate-item">
                             <button
                                 type="button"
-                                onClick={() => window.location.href = "http://localhost:5005/auth/google"}
+                                onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`}
                                 className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-sm hover:shadow"
                             >
                                 <Image

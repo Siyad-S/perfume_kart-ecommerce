@@ -144,7 +144,7 @@ export default function LoginPage() {
 
                     <div className="bg-white border border-gray-100 p-8 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
                         {isLogin ? (
-                            <LoginForm redirect={"/admin/brands"} />
+                            <LoginForm redirect={"/admin"} />
                         ) : (
                             <SignupForm setIsLogin={setIsLogin} />
                         )}

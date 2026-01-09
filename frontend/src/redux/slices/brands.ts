@@ -16,7 +16,7 @@ const brandSlice = createSlice({
     name: "brand",
     initialState,
     reducers: {
-        setBrand: (state, action: PayloadAction<string>) => {
+        setBrand: (state, action: PayloadAction<string | null>) => {
             state.brand = action.payload;
         },
     },

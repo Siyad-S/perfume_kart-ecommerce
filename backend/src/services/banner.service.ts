@@ -18,6 +18,7 @@ export const list = async (
     limit: number | null,
     filter: any = {},
     includes: string[] = [],
+    project: string[] = []
 ) => {
     let aggregationQuery: any[] = [];
     const search = filter?.search?.trim() || null;
@@ -110,6 +111,14 @@ export const list = async (
         dataPipeline.push({
             $limit: limit,
         });
+    }
+
+    if (project && project.length > 0) {
+        const projectStage = project.reduce((acc, field) => {
+            acc[field] = 1;
+            return acc;
+        }, {} as Record<string, 1>);
+        dataPipeline.push({ $project: projectStage });
     }
 
     // Add facet stage for pagination and total count

@@ -29,7 +29,7 @@ export default function CartPage() {
 
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // ✅ Sync quantities state with cart
+    // Sync quantities state with cart
     useEffect(() => {
         if (isLoggedIn && data?.data) {
             setCart(data.data);
@@ -76,7 +76,7 @@ export default function CartPage() {
 
     }, { scope: containerRef, dependencies: [cart.length > 0] }); // Only run entrance when cart has items
 
-    // ✅ Update logic shared for both guest & user
+    // Update logic shared for both guest & user
     const updateCart = (updatedCart: CartType[]) => {
         setCart(updatedCart);
 
@@ -145,10 +145,20 @@ export default function CartPage() {
         }, 0);
 
     const subtotal = calculateSubtotal();
-    const shipping = subtotal > 1000 ? 0 : 100; // Example logic: Free shipping over 1000
+    const shipping = subtotal > 1000 ? 0 : 100;
     const total = subtotal + shipping;
 
     const handleCheckout = () => {
+        if (!isLoggedIn) {
+            toast.error("Please login to place an order.");
+            return;
+        }
+
+        if (cart.length === 0) {
+            toast.error("Your cart is empty.");
+            return;
+        }
+
         router.push("/checkout")
     }
 

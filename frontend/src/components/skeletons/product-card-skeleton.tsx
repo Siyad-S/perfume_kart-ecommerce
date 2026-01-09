@@ -32,7 +32,7 @@ import { cn } from "@/src/lib/utils";
 
 export function ProductGridSkeleton({ count = 8, className }: { count?: number; className?: string }) {
     return (
-        <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 md:px-8", className)}>
+        <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 px-4 md:px-8", className)}>
             {Array.from({ length: count }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
             ))}

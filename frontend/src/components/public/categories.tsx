@@ -54,27 +54,31 @@ export default function Categories(props: { from?: string }) {
 
   useGSAP(
     () => {
-      const cards = gsap.utils.toArray(".category-card");
+      const mm = gsap.matchMedia();
 
-      gsap.fromTo(
-        cards,
-        {
-          opacity: 0,
-          y: 50,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
+      mm.add("(min-width: 768px)", () => {
+        const cards = gsap.utils.toArray(".category-card");
+
+        gsap.fromTo(
+          cards,
+          {
+            opacity: 0,
+            y: 50,
           },
-        }
-      );
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: "top 80%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      });
     },
     { scope: containerRef, dependencies: [categoriesData] }
   );

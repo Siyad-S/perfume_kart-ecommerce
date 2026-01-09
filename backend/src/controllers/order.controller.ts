@@ -50,7 +50,7 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
   })
 
   // Create payment
-  await PaymentServices?.create({
+  const payment = await PaymentServices?.create({
     user_id,
     order_id: order._id,
     razorpay: { order_id: razorpayOrder.id },
@@ -60,7 +60,7 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
     payment_status: "pending",
   });
 
-  return responseFormatter(res, { order, payment: null }, "Order created successfully", 200)
+  return responseFormatter(res, { order, payment }, "Order created successfully", 200)
 });
 
 // get orders

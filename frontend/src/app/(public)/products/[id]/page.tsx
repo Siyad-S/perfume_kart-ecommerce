@@ -170,9 +170,9 @@ export default function ProductDetailPage() {
                             <div className="flex items-center justify-between">
                                 <h2 className="text-sm font-semibold tracking-widest uppercase text-neutral-500">{details?.brand?.name}</h2>
                                 <div className="flex items-center gap-1 text-yellow-500 text-sm">
-                                    <Star className="w-4 h-4 fill-current" />
+                                    {/* <Star className="w-4 h-4 fill-current" />
                                     <span className="font-medium text-neutral-900">4.8</span>
-                                    <span className="text-neutral-400">(120 reviews)</span>
+                                    <span className="text-neutral-400">(120 reviews)</span> */}
                                 </div>
                             </div>
                             <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 leading-tight">{details?.name}</h1>

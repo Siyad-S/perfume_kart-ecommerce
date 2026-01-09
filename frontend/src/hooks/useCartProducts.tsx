@@ -20,9 +20,7 @@ export const useCart = () => {
     const addToCart = async (product: ProductInput, quantity: number = 1) => {
         try {
             if (user?._id) {
-                // -----------------------------
-                // ✅ Logged-in User Logic
-                // -----------------------------
+                // Logged-in User Logic
                 const currentCart = user.cart || [];
                 const existingItemIndex = currentCart.findIndex(
                     (item: CartType) => item.product_id === product._id
@@ -52,9 +50,7 @@ export const useCart = () => {
 
                 toast.success("Added to cart successfully!");
             } else {
-                // -----------------------------
-                // 🚫 Guest User Logic
-                // -----------------------------
+                // Guest User Logic
                 const guestCart = getGuestCart();
                 const existingItemIndex = guestCart.findIndex(
                     (item: CartType) => item.product_id === product._id

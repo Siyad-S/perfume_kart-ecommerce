@@ -14,6 +14,11 @@ export default function OrderSuccessPage() {
     const contentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        if (!orderId) {
+            router.replace("/home");
+        }
+    }, [orderId]);
+    useEffect(() => {
         const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
         if (containerRef.current && iconRef.current && contentRef.current) {

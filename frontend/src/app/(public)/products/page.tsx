@@ -14,8 +14,8 @@ import {
 } from "@/src/components/ui/select";
 import Categories from "@/src/components/public/categories";
 import Breadcrumbs from "@/src/components/common/breadcrumbs";
-import { useSelector } from "react-redux";
-import { RootState } from "@/src/redux/store";
+import { RootState, useTypedDispatch, useTypedSelector } from "@/src/redux/store";
+import { setFilter } from "@/src/redux/slices/products";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -26,25 +26,28 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { Slider } from "@/src/components/ui/slider";
 import { Checkbox } from "@/src/components/ui/checkbox";
-import { Filter, Loader2, Search } from "lucide-react";
+import { Filter, Loader2, Search, PackageSearch, ChevronDown } from "lucide-react";
 import { useGetBrandsQuery } from "@/src/redux/apis/brands";
+import { setBrand } from "@/src/redux/slices/brands";
 import { useInfiniteScrollPagination } from "@/src/hooks/useInfiniteScrollPagination";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { Button } from "@/src/components/ui/button";
 
 export default function ProductsPage() {
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("createdAt_desc");
     const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<number[]>([0, 100000]);
-    const [bestSeller, setBestSeller] = useState(false);
-    const [trending, setTrending] = useState(false);
-    const [newLaunch, setNewLaunch] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const category = useSelector((state: RootState) => state.categories.category);
-    const brand = useSelector((state: RootState) => state.brands.brand);
+    const { filter: reduxFilters } = useTypedSelector((state) => state.products);
+    const { best_seller, trending, new_launch } = reduxFilters;
+    const dispatch = useTypedDispatch();
+
+    const category = useTypedSelector((state) => state.categories.category);
+    const brand = useTypedSelector((state) => state.brands.brand);
 
     // Brands Query
     const { data: brands } = useGetBrandsQuery({
@@ -54,15 +57,55 @@ export default function ProductsPage() {
         sort: `name_asc`,
     });
 
+    useEffect(() => {
+        if (brand) {
+            setSelectedBrands((prev) => {
+                if (prev.includes(brand)) return prev;
+                return [...prev, brand];
+            });
+            dispatch(setBrand(null));
+        }
+    }, [brand, dispatch]);
+
     // Prepare filters
     const filters = {
         ...(brand ? { brand_id: brand } : {}),
         ...(category ? { category_id: category } : {}),
         ...(selectedBrands.length ? { brand: selectedBrands } : {}),
         ...(priceRange[1] > priceRange[0] ? { price: { min: priceRange[0], max: priceRange[1] } } : {}),
-        ...(bestSeller ? { best_seller: true } : {}),
+        ...(best_seller ? { best_seller: true } : {}),
         ...(trending ? { trending: true } : {}),
-        ...(newLaunch ? { new_launch: true } : {}),
+        ...(new_launch ? { new_launch: true } : {}),
+    };
+
+    const isAnyFilterActive =
+        !!brand ||
+        !!category ||
+        selectedBrands.length > 0 ||
+        priceRange[0] > 0 ||
+        priceRange[1] < 100000 ||
+        best_seller ||
+        trending ||
+        new_launch;
+
+    const handleFilterChange = (key: keyof typeof reduxFilters, value: boolean) => {
+        dispatch(setFilter({
+            ...reduxFilters,
+            [key]: value
+        }));
+    };
+
+    const handleClearFilters = () => {
+        setSearch("");
+        setSort("createdAt_desc");
+        setSelectedBrands([]);
+        setPriceRange([0, 100000]);
+        dispatch(setFilter({
+            best_seller: false,
+            trending: false,
+            new_launch: false
+        }));
+        dispatch(setBrand(null));
     };
 
     // Infinite Scroll Hook
@@ -73,7 +116,7 @@ export default function ProductsPage() {
         observerRef,
     } = useInfiniteScrollPagination({
         useQueryHook: useGetProductsQuery,
-        limit: 12, // Increased limit
+        limit: 12,
         search,
         extraQueryArgs: {
             sort: sort as ProductSort,
@@ -128,25 +171,44 @@ export default function ProductsPage() {
                                 />
                             </div>
 
-                            <Select value={sort} onValueChange={setSort}>
-                                <SelectTrigger className="w-[160px] rounded-full border-neutral-200 h-10">
-                                    <SelectValue placeholder="Sort" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="createdAt_desc">Newest</SelectItem>
-                                    <SelectItem value="price_asc">Price: Low - High</SelectItem>
-                                    <SelectItem value="price_desc">Price: High - Low</SelectItem>
-                                    <SelectItem value="name_asc">Name: A - Z</SelectItem>
-                                </SelectContent>
-                            </Select>
-
-                            <DropdownMenu>
+                            <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="h-10 w-10 flex items-center justify-center border border-neutral-200 rounded-full hover:bg-neutral-100 transition-colors bg-white">
-                                        <Filter className="w-4 h-4 text-neutral-600" />
-                                    </button>
+                                    <Button variant="outline" className="flex items-center justify-between w-[160px] rounded-full border border-neutral-200 h-10 px-3 text-sm bg-white hover:bg-neutral-100 transition-colors">
+                                        <span className="truncate">
+                                            {sort === "createdAt_desc" && "Newest"}
+                                            {sort === "price_asc" && "Price: Low - High"}
+                                            {sort === "price_desc" && "Price: High - Low"}
+                                            {sort === "name_asc" && "Name: A - Z"}
+                                        </span>
+                                        <ChevronDown className="w-4 h-4 text-neutral-500 opacity-50" />
+                                    </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-72 p-4 mr-4" align="end">
+                                <DropdownMenuContent className="w-[160px]" align="start">
+                                    <DropdownMenuItem onClick={() => setSort("createdAt_desc")}>
+                                        Newest
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setSort("price_asc")}>
+                                        Price: Low - High
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setSort("price_desc")}>
+                                        Price: High - Low
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setSort("name_asc")}>
+                                        Name: A - Z
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
+                            <DropdownMenu modal={false}>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="relative h-10 w-10 flex items-center justify-center border border-neutral-200 rounded-full hover:bg-neutral-100 transition-colors bg-white">
+                                        <Filter className="w-4 h-4 text-neutral-600" />
+                                        {(isAnyFilterActive) && (
+                                            <span className="absolute top-0 right-0 h-2.5 w-2.5 bg-green-500 rounded-full border border-white"></span>
+                                        )}
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-72 p-4" align="end">
                                     <DropdownMenuLabel>Filters</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
 
@@ -199,8 +261,8 @@ export default function ProductsPage() {
                                                 <div className="flex items-center gap-3">
                                                     <Checkbox
                                                         id="filter-best-seller"
-                                                        checked={bestSeller}
-                                                        onCheckedChange={(checked) => setBestSeller(checked as boolean)}
+                                                        checked={best_seller}
+                                                        onCheckedChange={(checked) => handleFilterChange("best_seller", checked as boolean)}
                                                     />
                                                     <label htmlFor="filter-best-seller" className="text-sm cursor-pointer select-none">
                                                         Best Seller
@@ -210,7 +272,7 @@ export default function ProductsPage() {
                                                     <Checkbox
                                                         id="filter-trending"
                                                         checked={trending}
-                                                        onCheckedChange={(checked) => setTrending(checked as boolean)}
+                                                        onCheckedChange={(checked) => handleFilterChange("trending", checked as boolean)}
                                                     />
                                                     <label htmlFor="filter-trending" className="text-sm cursor-pointer select-none">
                                                         Trending
@@ -219,8 +281,8 @@ export default function ProductsPage() {
                                                 <div className="flex items-center gap-3">
                                                     <Checkbox
                                                         id="filter-new-launch"
-                                                        checked={newLaunch}
-                                                        onCheckedChange={(checked) => setNewLaunch(checked as boolean)}
+                                                        checked={new_launch}
+                                                        onCheckedChange={(checked) => handleFilterChange("new_launch", checked as boolean)}
                                                     />
                                                     <label htmlFor="filter-new-launch" className="text-sm cursor-pointer select-none">
                                                         New Launch
@@ -238,10 +300,6 @@ export default function ProductsPage() {
 
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-                {/* Categories - keeping it here as per original design, but maybe cleaner if separate? 
-                    Original design had it. We'll keep it but maybe it should be less obtrusive or just "Categories" text.
-                    Actually, let's keep it as is, it's a nice discovery feature. 
-                */}
                 <div className="mb-12 header-animate">
                     <Categories />
                 </div>
@@ -257,8 +315,23 @@ export default function ProductsPage() {
                         <ProductGridSkeleton count={8} />
                     </div>
                 ) : productsData.length === 0 ? (
-                    <div className="text-center py-20 text-neutral-500 header-animate">
-                        No products found matching your criteria.
+                    <div className="flex flex-col items-center justify-center py-20 text-center header-animate">
+                        <div className="bg-neutral-100 p-4 rounded-full mb-4">
+                            <PackageSearch className="w-8 h-8 text-neutral-400" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                            No products found
+                        </h3>
+                        <p className="text-neutral-500 max-w-md mx-auto mb-8">
+                            We couldn't find any perfumes matching your current filters. Try adjusting your search or filters to find what you're looking for.
+                        </p>
+                        <Button
+                            onClick={handleClearFilters}
+                            variant="outline"
+                            className="rounded-full px-6"
+                        >
+                            Clear All Filters
+                        </Button>
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-10">
@@ -267,7 +340,6 @@ export default function ProductsPage() {
                                 <ProductCard product={product} />
                             </div>
                         ))}
-                        {/* Show skeleton capability for infinite scroll if needed, or keeping the loader at bottom */}
                     </div>
                 )}
 
