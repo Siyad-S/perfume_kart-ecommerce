@@ -90,19 +90,15 @@ export const login = catchAsync(async (
 
     res.cookie(accessTokenCookieName, accessToken, {
       httpOnly: true,
-      // secure: process.env.NODE_ENV === "production",
-      // sameSite: "strict",
-      sameSite: "none",
-      secure: true,
+      sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax" | "strict",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie(refreshTokenCookieName, refreshToken, {
       httpOnly: true,
-      // secure: process.env.NODE_ENV === "production",
-      // sameSite: "strict",
-      sameSite: "none",
-      secure: true,
+      sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax" | "strict",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

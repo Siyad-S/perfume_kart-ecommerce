@@ -21,6 +21,12 @@ const corsOptions = {
 }
 app.use(cors(corsOptions));
 
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
+
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

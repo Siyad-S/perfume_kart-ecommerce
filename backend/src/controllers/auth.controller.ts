@@ -14,13 +14,11 @@ export const googleCallback = catchAsync(async (req: Request, res: Response, nex
 
     const payload = { id: user._id, email: user.email, role: user.role };
 
-    console.log('Google Callback: Logging in user', { id: user._id, email: user.email });
-
     const { accessToken, refreshToken } = generateTokens(payload);
 
     const cookieOptions = {
         httpOnly: true,
-        sameSite: "lax" as const,
+        sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax" | "strict",
         secure: process.env.NODE_ENV === "production",
         maxAge: 15 * 60 * 1000,
     };

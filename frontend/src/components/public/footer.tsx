@@ -68,7 +68,7 @@ export default function Footer() {
                             </p>
                         </div>
 
-                        <div className="space-y-3">
+                        {/* <div className="space-y-3">
                             <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">Subscribe via Email</p>
                             <div className="flex items-center gap-2">
                                 <div className="relative flex-1">
@@ -82,7 +82,7 @@ export default function Footer() {
                                     <Send className="h-4 w-4" />
                                 </Button>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Shop Links */}
