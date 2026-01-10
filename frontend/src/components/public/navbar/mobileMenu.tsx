@@ -10,6 +10,11 @@ import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 import { useGlobalSearchQuery } from "@/src/redux/apis/products"
 import { useInfiniteScrollPagination } from "@/src/hooks/useInfiniteScrollPagination"
+import { useLogoutMutation } from "@/src/redux/apis/auth";
+import { useGetUserQuery, userApi } from "@/src/redux/apis/users";
+import { setUser } from "@/src/redux/slices/auth"
+import { toast } from "sonner"
+import { useDispatch } from "react-redux"
 
 // Types
 interface Category {
@@ -66,6 +71,22 @@ export function MobileMenu({
     const [query, setQuery] = useState("")
     const [debouncedQuery, setDebouncedQuery] = useState("")
 
+    // Auth
+    const { data: userData } = useGetUserQuery();
+    const [logout] = useLogoutMutation();
+    const user = userData?.data?.user;
+    const dispatch = useDispatch();
+
+
+    const handleLogout = async () => {
+        await logout();
+        dispatch(setUser(null));
+        dispatch(userApi.util.resetApiState());
+        toast.success("Logged out successfully!");
+        router.push("/home");
+        onClose();
+    }
+
     // --- Refs ---
     const containerRef = useRef<HTMLDivElement>(null)
     const drawerRef = useRef<HTMLDivElement>(null)
@@ -87,22 +108,21 @@ export function MobileMenu({
 
     // Debounce Effect
     useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedQuery(query)
-        }, 300)
-        return () => clearTimeout(handler)
-    }, [query])
+        if (!query) {
+            setDebouncedQuery("");
+            return;
+        }
 
-    // Reset list on new debounce query
-    useEffect(() => {
-        reset();
-    }, [debouncedQuery, reset]); // Added reset to dependency array
+        const handler = setTimeout(() => {
+            setDebouncedQuery(query);
+        }, 300);
+        return () => clearTimeout(handler);
+    }, [query]);
 
     const handleClearSearch = () => {
-        setQuery("")
-        setDebouncedQuery("")
-        reset()
-    }
+        setQuery("");
+        setDebouncedQuery("");
+    };
 
 
     // --- Animations ---
@@ -354,12 +374,25 @@ export function MobileMenu({
 
                 {/* Footer */}
                 <div className="p-4 border-t bg-gray-50 shrink-0">
-                    <Button className="w-full rounded-full py-6 text-base font-semibold shadow-lg shadow-primary/20" onClick={() => {
-                        onClose()
-                        router.push("/login")
-                    }}>
-                        Login / Sign Up
-                    </Button>
+                    {user ? (
+                        <Button
+                            variant="destructive"
+                            className="w-full rounded-full py-6 text-base font-semibold shadow-lg shadow-red-500/20"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </Button>
+                    ) : (
+                        <Button
+                            className="w-full rounded-full py-6 text-base font-semibold shadow-lg shadow-primary/20"
+                            onClick={() => {
+                                onClose()
+                                router.push("/login")
+                            }}
+                        >
+                            Login / Sign Up
+                        </Button>
+                    )}
                 </div>
 
             </div>

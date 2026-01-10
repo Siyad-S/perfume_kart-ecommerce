@@ -36,7 +36,6 @@ export function SearchBar() {
     const [isOpen, setIsOpen] = React.useState(false)
     const searchRef = React.useRef<HTMLDivElement>(null)
 
-    // 1. Setup Pagination Hook
     const {
         list: products,
         hasMore,
@@ -50,56 +49,48 @@ export function SearchBar() {
         search: debouncedQuery,
     })
 
-    // 2. Handle Debouncing and Resetting
     React.useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedQuery(query)
-        }, 300)
-
-        // If user changes input, we should probably reset the list 
-        // immediately so old results don't linger while waiting for debounce
-        if (query !== debouncedQuery) {
-            // Optional: You can choose to reset here or wait for the new fetch
-            // reset(); 
+        if (!query) {
+            setDebouncedQuery("");
+            return;
         }
 
-        return () => clearTimeout(handler)
-    }, [query])
+        const handler = setTimeout(() => {
+            setDebouncedQuery(query);
+            // reset();
+        }, 300);
 
-    // Reset list when the actual search term changes (after debounce)
-    React.useEffect(() => {
-        reset();
-    }, [debouncedQuery, reset]);
+        return () => clearTimeout(handler);
+    }, [query]);
 
     const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!query) return
-        setIsOpen(false)
-        router.push(`/products?search=${encodeURIComponent(query)}`)
-    }
+        e.preventDefault();
+        if (!query) return;
+        setIsOpen(false);
+        router.push(`/products?search=${encodeURIComponent(query)}`);
+    };
 
-    const handleProductClick = (productId: string) => {
-        setIsOpen(false)
-        setQuery("")
-    }
+    const handleProductClick = () => {
+        setIsOpen(false);
+        setQuery("");
+    };
 
     const clearSearch = () => {
-        setQuery("")
-        setDebouncedQuery("")
-        reset() // Clear the list
-        setIsOpen(false)
-    }
+        setQuery("");
+        setDebouncedQuery(""); 
+        setIsOpen(false);
+    };
 
     // Click outside to close
     React.useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-                setIsOpen(false)
+                setIsOpen(false);
             }
-        }
-        document.addEventListener("mousedown", handleClickOutside)
-        return () => document.removeEventListener("mousedown", handleClickOutside)
-    }, [])
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const showLoading = isInitialLoading || (isFetching && products.length === 0);
 
@@ -144,13 +135,13 @@ export function SearchBar() {
                                 Products
                             </div>
 
-                            {/* 3. Infinite Scroll Container */}
+                            {/* Infinite Scroll Container */}
                             <ul className="max-h-[300px] overflow-y-auto py-1 custom-scrollbar">
                                 {products?.map((product, index) => (
                                     <li key={`${product._id}-${index}`}>
                                         <Link href={`/products/${product?._id}`}>
                                             <button
-                                                onClick={() => handleProductClick(product._id)}
+                                                onClick={handleProductClick}
                                                 className="w-full text-left px-4 py-3 hover:bg-gray-100 flex items-center gap-4 transition-colors group hover:cursor-pointer"
                                             >
                                                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border bg-gray-100">
