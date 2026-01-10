@@ -8,6 +8,7 @@ export interface ListRequestType {
   filter: {
     category_id?: mongoose.Types.ObjectId;
     brand_id?: mongoose.Types.ObjectId;
+    category?: mongoose.Types.ObjectId[];
     brand?: mongoose.Types.ObjectId[];
     price?: {
       min: number;

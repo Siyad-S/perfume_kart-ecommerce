@@ -15,6 +15,7 @@ import { useGetUserQuery, userApi } from "@/src/redux/apis/users";
 import { setUser } from "@/src/redux/slices/auth"
 import { toast } from "sonner"
 import { useDispatch } from "react-redux"
+import { useCategoryNavigation } from "@/src/hooks/useCategoryNavigation"
 
 // Types
 interface Category {
@@ -57,6 +58,7 @@ export function MobileMenu({
     const [openCategory, setOpenCategory] = useState(false)
     const [openBrand, setOpenBrand] = useState(false)
     const router = useRouter()
+    const { navigateToProducts } = useCategoryNavigation();
 
     // Helper for active link styles
     const getLinkClass = (path: string) => {
@@ -124,6 +126,14 @@ export function MobileMenu({
         setDebouncedQuery("");
     };
 
+    const handleCategoryClick = (id: string) => {
+        navigateToProducts({ category_id: id });
+    };
+
+    const handleBrandClick = (id: string) => {
+        navigateToProducts({ brand_id: id });
+    };
+
 
     // --- Animations ---
     useGSAP(() => {
@@ -185,7 +195,6 @@ export function MobileMenu({
             gsap.to(brandContentRef.current, { height: 0, duration: 0.3, ease: "power2.in" })
         }
     }, { dependencies: [openBrand] })
-
 
     return (
         <div ref={containerRef} className="relative z-[200]">
@@ -319,19 +328,46 @@ export function MobileMenu({
                                     </button>
                                     <div ref={categoryContentRef} className="h-0 overflow-hidden">
                                         <div className="pl-4 pr-2 py-2 space-y-1 border-l-2 border-gray-100 ml-3">
+                                            <Button
+                                                variant="ghost"
+                                                onClick={() => {
+                                                    navigateToProducts({});
+                                                    onClose();
+                                                }}
+                                                className="w-full justify-start text-left font-normal text-sm text-gray-600 hover:text-primary hover:bg-amber-50 h-auto py-2 px-3"
+                                            >
+                                                View All Products
+                                            </Button>
                                             {categories.slice(0, 8).map(cat => (
-                                                <Link
+                                                <Button
                                                     key={cat._id}
-                                                    href={`/category/${cat._id}`}
-                                                    onClick={onClose}
-                                                    className="block p-2 text-sm text-gray-600 hover:text-primary hover:bg-amber-50 rounded-md transition-colors"
+                                                    variant="ghost"
+                                                    onClick={() => {
+                                                        handleCategoryClick(cat._id);
+                                                        onClose();
+                                                    }}
+                                                    className="w-full justify-start text-left font-normal text-sm text-gray-600 hover:text-primary hover:bg-amber-50 h-auto py-2 px-3"
                                                 >
                                                     {cat.name}
-                                                </Link>
+                                                </Button>
                                             ))}
-                                            <Link href="/categories" onClick={onClose} className="block p-2 text-sm font-semibold text-primary hover:underline">
+                                            {/* "View All" for Categories can just go to /products to match MegaMenu behavior or specific logic if needed. 
+                                                MegaMenu didn't have a "View All Categories" inside the list, but it had categories list.
+                                                However, standard behavior is usually just reset filters or go to products. 
+                                                Let's stick to the requested behavior: "view more want to work as like in the megamenu's brand's"
+                                                MegaMenu brands view more opens that brand. 
+                                                For "View All Categories", let's map it to clearing category filter or just products page.
+                                            */}
+                                            {/* <Button
+                                                variant="ghost" 
+                                                onClick={() => {
+                                                    navigateToProducts({}); // Clear filters? Or just go to products
+                                                    onClose();
+                                                }}
+                                                className="block w-full text-left p-2 text-sm font-semibold text-primary hover:underline"
+                                            >
                                                 View All Categories →
-                                            </Link>
+                                            </Button> */}
                                         </div>
                                     </div>
                                 </div>
@@ -348,18 +384,28 @@ export function MobileMenu({
                                     <div ref={brandContentRef} className="h-0 overflow-hidden">
                                         <div className="pl-4 pr-2 py-2 space-y-1 border-l-2 border-gray-100 ml-3">
                                             {brands.slice(0, 8).map(brand => (
-                                                <Link
+                                                <Button
                                                     key={brand._id}
-                                                    href={`/brands/${brand._id}`} // Assuming brand ID based routing
-                                                    onClick={onClose}
-                                                    className="block p-2 text-sm text-gray-600 hover:text-primary hover:bg-amber-50 rounded-md transition-colors"
+                                                    variant="ghost"
+                                                    onClick={() => {
+                                                        handleBrandClick(brand._id);
+                                                        onClose();
+                                                    }}
+                                                    className="w-full justify-start text-left font-normal text-sm text-gray-600 hover:text-primary hover:bg-amber-50 h-auto py-2 px-3"
                                                 >
                                                     {brand.name}
-                                                </Link>
+                                                </Button>
                                             ))}
-                                            <Link href="/brands" onClick={onClose} className="block p-2 text-sm font-semibold text-primary hover:underline">
+                                            <Button
+                                                variant="ghost"
+                                                onClick={() => {
+                                                    navigateToProducts({});
+                                                    onClose();
+                                                }}
+                                                className="w-full justify-start text-left font-semibold text-sm text-primary hover:bg-amber-50 h-auto py-2 px-3"
+                                            >
                                                 View All Brands →
-                                            </Link>
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
@@ -377,14 +423,14 @@ export function MobileMenu({
                     {user ? (
                         <Button
                             variant="destructive"
-                            className="w-full rounded-full py-6 text-base font-semibold shadow-lg shadow-red-500/20"
+                            className="w-full rounded-full py-6 text-base font-semibold shadow-lg shadow-red-500/20 cursor-pointer"
                             onClick={handleLogout}
                         >
                             Logout
                         </Button>
                     ) : (
                         <Button
-                            className="w-full rounded-full py-6 text-base font-semibold shadow-lg shadow-primary/20"
+                            className="w-full rounded-full py-6 text-base font-semibold shadow-lg shadow-primary/20 cursor-pointer"
                             onClick={() => {
                                 onClose()
                                 router.push("/login")

@@ -29,6 +29,8 @@ import { Checkbox } from "@/src/components/ui/checkbox";
 import { Filter, Loader2, Search, PackageSearch, ChevronDown } from "lucide-react";
 import { useGetBrandsQuery } from "@/src/redux/apis/brands";
 import { setBrand } from "@/src/redux/slices/brands";
+import { useGetCategoriesQuery } from "@/src/redux/apis/categories";
+import { setCategory } from "@/src/redux/slices/categories";
 import { useInfiniteScrollPagination } from "@/src/hooks/useInfiniteScrollPagination";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -49,6 +51,14 @@ export default function ProductsPage() {
     const category = useTypedSelector((state) => state.categories.category);
     const brand = useTypedSelector((state) => state.brands.brand);
 
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+    // Categories Query
+    const { data: categoriesData } = useGetCategoriesQuery({
+        sort: "name_asc",
+        limit: 100 // Fetch enough categories for the filter
+    });
+
     // Brands Query
     const { data: brands } = useGetBrandsQuery({
         search: "",
@@ -67,10 +77,21 @@ export default function ProductsPage() {
         }
     }, [brand, dispatch]);
 
+    useEffect(() => {
+        if (category) {
+            setSelectedCategories((prev) => {
+                if (prev.includes(category)) return prev;
+                return [...prev, category];
+            });
+            dispatch(setCategory(null));
+        }
+    }, [category, dispatch]);
+
     // Prepare filters
     const filters = {
         ...(brand ? { brand_id: brand } : {}),
-        ...(category ? { category_id: category } : {}),
+        ...(brand ? { brand_id: brand } : {}),
+        ...(selectedCategories.length ? { category: selectedCategories } : {}),
         ...(selectedBrands.length ? { brand: selectedBrands } : {}),
         ...(priceRange[1] > priceRange[0] ? { price: { min: priceRange[0], max: priceRange[1] } } : {}),
         ...(best_seller ? { best_seller: true } : {}),
@@ -80,7 +101,8 @@ export default function ProductsPage() {
 
     const isAnyFilterActive =
         !!brand ||
-        !!category ||
+        !!brand ||
+        selectedCategories.length > 0 ||
         selectedBrands.length > 0 ||
         priceRange[0] > 0 ||
         priceRange[1] < 100000 ||
@@ -105,7 +127,13 @@ export default function ProductsPage() {
             trending: false,
             new_launch: false
         }));
+        dispatch(setFilter({
+            best_seller: false,
+            trending: false,
+            new_launch: false
+        }));
         dispatch(setBrand(null));
+        setSelectedCategories([]);
     };
 
     // Infinite Scroll Hook
@@ -229,6 +257,31 @@ export default function ProductsPage() {
                                             />
                                         </div>
 
+                                        {/* Categories */}
+                                        <div className="space-y-3">
+                                            <h3 className="text-sm font-semibold">Categories</h3>
+                                            <div className="max-h-48 overflow-y-auto pr-2 space-y-2 scrollbar-thin scrollbar-thumb-neutral-200">
+                                                {categoriesData?.data?.data?.map((cat: any) => (
+                                                    <div key={cat._id} className="flex items-center gap-3">
+                                                        <Checkbox
+                                                            id={`cat-${cat._id}`}
+                                                            checked={selectedCategories.includes(cat._id)}
+                                                            onCheckedChange={(checked) => {
+                                                                if (checked) {
+                                                                    setSelectedCategories([...selectedCategories, cat._id]);
+                                                                } else {
+                                                                    setSelectedCategories(selectedCategories.filter((c) => c !== cat._id));
+                                                                }
+                                                            }}
+                                                        />
+                                                        <label htmlFor={`cat-${cat._id}`} className="text-sm cursor-pointer select-none">
+                                                            {cat.name}
+                                                        </label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
                                         {/* Brands */}
                                         <div className="space-y-3">
                                             <h3 className="text-sm font-semibold">Brands</h3>
@@ -300,9 +353,9 @@ export default function ProductsPage() {
 
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-                <div className="mb-12 header-animate">
+                {/* <div className="mb-12 header-animate">
                     <Categories />
-                </div>
+                </div> */}
 
                 <div className="header-animate mb-8">
                     <h2 className="text-2xl font-bold tracking-tight">All Products</h2>

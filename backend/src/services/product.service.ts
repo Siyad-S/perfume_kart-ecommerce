@@ -48,6 +48,17 @@ export const list = async (
   }
   delete filter.brand;
 
+  if (filter?.category?.length > 0) {
+    aggregationQuery.push({
+      $match: {
+        category_id: {
+          $in: filter.category,
+        }
+      }
+    })
+  }
+  delete filter.category;
+
   if (filter?.price) {
     aggregationQuery.push({
       $match: {

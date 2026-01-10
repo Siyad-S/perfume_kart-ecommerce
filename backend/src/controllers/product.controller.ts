@@ -123,6 +123,10 @@ export const list = catchAsync(async (
     (filter as { brand: mongoose.Types.ObjectId[] }).brand = filter.brand.map((brand) => new mongoose.Types.ObjectId(brand));
   }
 
+  if ((filter as any)?.category && (filter as any).category.length > 0) {
+    (filter as { category: mongoose.Types.ObjectId[] }).category = (filter as any).category.map((cat: string) => new mongoose.Types.ObjectId(cat));
+  }
+
   if (filter?.price) {
     (filter as { price: { min: number, max: number } }).price = {
       min: filter.price.min,
