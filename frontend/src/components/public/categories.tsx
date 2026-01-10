@@ -94,8 +94,8 @@ export default function Categories(props: { from?: string }) {
       </div>
 
       <div className="max-w-7xl mx-auto">
-        {!categoriesData.length && isLoading ? (
-          <CategoryGridSkeleton />
+        {isLoading ? (
+          <CategoryGridSkeleton count={4} />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {categoriesData?.map((category: Category) => (

@@ -2,7 +2,7 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 
 export function CategorySkeleton() {
     return (
-        <div className="relative group overflow-hidden rounded-2xl h-[400px] w-full bg-neutral-100">
+        <div className="relative group overflow-hidden rounded-2xl h-[300px] md:h-[400px] w-full bg-neutral-100">
             <Skeleton className="h-full w-full absolute inset-0" />
 
             {/* Overlay Gradient Placeholder */}
@@ -21,10 +21,10 @@ export function CategorySkeleton() {
     );
 }
 
-export function CategoryGridSkeleton() {
+export function CategoryGridSkeleton({ count }: { count: number }) {
     return (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: count }).map((_, i) => (
                 <CategorySkeleton key={i} />
             ))}
         </div>
