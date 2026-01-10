@@ -9,8 +9,8 @@ const env = cleanEnv(process.env, {
   CONNECTION_URL: str(),
   JWT_SECRET: str(),
   REFRESH_SECRET: str(),
-  CLIENT_URL: url({ default: `${process.env.CLIENT_URL}` }),
-  SERVER_URL: url({ default: `${process.env.SERVER_URL}` }),
+  CLIENT_URL: url(),
+  SERVER_URL: url(),
 });
 
 interface Config {
