@@ -5,9 +5,9 @@ import mongoose from "mongoose";
 import OrderServices from "../services/order.service";
 import PaymentServices from "../services/payment.service";
 import { OrderType } from '../types/order.types';
-import { responseFormatter } from "@/utils/responseFormatter";
-import { catchAsync } from "@/utils/catchAsync";
-import { AppError } from "@/utils/AppError";
+import { responseFormatter } from '../utils/responseFormatter';
+import { catchAsync } from '../utils/catchAsync';
+import { AppError } from '../utils/AppError';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,

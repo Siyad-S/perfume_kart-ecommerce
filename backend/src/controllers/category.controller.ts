@@ -6,8 +6,8 @@ import { ListRequestType } from '../types/common.types';
 import * as Brand from '../services/brand.service';
 import * as Product from '../services/product.service';
 import mongoose from "mongoose";
-import { catchAsync } from "@/utils/catchAsync";
-import { AppError } from "@/utils/AppError";
+import { catchAsync } from '../utils/catchAsync';
+import { AppError } from '../utils/AppError';
 
 //create category
 export const create = catchAsync(async (

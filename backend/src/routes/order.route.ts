@@ -1,8 +1,8 @@
 // routes/paymentRoutes.ts
-import { createOrder, deleteOrder, getOrders, updateOrder } from "@/controllers/order.controller";
+import { createOrder, deleteOrder, getOrders, updateOrder } from '../controllers/order.controller';
 import express from "express";
-import { validate } from "@/middlewares/validate.middleware";
-import { createOrderSchema, orderListSchema, updateOrderSchema, orderIdSchema } from "@/validations/order.validation";
+import { validate } from '../middlewares/validate.middleware';
+import { createOrderSchema, orderListSchema, updateOrderSchema, orderIdSchema } from '../validations/order.validation';
 
 const router = express.Router();
 

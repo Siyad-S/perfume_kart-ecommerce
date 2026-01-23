@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { sendEmail } from '../services/mailer.service';
-import { responseFormatter } from '@/utils/responseFormatter';
-import { catchAsync } from '@/utils/catchAsync';
-import { AppError } from '@/utils/AppError';
+import { responseFormatter } from '../utils/responseFormatter';
+import { catchAsync } from '../utils/catchAsync';
+import { AppError } from '../utils/AppError';
 
 // contact support
 export const contactSupport = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

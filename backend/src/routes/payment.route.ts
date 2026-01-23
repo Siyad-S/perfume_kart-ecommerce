@@ -1,9 +1,9 @@
 // routes/paymentRoutes.ts
-import { createOrder } from "@/controllers/order.controller";
-import { deletePayment, getPayments, retryPayment, verifyPayment } from "@/controllers/payment.controller";
+import { createOrder } from '../controllers/order.controller';
+import { deletePayment, getPayments, retryPayment, verifyPayment } from '../controllers/payment.controller';
 import express from "express";
-import { validate } from "@/middlewares/validate.middleware";
-import { verifyPaymentSchema, retryPaymentSchema, paymentListSchema, paymentIdSchema } from "@/validations/payment.validation";
+import { validate } from '../middlewares/validate.middleware';
+import { verifyPaymentSchema, retryPaymentSchema, paymentListSchema, paymentIdSchema } from '../validations/payment.validation';
 
 const router = express.Router();
 

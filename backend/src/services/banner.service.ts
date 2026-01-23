@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import Banner from '@/models/banner.model';
-import { BannerType } from '@/types/banner.types';
+import Banner from '../models/banner.model';
+import { BannerType } from '../types/banner.types';
 
 //create new banner
 export const create = async (data: Partial<BannerType>) => {

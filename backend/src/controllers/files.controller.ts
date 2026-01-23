@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { uploadSingleImage, uploadMultipleImages } from '../services/file.service';
 import { UploadResult } from '../types/upload';
-import { responseFormatter } from '@/utils/responseFormatter';
-import { catchAsync } from '@/utils/catchAsync';
-import { AppError } from '@/utils/AppError';
+import { responseFormatter } from '../utils/responseFormatter';
+import { catchAsync } from '../utils/catchAsync';
+import { AppError } from '../utils/AppError';
 
 // upload images
 export const uploadImages = catchAsync(async (req: Request<{}, {}, Partial<{

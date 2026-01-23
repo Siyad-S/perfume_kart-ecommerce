@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { BannerType } from '@/types/banner.types';
+import { BannerType } from '../types/banner.types';
 
 const bannerSchema = new mongoose.Schema<BannerType>(
     {

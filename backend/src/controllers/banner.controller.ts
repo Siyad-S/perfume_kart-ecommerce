@@ -1,10 +1,10 @@
-import { BannerType } from "@/types/banner.types";
-import * as Banner from "@/services/banner.service";
+import { BannerType } from '../types/banner.types';
+import * as Banner from '../services/banner.service';
 import { NextFunction, Request, Response } from "express";
-import { responseFormatter } from "@/utils/responseFormatter";
+import { responseFormatter } from '../utils/responseFormatter';
 import mongoose from "mongoose";
-import { catchAsync } from "@/utils/catchAsync";
-import { AppError } from "@/utils/AppError";
+import { catchAsync } from '../utils/catchAsync';
+import { AppError } from '../utils/AppError';
 
 // create banner
 export const create = catchAsync(async (

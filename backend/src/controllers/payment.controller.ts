@@ -1,15 +1,15 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import { NextFunction, Request, Response } from "express";
-import { responseFormatter } from "@/utils/responseFormatter";
+import { responseFormatter } from '../utils/responseFormatter';
 import PaymentService from "../services/payment.service";
 import { Payment } from "../models/payment.model";
 import mongoose from "mongoose";
 import orderService from "../services/order.service";
 import UserService from "../services/user.service";
-import { ListRequestType } from "@/types/common.types";
-import { catchAsync } from "@/utils/catchAsync";
-import { AppError } from "@/utils/AppError";
+import { ListRequestType } from '../types/common.types';
+import { catchAsync } from '../utils/catchAsync';
+import { AppError } from '../utils/AppError';
 
 // Manual Payment Verification
 export const verifyPayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

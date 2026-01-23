@@ -4,8 +4,8 @@ import * as Brand from '../services/brand.service';
 import { BrandType } from '../types/brand.types';
 import { ListRequestType } from '../types/common.types';
 import mongoose from "mongoose";
-import { catchAsync } from "@/utils/catchAsync";
-import { AppError } from "@/utils/AppError";
+import { catchAsync } from '../utils/catchAsync';
+import { AppError } from '../utils/AppError';
 
 // Create brand
 export const create = catchAsync(async (

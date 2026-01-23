@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { AddressType, LoginRegisterType, LoginType, UserType } from '../types/user.types';
 import { responseFormatter } from '../utils/responseFormatter';
-import { ListRequestType } from '@/types/common.types';
+import { ListRequestType } from '../types/common.types';
 import mongoose from 'mongoose';
 import UserModel from '../models/user.model';
 import { sendEmail } from '../services/mailer.service';
