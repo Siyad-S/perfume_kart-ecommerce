@@ -28,8 +28,7 @@
     "prettier": "^3.5.3",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.6",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "ts-node": "^10.9.2"
   },
   "dependencies": {
     "@types/cookie-parser": "^1.4.10",
@@ -58,6 +57,7 @@
     "passport-google-oauth20": "^2.0.0",
     "razorpay": "^2.9.6",
     "sharp": "^0.34.3",
+    "typescript": "^5.9.3",
     "winston": "^3.19.0",
     "zod": "^4.3.4"
   }
