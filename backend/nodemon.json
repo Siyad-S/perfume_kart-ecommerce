@@ -1,6 +1,6 @@
 {
   "watch": ["src"],
   "ext": "ts,json,js",
-  "exec": "ts-node -r tsconfig-paths/register src/server.ts",
+  "exec": "ts-node src/server.ts",
   "ignore": ["node_modules", "logs", "dist"]
 }
