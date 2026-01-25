@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { Button } from "@/src/components/ui/button"
-import { User, Bell } from "lucide-react"
+import { User, Bell, LogOut } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,11 +15,13 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar"
 import { useLogoutMutation } from "@/src/redux/apis/auth"
 import { useRouter } from "next/navigation"
+import { useGetUserQuery } from "@/src/redux/apis/users"
 
 export function AdminNav() {
   const [logout, { isLoading }] = useLogoutMutation()
   const router = useRouter()
-
+  const { data: userData, isSuccess, isLoading: userLoading } = useGetUserQuery()
+  const user = userData?.data?.user
   const handleLogout = async () => {
     try {
       await logout()
@@ -36,9 +38,9 @@ export function AdminNav() {
       </div>
 
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="text-muted-foreground">
+        {/* <Button variant="ghost" size="icon" className="text-muted-foreground">
           <Bell className="h-5 w-5" />
-        </Button>
+        </Button> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -52,25 +54,28 @@ export function AdminNav() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>
-              <div className="flex flex-col">
-                <span className="font-medium">Admin</span>
-                <span className="text-xs text-muted-foreground">admin@fragrancekart.com</span>
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user?.name}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user?.email}
+                </p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            {/* <DropdownMenuSeparator /> */}
+            {/* <DropdownMenuItem>
               Profile
             </DropdownMenuItem>
             <DropdownMenuItem>
               Settings
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="text-red-600 focus:text-red-600"
+              className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
               onClick={handleLogout}
               disabled={isLoading}
             >
-              Logout
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
