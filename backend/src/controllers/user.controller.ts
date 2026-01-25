@@ -310,10 +310,16 @@ export const refreshToken = catchAsync(async (req: Request, res: Response, next:
 
 // Logout user
 export const logout = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
-  res.clearCookie("adminAccessToken");
-  res.clearCookie("adminRefreshToken");
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax" | "strict",
+  };
+
+  res.clearCookie("accessToken", cookieOptions);
+  res.clearCookie("refreshToken", cookieOptions);
+  res.clearCookie("adminAccessToken", cookieOptions);
+  res.clearCookie("adminRefreshToken", cookieOptions);
   return responseFormatter(res, null, 'Logout success', 200);
 });
 
