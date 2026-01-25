@@ -2,13 +2,11 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 export default function AuthSuccessPage() {
     const router = useRouter();
 
     useEffect(() => {
-        // Redirect to home after a brief delay
         const timer = setTimeout(() => {
             router.push("/home");
         }, 2000);

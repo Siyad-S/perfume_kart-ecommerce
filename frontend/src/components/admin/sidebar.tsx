@@ -32,12 +32,12 @@ type SidebarGroup = {
 }
 
 const sidebarGroups: SidebarGroup[] = [
-  {
-    title: "Overview",
-    items: [
-      { label: "Dashboard", icon: LayoutDashboard, href: "/admin", activePrefix: "/admin" },
-    ]
-  },
+  // {
+  //   title: "Overview",
+  //   items: [
+  //     { label: "Dashboard", icon: LayoutDashboard, href: "/admin", activePrefix: "/admin" },
+  //   ]
+  // },
   {
     title: "Catalog",
     items: [
@@ -55,13 +55,13 @@ const sidebarGroups: SidebarGroup[] = [
       // { label: "Shipments", icon: Truck, href: "/admin/shipments" }, 
     ]
   },
-  {
-    title: "Management",
-    items: [
-      // Placeholder for now
-      { label: "Settings", icon: Settings, href: "/admin/settings" },
-    ]
-  }
+  // {
+  //   title: "Management",
+  //   items: [
+  //     // Placeholder for now
+  //     { label: "Settings", icon: Settings, href: "/admin/settings" },
+  //   ]
+  // }
 ];
 
 

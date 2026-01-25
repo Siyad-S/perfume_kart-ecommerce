@@ -48,7 +48,7 @@ export const userApi = createApi({
         }),
 
         // Forgot Password
-        forgotPassword: builder.mutation<{ message: string }, { email: string }>({
+        forgotPassword: builder.mutation<{ message: string }, { email: string; portal?: "user" | "admin" }>({
             query: (body) => ({
                 url: `user/forgot-password`,
                 method: "POST",

@@ -12,7 +12,7 @@ export const googleCallback = catchAsync(async (req: Request, res: Response, nex
         return next(new AppError('JWT_SECRET or REFRESH_SECRET is missing!', 500));
     }
 
-    const payload = { id: user._id, email: user.email, role: user.role };
+    const payload = { _id: user._id, email: user.email, role: user.role };
 
     const { accessToken, refreshToken } = generateTokens(payload);
 
@@ -30,5 +30,10 @@ export const googleCallback = catchAsync(async (req: Request, res: Response, nex
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.redirect(`${config.clientUrl}/auth/success`);
+    const isAdminIntent = req.cookies.admin_login_intent === 'true';
+    const redirectUrl = isAdminIntent
+        ? `${config.clientUrl}/admin/auth/success`
+        : `${config.clientUrl}/auth/success`;
+
+    res.redirect(redirectUrl);
 });

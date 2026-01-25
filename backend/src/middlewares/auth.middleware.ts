@@ -17,6 +17,8 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     token = req.headers.authorization.split(' ')[1];
   } else if (req.cookies.accessToken) {
     token = req.cookies.accessToken;
+  } else if (req.cookies.adminAccessToken) {
+    token = req.cookies.adminAccessToken;
   }
 
   if (!token) {
@@ -41,6 +43,8 @@ export const optionalAuthMiddleware = (req: Request, res: Response, next: NextFu
     token = req.headers.authorization.split(' ')[1];
   } else if (req.cookies.accessToken) {
     token = req.cookies.accessToken;
+  } else if (req.cookies.adminAccessToken) {
+    token = req.cookies.adminAccessToken;
   }
 
   if (token) {

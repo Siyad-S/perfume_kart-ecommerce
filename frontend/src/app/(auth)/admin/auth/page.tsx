@@ -8,9 +8,12 @@ import { Toaster } from "sonner";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import Link from "next/link";
+import { GoogleLoginButton } from "@/src/components/auth/GoogleLoginButton";
+import { ForgotPasswordForm } from "@/src/components/auth/ForgotPasswordForm";
 
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState<boolean>(true);
+    const [isForgot, setIsForgot] = useState<boolean>(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const imagePanelRef = useRef<HTMLDivElement>(null);
     const formPanelRef = useRef<HTMLDivElement>(null);
@@ -115,38 +118,64 @@ export default function LoginPage() {
                             <p className="text-gray-500 uppercase tracking-widest text-[10px] font-bold">Secure Access</p>
                         </div>
                         <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                            {isLogin ? "Welcome Back" : "Join the Team"}
+                            {isForgot ? "Reset Password" : (isLogin ? "Welcome Back" : "Join the Team")}
                         </h2>
                         <p className="text-gray-500 text-sm">
-                            {isLogin ? "Please enter your details to sign in." : "Set up your admin account."}
+                            {isForgot ? "Enter email to reset" : (isLogin ? "Please enter your details to sign in." : "Set up your admin account.")}
                         </p>
                     </div>
 
-                    {/* Tab Switcher */}
-                    <div className="flex bg-gray-200/50 p-1 rounded-xl mb-8 relative">
-                        <button
-                            onClick={() => setIsLogin(true)}
-                            className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 ${isLogin
-                                ? "bg-white text-gray-900 shadow-sm"
-                                : "text-gray-500 hover:text-gray-700"}`}
-                        >
-                            Log In
-                        </button>
-                        <button
-                            onClick={() => setIsLogin(false)}
-                            className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 ${!isLogin
-                                ? "bg-white text-gray-900 shadow-sm"
-                                : "text-gray-500 hover:text-gray-700"}`}
-                        >
-                            Sign Up
-                        </button>
-                    </div>
+                    {!isForgot && (
+                        /* Tab Switcher */
+                        <div className="flex bg-gray-200/50 p-1 rounded-xl mb-8 relative">
+                            <button
+                                onClick={() => setIsLogin(true)}
+                                className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 ${isLogin
+                                    ? "bg-white text-gray-900 shadow-sm"
+                                    : "text-gray-500 hover:text-gray-700"}`}
+                            >
+                                Log In
+                            </button>
+                            <button
+                                onClick={() => setIsLogin(false)}
+                                className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 ${!isLogin
+                                    ? "bg-white text-gray-900 shadow-sm"
+                                    : "text-gray-500 hover:text-gray-700"}`}
+                            >
+                                Sign Up
+                            </button>
+                        </div>
+                    )}
 
                     <div className="bg-white border border-gray-100 p-8 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
-                        {isLogin ? (
-                            <LoginForm redirect={"/admin"} />
+                        {isForgot ? (
+                            <ForgotPasswordForm onBackToLogin={() => setIsForgot(false)} portal="admin" />
                         ) : (
-                            <SignupForm setIsLogin={setIsLogin} />
+                            isLogin ? (
+                                <>
+                                    <LoginForm redirect={"/admin"} />
+                                    <div className="mt-4 text-right">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsForgot(true)}
+                                            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                                        >
+                                            Forgot Password?
+                                        </button>
+                                    </div>
+                                    <div className="relative my-8">
+                                        <div className="absolute inset-0 flex items-center">
+                                            <div className="w-full border-t border-gray-200"></div>
+                                        </div>
+                                        <div className="relative flex justify-center text-sm">
+                                            <span className="px-4 bg-white text-gray-500 uppercase tracking-wider text-xs font-medium">Or continue with</span>
+                                        </div>
+                                    </div>
+                                    <GoogleLoginButton isAdmin={true} />
+                                </>
+                            ) : (
+                                <SignupForm setIsLogin={setIsLogin} />
+                            )
                         )}
                     </div>
 

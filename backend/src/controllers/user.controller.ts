@@ -325,7 +325,7 @@ export const getUserProfile = catchAsync(async (req: Request, res: Response, nex
     return next(new AppError("Guest user", 401));
   }
 
-  const userId = new mongoose.Types.ObjectId(req.user.id)
+  const userId = new mongoose.Types.ObjectId(req.user._id)
   const user = await UserModel.findById(userId).select("-password"); // Changed .id to ._id
 
   if (!user) {
@@ -388,7 +388,7 @@ export const clearCart = catchAsync(async (
 
 // Forgot Password
 export const forgotPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const { email } = req.body;
+  const { email, portal } = req.body;
   const user = await User.findByQuery({ email });
   if (!user) {
     return next(new AppError('User with this email does not exist', 404));
@@ -401,7 +401,12 @@ export const forgotPassword = catchAsync(async (req: Request, res: Response, nex
   user.resetPasswordExpires = new Date(expireTime);
   await User.update(user._id, user);
 
-  const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/reset-password/${token}`;
+  const baseUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+  const resetPath = portal === 'admin'
+    ? `/admin/auth/reset-password/${token}`
+    : `/reset-password/${token}`;
+
+  const resetUrl = `${baseUrl}${resetPath}`;
 
   await sendEmail(user.email, 'Password Reset Request', 'resetPassword', { resetUrl });
 

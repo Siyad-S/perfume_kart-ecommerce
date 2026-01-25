@@ -8,8 +8,8 @@ import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { useForgotPasswordMutation } from "@/src/redux/apis/users";
-import { toast } from "sonner";
+import { GoogleLoginButton } from "@/src/components/auth/GoogleLoginButton";
+import { ForgotPasswordForm } from "@/src/components/auth/ForgotPasswordForm";
 
 function AuthPageContent() {
     // viewState: 'login' | 'signup' | 'forgot-password'
@@ -20,21 +20,6 @@ function AuthPageContent() {
     const containerRef = useRef<HTMLDivElement>(null);
     const imagePanelRef = useRef<HTMLDivElement>(null);
     const formPanelRef = useRef<HTMLDivElement>(null);
-
-    // Forgot Password Logic
-    const [forgotEmail, setForgotEmail] = useState("");
-    const [forgotPassword, { isLoading: isForgotLoading }] = useForgotPasswordMutation();
-
-    const handleForgotSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            await forgotPassword({ email: forgotEmail }).unwrap();
-            toast.success("Password reset email sent! Please check your inbox.");
-            setViewState('login');
-        } catch (error: any) {
-            toast.error(error?.data?.message || "Failed to send reset email");
-        }
-    };
 
     useGSAP(() => {
         const tl = gsap.timeline();
@@ -195,33 +180,7 @@ function AuthPageContent() {
                         )}
 
                         {viewState === 'forgot-password' && (
-                            <form onSubmit={handleForgotSubmit} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                                    <input
-                                        type="email"
-                                        value={forgotEmail}
-                                        onChange={(e) => setForgotEmail(e.target.value)}
-                                        required
-                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                                        placeholder="john@example.com"
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={isForgotLoading}
-                                    className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-                                >
-                                    {isForgotLoading ? "Sending..." : "Send Reset Link"}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setViewState('login')}
-                                    className="w-full text-sm text-gray-500 hover:text-gray-900 mt-4 font-medium"
-                                >
-                                    Back to Login
-                                </button>
-                            </form>
+                            <ForgotPasswordForm onBackToLogin={() => setViewState('login')} portal="user" />
                         )}
                     </div>
 
@@ -240,19 +199,7 @@ function AuthPageContent() {
                     {/* Google Login */}
                     {viewState === 'login' && (
                         <div className="form-animate-item">
-                            <button
-                                type="button"
-                                onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`}
-                                className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-sm hover:shadow"
-                            >
-                                <Image
-                                    src="/icons/google_button_icon.png"
-                                    alt="Google"
-                                    width={20}
-                                    height={20}
-                                />
-                                <span>Google</span>
-                            </button>
+                            <GoogleLoginButton />
                         </div>
                     )}
 

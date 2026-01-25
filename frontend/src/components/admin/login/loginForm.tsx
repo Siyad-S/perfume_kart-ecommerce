@@ -28,7 +28,7 @@ export function LoginForm({ redirect = "/home" }: { redirect: string }) {
                 toast.success("Logged in successfully");
 
                 if (isAdminPath) {
-                    router.push("/admin");
+                    router.push("/admin/products/list");
                 } else {
                     dispatch(userApi.util.invalidateTags(["User"]));
                     router.push("/home");
