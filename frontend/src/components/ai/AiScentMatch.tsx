@@ -158,9 +158,18 @@ export function AiScentMatch({ onOpen, trigger }: AiScentMatchProps) {
                                                         <h4 className="font-serif font-bold text-gray-900 truncate">{product.name}</h4>
                                                         <p className="text-sm text-gray-500">{product.brand_id?.name}</p>
                                                     </div>
-                                                    <span className="font-medium text-primary">
-                                                        ₹{product.discount_price || product.price}
-                                                    </span>
+                                                    <div className="flex flex-col items-end">
+                                                        {product?.discount_price && product?.discount_price < product?.price && (
+                                                            <span className="text-xs text-gray-400 line-through">
+                                                                ₹{product?.price}
+                                                            </span>
+                                                        )}
+                                                        <span className="font-medium text-primary">
+                                                            ₹{product?.discount_price ?
+                                                                product?.price - product?.discount_price :
+                                                                product?.price}
+                                                        </span>
+                                                    </div>
                                                 </div>
 
                                                 <div className="mt-2 text-sm bg-amber-50 text-amber-900 p-2 rounded-lg border border-amber-100">
