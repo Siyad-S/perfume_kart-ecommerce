@@ -16,10 +16,13 @@ export const googleCallback = catchAsync(async (req: Request, res: Response, nex
 
     const { accessToken, refreshToken } = generateTokens(payload);
 
+    const isSecure = process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false";
+    const sameSite = isSecure ? "none" : "lax";
+
     const cookieOptions = {
         httpOnly: true,
-        sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax" | "strict",
-        secure: process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
+        sameSite: sameSite as "none" | "lax" | "strict",
+        secure: isSecure,
         maxAge: 15 * 60 * 1000,
     };
 

@@ -39,17 +39,20 @@ export const register = catchAsync(async (
   const payload = { _id: user._id, email: user.email, role: user.role };
   const { accessToken, refreshToken } = generateTokens(payload);
 
+  const isSecure = process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false";
+  const sameSite = isSecure ? "none" : "lax";
+
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: isSecure,
+    sameSite: sameSite as "none" | "lax" | "strict",
     maxAge: 15 * 60 * 1000,
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: isSecure,
+    sameSite: sameSite as "none" | "lax" | "strict",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
@@ -88,17 +91,20 @@ export const login = catchAsync(async (
     const accessTokenCookieName = isForAdmin ? "adminAccessToken" : "accessToken";
     const refreshTokenCookieName = isForAdmin ? "adminRefreshToken" : "refreshToken";
 
+    const isSecure = process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false";
+    const sameSite = isSecure ? "none" : "lax";
+
     res.cookie(accessTokenCookieName, accessToken, {
       httpOnly: true,
-      sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax" | "strict",
-      secure: process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
+      sameSite: sameSite as "none" | "lax" | "strict",
+      secure: isSecure,
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie(refreshTokenCookieName, refreshToken, {
       httpOnly: true,
-      sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax" | "strict",
-      secure: process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
+      sameSite: sameSite as "none" | "lax" | "strict",
+      secure: isSecure,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -298,10 +304,13 @@ export const refreshToken = catchAsync(async (req: Request, res: Response, next:
   const payload = { _id: decoded._id, email: decoded.email, role: decoded.role }; // Changed id to _id
   const { accessToken } = generateTokens(payload);
 
+  const isSecure = process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false";
+  const sameSite = isSecure ? "none" : "lax";
+
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: isSecure,
+    sameSite: sameSite as "none" | "lax" | "strict",
     maxAge: 15 * 60 * 1000,
   });
 
