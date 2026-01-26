@@ -27,14 +27,20 @@ I built this project to master the **Monorepo** architecture and demonstrate adv
 
 | **User Experience** | **Admin Power** | **Technical Excellence** |
 | :--- | :--- | :--- |
-| 🛍️ **Smart Filtering**: Filter by brand, price, and category. | 📊 **Dashboard**: Real-time sales analytics and charts. | 🐳 **Dockerized**: Full environment setup with one command. |
-| ⚡ **Optimized UI**: Infinite scroll & skeleton loading. | 📦 **Product Mgr**: CRUD operations with image upload. | 🛡️ **Secure**: JWT + Refresh Tokens & Zod Validation. |
-| 🛒 **Dynamic Cart**: Guest & User cart syncing. | 🚚 **Order Ops**: Update status from Processing to Delivered. | ☁️ **Hybrid Cloud**: Best-of-breed hosting (Vercel + Render). |
-| 💳 **Checkout**: Razorpay integration for payments. | 📢 **Banners**: Customize homepage visuals dynamically. | 📧 **Email System**: Transactional emails via Nodemailer. |
+| 🤖 **AI Scent Sommelier**: Matches perfumes to mood/occasion using **Google Gemini**. | 📊 **Dashboard**: Real-time sales analytics and charts. | 🐳 **Dockerized**: Full environment setup with one command. |
+| 🛍️ **Smart Filtering**: Filter by brand, price, and category. | 📦 **Product Mgr**: CRUD operations with image upload. | 🛡️ **Secure**: JWT + Refresh Tokens & Zod Validation. |
+| ⚡ **Optimized UI**: Infinite scroll & skeleton loading. | 🚚 **Order Ops**: Update status from Processing to Delivered. | ☁️ **Hybrid Cloud**: Best-of-breed hosting (Vercel + Render). |
+| � **Dynamic Cart**: Guest & User cart syncing. | 📢 **Banners**: Customize homepage visuals dynamically. | 📧 **Email System**: Transactional emails via Nodemailer. |
+| 💳 **Checkout**: Razorpay integration for payments. | | |
 
 ---
 
 ## 🛠️ Tech Stack Deep Dive
+
+### 🧠 Artificial Intelligence (New)
+*   **Engine:** Google Gemini Flash Model (`gemini-flash-latest`).
+*   **Logic:** Semantic Content-Based Recommendation System.
+*   **Function:** Analyzes natural language queries (e.g., "spicy woody scent for evening") to find contextually relevant products.
 
 ### 🎨 Frontend (Client)
 *   **Framework:** Next.js 15 (App Router)
