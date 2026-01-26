@@ -65,6 +65,9 @@ export function AiScentMatch({ onOpen, trigger }: AiScentMatchProps) {
         setIsOpen(open);
         if (open && onOpen) {
             onOpen();
+        } else {
+            setQuery('')
+            setSubmittedQuery('')
         }
     }
 
