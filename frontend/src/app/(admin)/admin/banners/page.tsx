@@ -18,6 +18,7 @@ import {
 import { useFileUpload } from "@/src/hooks/useFileUpload";
 import { useAdminGetProductsQuery } from "@/src/redux/apis/adminProducts";
 import { useAdminGetCategoriesQuery } from "@/src/redux/apis/adminCategories";
+import { ConfirmationModal } from "@/src/components/common/confirmationModal";
 
 type SortColumn = "createdAt";
 type SortValue = "createdAt_asc" | "createdAt_desc" | undefined;
@@ -53,6 +54,8 @@ export default function BannersPage() {
     const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">("desc");
     const [openAddEdit, setOpenAddEdit] = React.useState<boolean>(false);
     const [editBanner, setEditBanner] = React.useState<Banner | null>(null);
+    const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+    const [bannerToDelete, setBannerToDelete] = React.useState<Banner | null>(null);
 
     const { upload } = useFileUpload();
     const [createBanner, { isLoading: createLoading, isSuccess: createSuccess }] =
@@ -237,9 +240,12 @@ export default function BannersPage() {
                         setOpenAddEdit(true);
                     }, 100);
                 }}
-                onDeleteClick={(item: Banner) =>
-                    handleDeleteBanner(item?._id || "")
-                }
+                onDeleteClick={(item: Banner) => {
+                    setBannerToDelete(item);
+                    setTimeout(() => {
+                        setDeleteModalOpen(true);
+                    }, 100);
+                }}
                 loading={isLoading || createLoading || updateLoading || deleteLoading}
             />
             <AddEditBanner
@@ -248,6 +254,22 @@ export default function BannersPage() {
                 initialValues={formInitialValue}
                 onSubmit={submitForm}
                 submitting={createLoading || updateLoading}
+            />
+            <ConfirmationModal
+                open={deleteModalOpen}
+                onClose={() => {
+                    setDeleteModalOpen(false);
+                    setBannerToDelete(null);
+                }}
+                onConfirm={() => {
+                    if (bannerToDelete?._id) {
+                        return handleDeleteBanner(bannerToDelete._id);
+                    }
+                }}
+                title="Delete Banner"
+                description="Are you sure you want to delete this banner? This action cannot be undone."
+                targetLabel="Banner ID"
+                targetValue={bannerToDelete?._id}
             />
             <Toaster richColors position="top-right" />
         </div>

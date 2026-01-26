@@ -25,10 +25,6 @@ interface ConfirmationModalProps {
     targetValue?: string | number;
 }
 
-/**
- * Common reusable confirmation modal
- * Use for delete, cancel, publish, etc.
- */
 export function ConfirmationModal({
     open,
     onClose,

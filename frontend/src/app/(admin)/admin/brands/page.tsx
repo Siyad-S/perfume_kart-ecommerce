@@ -10,6 +10,7 @@ import { getErrorMessage } from "@/src/lib/utils";
 import Loader from "@/src/components/common/loader";
 import { useFileUpload } from "@/src/hooks/useFileUpload";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { ConfirmationModal } from "@/src/components/common/confirmationModal";
 import Image from "next/image";
 
 type SortColumn = "name" | "createdAt";
@@ -32,6 +33,8 @@ export default function BrandsPage() {
     const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">("desc");
     const [openAddEdit, setOpenAddEdit] = React.useState<boolean>(false);
     const [editBrand, setEditBrand] = React.useState<Brand | null>(null);
+    const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+    const [brandToDelete, setBrandToDelete] = React.useState<Brand | null>(null);
 
     const [createBrand, { isLoading: createLoading, isSuccess: createSuccess }] = useAdminCreateBrandMutation();
     const [updateBrand, { isLoading: updateLoading, isSuccess: updateSuccess }] = useAdminUpdateBrandMutation();
@@ -159,7 +162,12 @@ export default function BrandsPage() {
                         setOpenAddEdit(true);
                     }, 100);
                 }}
-                onDeleteClick={(item: Brand) => handleDeleteBrand(item?._id || "")}
+                onDeleteClick={(item: Brand) => {
+                    setBrandToDelete(item);
+                    setTimeout(() => {
+                        setDeleteModalOpen(true);
+                    }, 100);
+                }}
                 loading={isLoading || createLoading || updateLoading || deleteLoading}
             />
             <AddEditBrand
@@ -168,6 +176,22 @@ export default function BrandsPage() {
                 initialValues={formInitialValue}
                 onSubmit={submitForm}
                 submitting={uploadLoading || createLoading || updateLoading}
+            />
+            <ConfirmationModal
+                open={deleteModalOpen}
+                onClose={() => {
+                    setDeleteModalOpen(false);
+                    setBrandToDelete(null);
+                }}
+                onConfirm={() => {
+                    if (brandToDelete?._id) {
+                        return handleDeleteBrand(brandToDelete._id);
+                    }
+                }}
+                title="Delete Brand"
+                description="Are you sure you want to delete this brand? This action cannot be undone."
+                targetLabel="Brand"
+                targetValue={brandToDelete?.name}
             />
             <Toaster richColors position="top-right" />
         </div>

@@ -61,10 +61,7 @@ export default function OrdersPage() {
     };
 
     useGSAP(() => {
-        // Only run animation if we have orders
         if (ordersList.length > 0) {
-            // We use .from which sets initial state immediately
-            // clearProps ensures we don't leave inline styles that might conflict later
             gsap.from(".order-card-item", {
                 y: 20,
                 opacity: 0,

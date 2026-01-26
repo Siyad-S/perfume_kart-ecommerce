@@ -11,7 +11,7 @@ import {
 
 type Crumb = {
     label: string;
-    href?: string; // optional (last item usually has no href)
+    href?: string;
 };
 
 interface BreadcrumbsProps {

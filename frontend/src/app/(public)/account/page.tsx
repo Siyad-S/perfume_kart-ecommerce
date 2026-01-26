@@ -18,7 +18,7 @@ export default function AccountDashboard() {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const { data: ordersData, isLoading: ordersLoading } = useGetOrdersQuery(
-        { limit: 1 }, // Just get the latest one
+        { limit: 1 },
         { skip: !isLoggedIn }
     );
 

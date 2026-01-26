@@ -3,11 +3,11 @@ import { ArrowRight } from "lucide-react";
 
 interface SectionHeaderProps {
     title: string;
-    subtitle?: string; // Optional description like in Categories
+    subtitle?: string;
     href?: string;
     onViewAll?: () => void;
     actionText?: string;
-    className?: string; // For flexibility
+    className?: string;
 }
 
 export default function SectionHeader({
@@ -18,7 +18,6 @@ export default function SectionHeader({
     actionText = "View All",
     className,
 }: SectionHeaderProps) {
-    // If href is provided, wrap button in Link, otherwise button with onClick
     const ActionWrapper = href ? Link : "button";
     const actionProps = href ? { href } : { onClick: onViewAll };
 

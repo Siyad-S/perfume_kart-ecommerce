@@ -55,6 +55,8 @@ interface Order {
     createdAt?: string;
 }
 
+import { ConfirmationModal } from "@/src/components/common/confirmationModal";
+
 export default function OrdersPage() {
     const [currentPage, setCurrentPage] = React.useState(1);
     const [searchTerm, setSearchTerm] = React.useState("");
@@ -63,6 +65,8 @@ export default function OrdersPage() {
     const [sortDirection, setSortDirection] =
         React.useState<"asc" | "desc">("desc");
     const [statusFilter, setStatusFilter] = React.useState<string>("all");
+    const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+    const [orderToDelete, setOrderToDelete] = React.useState<Order | null>(null);
 
     const sort: SortValue = sortColumn
         ? (`${sortColumn}_${sortDirection}` as SortValue)
@@ -203,39 +207,7 @@ export default function OrdersPage() {
                     },
                     {
                         key: "createdAt",
-                        label: "Order Date", // Keeping label as is, or maybe Created At? The column key was order_date before for the logic? No, check below.
-                        // Wait, line 205 has key: "order_date". Line 13 has order_date and created_at.
-                        // I need to be careful. The table columns are defined at 205.
-                        // But I need to find where created_at is used as a key.
-                        // It doesn't seem to be used in columns?
-                        // Ah, sortColumn can be "created_at".
-                        // Let's check lines 205-212. It uses `item.order_date`.
-                        // Is there another column for created_at?
-                        // No.
-                        // But sortColumn allows "created_at".
-                        // If I change SortColumn type, I'm good.
-                        // But wait, look at line 205.
-                        // key: "order_date".
-                        // If I want to sort by created_at, I need a column for it or change this column's sort key?
-                        // The backend supports created_at sorting.
-                        // The frontend columns seem to only show order_date.
-                        // Wait, looking at the file content for orders/page.tsx:
-                        // Lines 13-23 define SortColumn and SortValue.
-                        // Lines 205-212 define the "Order Date" column with key "order_date".
-                        // Is there a "Created At" column? No.
-                        // So maybe the "Order Date" column is meant to sort by `order_date`?
-                        // But the default sortColumn is `created_at`.
-                        // If the user clicks sort on "Order Date", does it sort by order_date or created_at?
-                        // The TableListingPage likely uses the `key` for sorting if `sortable: true`.
-                        // So if key is "order_date", it sorts by "order_date".
-                        // But the default state is "created_at".
-                        // This implies there might be a mismatch or implicit behavior.
-                        // However, I must rename `created_at` to `createdAt` in SortColumn and SortValue and State.
-                        // I already did that in the chunks above.
-                        // I don't need to change the columns if `created_at` isn't displayed.
-                        // EXCEPT, the Interface Order has `created_at`. I changed that too.
-                        // So I am good.
-                        // I will just apply the changes I identified.
+                        label: "Order Date",
                         sortable: true,
                         render: (item: Order) =>
                             item.order_date
@@ -263,10 +235,30 @@ export default function OrdersPage() {
                 itemsPerPage={5}
                 title="Orders"
                 addButtonLabel=""
-                onDeleteClick={(item: Order) =>
-                    handleDeleteOrder(item?._id || "")
-                }
+                onDeleteClick={(item: Order) => {
+                    setOrderToDelete(item);
+                    setTimeout(() => {
+                        setDeleteModalOpen(true);
+                    }, 100);
+                }}
                 loading={isLoading || deleteLoading}
+            />
+
+            <ConfirmationModal
+                open={deleteModalOpen}
+                onClose={() => {
+                    setDeleteModalOpen(false);
+                    setOrderToDelete(null);
+                }}
+                onConfirm={() => {
+                    if (orderToDelete?._id) {
+                        return handleDeleteOrder(orderToDelete._id);
+                    }
+                }}
+                title="Delete Order"
+                description="Are you sure you want to delete this order? This action cannot be undone."
+                targetLabel="Order ID"
+                targetValue={orderToDelete?._id}
             />
 
             <Toaster richColors position="top-right" />

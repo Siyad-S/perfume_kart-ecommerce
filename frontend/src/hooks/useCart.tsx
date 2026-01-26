@@ -6,10 +6,6 @@ import { useTypedSelector } from "@/src/redux/store";
 import { getGuestCart } from "@/src/utils/guestCart";
 import { CartType } from "@/src/types/user";
 
-/**
- * Hook to manage fetching and calculating cart details
- * for both logged-in users and guests.
- */
 export const useCart = () => {
     const user = useTypedSelector((state) => state.auth.user);
     const isLoggedIn = !!user?._id;

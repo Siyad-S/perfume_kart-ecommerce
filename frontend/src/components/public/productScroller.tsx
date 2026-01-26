@@ -39,6 +39,7 @@ export default function ProductScroller() {
         skip: 0,
         limit: 1,
         sort: `createdAt_desc`,
+        filter: { home_sub: true },
     });
 
     const productsData = products?.data?.data || [];

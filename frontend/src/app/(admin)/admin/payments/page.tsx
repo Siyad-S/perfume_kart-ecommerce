@@ -33,6 +33,8 @@ interface Payment {
     createdAt?: string;
 }
 
+import { ConfirmationModal } from "@/src/components/common/confirmationModal";
+
 export default function PaymentsPage() {
     const [currentPage, setCurrentPage] = React.useState(1);
     const [searchTerm, setSearchTerm] = React.useState("");
@@ -41,6 +43,8 @@ export default function PaymentsPage() {
     const [sortDirection, setSortDirection] =
         React.useState<"asc" | "desc">("desc");
     const [statusFilter, setStatusFilter] = React.useState<string>("all");
+    const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+    const [paymentToDelete, setPaymentToDelete] = React.useState<Payment | null>(null);
 
     const sort: SortValue = sortColumn
         ? (`${sortColumn}_${sortDirection}` as SortValue)
@@ -176,10 +180,30 @@ export default function PaymentsPage() {
                 itemsPerPage={5}
                 title="Payments"
                 addButtonLabel=""
-                onDeleteClick={(item: Payment) =>
-                    handleDeletePayment(item?._id || "")
-                }
+                onDeleteClick={(item: Payment) => {
+                    setPaymentToDelete(item);
+                    setTimeout(() => {
+                        setDeleteModalOpen(true);
+                    }, 100);
+                }}
                 loading={isLoading || deleteLoading}
+            />
+
+            <ConfirmationModal
+                open={deleteModalOpen}
+                onClose={() => {
+                    setDeleteModalOpen(false);
+                    setPaymentToDelete(null);
+                }}
+                onConfirm={() => {
+                    if (paymentToDelete?._id) {
+                        return handleDeletePayment(paymentToDelete._id);
+                    }
+                }}
+                title="Delete Payment"
+                description="Are you sure you want to delete this payment record? This action cannot be undone."
+                targetLabel="Payment ID"
+                targetValue={paymentToDelete?.payment_id || paymentToDelete?._id}
             />
 
             <Toaster richColors position="top-right" />

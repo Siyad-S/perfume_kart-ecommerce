@@ -14,6 +14,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { useFileUpload } from "@/src/hooks/useFileUpload";
 import Loader from "@/src/components/common/loader";
 import { AddEditCategory } from "@/src/components/admin/Category/addEditCategory";
+import { ConfirmationModal } from "@/src/components/common/confirmationModal";
 import Image from "next/image";
 
 type SortColumn = "name" | "createdAt";
@@ -44,6 +45,8 @@ export default function CategoriesPage() {
         React.useState<boolean>(false);
     const [editCategory, setEditCategory] =
         React.useState<Category | null>(null);
+    const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+    const [categoryToDelete, setCategoryToDelete] = React.useState<Category | null>(null);
 
     const [createCategory, { isLoading: createLoading, isSuccess: createSuccess }] =
         useAdminCreateCategoryMutation();
@@ -193,9 +196,12 @@ export default function CategoriesPage() {
                         setOpenAddEdit(true);
                     }, 100);
                 }}
-                onDeleteClick={(item: Category) =>
-                    handleDeleteCategory(item?._id || "")
-                }
+                onDeleteClick={(item: Category) => {
+                    setCategoryToDelete(item);
+                    setTimeout(() => {
+                        setDeleteModalOpen(true);
+                    }, 100);
+                }}
                 loading={
                     isLoading ||
                     createLoading ||
@@ -210,6 +216,23 @@ export default function CategoriesPage() {
                 initialValues={formInitialValue}
                 onSubmit={submitForm}
                 submitting={uploadLoading || createLoading || updateLoading}
+            />
+
+            <ConfirmationModal
+                open={deleteModalOpen}
+                onClose={() => {
+                    setDeleteModalOpen(false);
+                    setCategoryToDelete(null);
+                }}
+                onConfirm={() => {
+                    if (categoryToDelete?._id) {
+                        return handleDeleteCategory(categoryToDelete._id);
+                    }
+                }}
+                title="Delete Category"
+                description="Are you sure you want to delete this category? This action cannot be undone."
+                targetLabel="Category"
+                targetValue={categoryToDelete?.name}
             />
 
             <Toaster richColors position="top-right" />

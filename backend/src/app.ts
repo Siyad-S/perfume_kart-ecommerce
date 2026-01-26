@@ -30,8 +30,8 @@ app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// app.use(helmet());
-// app.use(globalLimiter);
+app.use(helmet());
+app.use(globalLimiter);
 
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));

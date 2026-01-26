@@ -1,4 +1,3 @@
-// src/components/common/custom-pagination.tsx
 "use client";
 
 import * as React from "react";
@@ -18,7 +17,6 @@ interface CustomPaginationProps {
     onPageChange: (page: number) => void;
 }
 
-// --- LOGIC: Smart Page Generation ---
 const getPageNumbers = (currentPage: number, totalPages: number) => {
     if (totalPages <= 7) {
         return Array.from({ length: totalPages }, (_, i) => i + 1);

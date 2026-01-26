@@ -19,7 +19,7 @@ export const googleCallback = catchAsync(async (req: Request, res: Response, nex
     const cookieOptions = {
         httpOnly: true,
         sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax" | "strict",
-        secure: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
         maxAge: 15 * 60 * 1000,
     };
 

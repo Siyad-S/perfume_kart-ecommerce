@@ -16,6 +16,7 @@ import {
 } from "@/src/redux/apis/adminProducts";
 import { AddEditProduct } from "@/src/components/admin/product/addEditProduct";
 import { useFileUpload } from "@/src/hooks/useFileUpload";
+import { ConfirmationModal } from "@/src/components/common/confirmationModal";
 
 type SortColumn = "name" | "price" | "createdAt";
 type SortValue =
@@ -61,6 +62,8 @@ export default function ProductsListingPage() {
   );
   const [openAddEdit, setOpenAddEdit] = React.useState(false);
   const [editProduct, setEditProduct] = React.useState<Product | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [productToDelete, setProductToDelete] = React.useState<Product | null>(null);
 
   const { upload } = useFileUpload();
   const [createProduct, { isLoading: createLoading }] =
@@ -239,9 +242,12 @@ export default function ProductsListingPage() {
             setOpenAddEdit(true);
           }, 100);
         }}
-        onDeleteClick={(item: Product) =>
-          handleDeleteProduct(item?._id || "")
-        }
+        onDeleteClick={(item: Product) => {
+          setProductToDelete(item);
+          setTimeout(() => {
+            setDeleteModalOpen(true);
+          }, 100);
+        }}
         loading={
           isLoading || createLoading || updateLoading || deleteLoading
         }
@@ -253,6 +259,23 @@ export default function ProductsListingPage() {
         initialValues={formInitialValue}
         onSubmit={submitForm}
         submitting={createLoading || updateLoading}
+      />
+
+      <ConfirmationModal
+        open={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setProductToDelete(null);
+        }}
+        onConfirm={() => {
+          if (productToDelete?._id) {
+            return handleDeleteProduct(productToDelete._id);
+          }
+        }}
+        title="Delete Product"
+        description="Are you sure you want to delete this product? This action cannot be undone."
+        targetLabel="Product"
+        targetValue={productToDelete?.name}
       />
 
       <Toaster richColors position="top-right" />

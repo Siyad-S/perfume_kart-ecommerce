@@ -5,6 +5,7 @@ import { customBaseQuery } from "@/src/lib/customBaseQuery";
 export const authApi = createApi({
     reducerPath: "authApi",
     baseQuery: customBaseQuery,
+    tagTypes: ["User"],
     endpoints: (builder) => ({
         login: builder.mutation<{ user: { id: string; email: string; role: string } }, { email: string; password: string; portal?: string }>({
             query: (credentials) => ({
@@ -12,6 +13,7 @@ export const authApi = createApi({
                 method: "POST",
                 body: credentials,
             }),
+            invalidatesTags: ["User"],
         }),
         signup: builder.mutation<{ user: { id: string; email: string } }, { name: string; email: string; password: string }>({
             query: (userData) => ({
@@ -23,6 +25,7 @@ export const authApi = createApi({
 
         getCurrentUser: builder.query<{ data: { user: { id: string; email: string, role: string } } }, void>({
             query: () => "/user/me",
+            providesTags: ["User"],
         }),
         logout: builder.mutation<void, void>({
             query: () => ({
