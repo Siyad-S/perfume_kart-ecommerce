@@ -9,6 +9,7 @@ import bannerRouter from './banner.route'
 import paymentRouter from './payment.route'
 import orderRouter from './order.route'
 import supportRouter from './support.route'
+import aiRouter from './ai.route';
 
 const router = Router();
 //auth route
@@ -40,5 +41,8 @@ router.use('/order', orderRouter)
 
 //support route
 router.use('/support', supportRouter)
+
+//ai route
+router.use('/ai', aiRouter);
 
 export default router;

@@ -97,7 +97,7 @@ export function Navbar() {
               priority
               className="object-contain"
             />
-            <span className="text-2xl font-serif tracking-wide font-bold text-primary">
+            <span className="hidden lg:block text-2xl font-serif tracking-wide font-bold text-primary">
               Fragrance Kart
             </span>
           </Link>

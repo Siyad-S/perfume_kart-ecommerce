@@ -77,7 +77,7 @@ export function SearchBar() {
 
     const clearSearch = () => {
         setQuery("");
-        setDebouncedQuery(""); 
+        setDebouncedQuery("");
         setIsOpen(false);
     };
 
@@ -95,7 +95,7 @@ export function SearchBar() {
     const showLoading = isInitialLoading || (isFetching && products.length === 0);
 
     return (
-        <div ref={searchRef} className="relative hidden md:flex flex-1 max-w-xl">
+        <div ref={searchRef} className="relative hidden md:flex flex-1 max-w-xl mx-auto transition-all duration-300">
             <form onSubmit={handleSearch} className="flex w-full items-center gap-2">
                 <div className="relative w-full">
                     <Input

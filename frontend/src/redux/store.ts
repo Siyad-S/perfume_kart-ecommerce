@@ -21,6 +21,7 @@ import { adminAnalyticsApi } from "./apis/adminAnalytics";
 import { supportApi } from "./apis/support";
 import brandsReducer from "./slices/brands";
 import productsReducer from "./slices/products";
+import { aiApi } from "./apis/aiApi";
 
 export const store = configureStore({
     reducer: {
@@ -40,6 +41,7 @@ export const store = configureStore({
         [adminPaymentApi.reducerPath]: adminPaymentApi.reducer,
         // [adminAnalyticsApi.reducerPath]: adminAnalyticsApi.reducer,
         [supportApi.reducerPath]: supportApi.reducer,
+        [aiApi.reducerPath]: aiApi.reducer,
         file: fileReducer,
         auth: authReducer,
         categories: categoriesReducer,
@@ -62,7 +64,8 @@ export const store = configureStore({
             .concat(paymentApi.middleware)
             .concat(adminOrderApi.middleware)
             .concat(adminPaymentApi.middleware)
-            .concat(supportApi.middleware),
+            .concat(supportApi.middleware)
+            .concat(aiApi.middleware),
 });
 
 // Define RootState and AppDispatch types

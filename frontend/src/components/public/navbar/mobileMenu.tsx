@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image" // Added Image import
-import { Search, Heart, ShoppingCart, User, X, ChevronDown, ChevronRight, Loader2 } from "lucide-react"
+import { Search, Heart, ShoppingCart, User, X, ChevronDown, ChevronRight, Loader2, Sparkles } from "lucide-react"
 import { Input } from "../../ui/input"
 import { Button } from "../../ui/button"
 import gsap from "gsap"
@@ -16,6 +16,7 @@ import { setUser } from "@/src/redux/slices/auth"
 import { toast } from "sonner"
 import { useDispatch } from "react-redux"
 import { useCategoryNavigation } from "@/src/hooks/useCategoryNavigation"
+import { AiScentMatch } from "@/src/components/ai/AiScentMatch"
 
 // Types
 interface Category {
@@ -306,6 +307,17 @@ export function MobileMenu({
                                     <User className="h-5 w-5" />
                                     <span className="text-xs font-medium">Profile</span>
                                 </Link>
+
+                                {/* AI Matcher */}
+                                <AiScentMatch
+                                    onOpen={onClose}
+                                    trigger={
+                                        <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-gray-50 hover:bg-amber-50 hover:text-primary transition-colors gap-2 cursor-pointer menu-item-animate">
+                                            <Sparkles className="h-5 w-5" />
+                                            <span className="text-xs font-medium">AI Match</span>
+                                        </div>
+                                    }
+                                />
                             </div>
 
                             {/* Navigation Links */}
