@@ -24,7 +24,16 @@ export const useWishlist = () => {
     const [guestWishlist, setGuestWishlistState] = useState<WishlistItemType[]>([]);
 
     useEffect(() => {
-        setGuestWishlistState(getGuestWishlist());
+        const updateGuestWishlist = () => {
+            setGuestWishlistState(getGuestWishlist());
+        };
+        // Initial fetch
+        updateGuestWishlist();
+        // Listen for updates
+        window.addEventListener("guest-wishlist-updated", updateGuestWishlist);
+        return () => {
+            window.removeEventListener("guest-wishlist-updated", updateGuestWishlist);
+        };
     }, []);
 
     const isInWishlist = (productId: string) => {

@@ -14,6 +14,7 @@ export const getGuestWishlist = (): WishlistItemType[] => {
 
 export const setGuestWishlist = (wishlist: WishlistItemType[]) => {
     safeLocalStorage.set(GUEST_WISHLIST_KEY, wishlist);
+    window.dispatchEvent(new Event("guest-wishlist-updated"));
 };
 
 export const clearGuestWishlist = () => {
