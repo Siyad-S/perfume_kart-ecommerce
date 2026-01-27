@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/src/components/ui/button";
+import { ConfirmationModal } from "@/src/components/common/confirmationModal";
 import { useGetCartQuery, useUpdateUserMutation } from "@/src/redux/apis/users";
 import { useTypedSelector } from "../../../redux/store";
 import { CartType } from "@/src/types/user";
@@ -26,6 +27,7 @@ export default function CartPage() {
     const [updateUser, { isLoading: updating }] = useUpdateUserMutation();
     const [cart, setCart] = useState<CartType[]>([]);
     const [quantities, setQuantities] = useState<Record<string, number>>({});
+    const [isClearCartModalOpen, setIsClearCartModalOpen] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -125,15 +127,18 @@ export default function CartPage() {
     };
 
     const handleClearCart = () => {
-        if (confirm("Are you sure you want to clear your cart?")) {
-            setCart([]);
-            setQuantities({});
-            if (isLoggedIn) {
-                updateUser({ id: user!._id, updates: { cart: [] } });
-            } else {
-                clearGuestCart();
-            }
+        setIsClearCartModalOpen(true);
+    };
+
+    const handleConfirmClear = () => {
+        setCart([]);
+        setQuantities({});
+        if (isLoggedIn) {
+            updateUser({ id: user!._id, updates: { cart: [] } });
+        } else {
+            clearGuestCart();
         }
+        setIsClearCartModalOpen(false);
     };
 
     const calculateSubtotal = () =>
@@ -199,6 +204,15 @@ export default function CartPage() {
     // --- FILLED CART STATE ---
     return (
         <div ref={containerRef} className="bg-gray-50/50 min-h-screen py-10 md:py-20">
+            <ConfirmationModal
+                open={isClearCartModalOpen}
+                onClose={() => setIsClearCartModalOpen(false)}
+                onConfirm={handleConfirmClear}
+                title="Clear Cart"
+                description="Are you sure you want to remove all items from your cart? This action cannot be undone."
+                confirmText="Clear Cart"
+                confirmVariant="destructive"
+            />
             <div className="container mx-auto px-4 md:px-6">
 
                 <div className="cart-header flex items-center justify-between mb-8 opacity-0">
@@ -331,7 +345,7 @@ export default function CartPage() {
                                 size="lg"
                                 className="w-full rounded-xl py-6 text-lg font-medium shadow-lg shadow-primary/25 hover:scale-[1.02] transition-transform"
                             >
-                                Checkout <ArrowRight className="w-5 h-5 ml-2" />
+                                Checkout <ArrowRight className="w-5 h-4 ml-2" />
                             </Button>
 
                             <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-400">
