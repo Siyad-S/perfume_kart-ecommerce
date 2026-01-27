@@ -21,19 +21,28 @@ import { useDispatch } from "react-redux"
 
 import { useTypedSelector } from "@/src/redux/store";
 import { setUser } from "@/src/redux/slices/auth";
+import { ConfirmationModal } from "../../common/confirmationModal";
+import { useState } from "react";
 
 export function ProfileMenu() {
     const user = useTypedSelector((state) => state.auth.user);
     const router = useRouter();
     const [logout, { isLoading }] = useLogoutMutation();
     const dispatch = useDispatch();
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
     const handleLogout = async () => {
-        await logout();
-        dispatch(setUser(null));
-        dispatch(userApi.util.resetApiState());
-        toast.success("Logged out successfully!");
-        router.push("/home");
+        setIsLogoutModalOpen(false);
+        try {
+            await logout();
+            dispatch(setUser(null));
+            dispatch(userApi.util.resetApiState());
+            toast.success("Logged out successfully!");
+            router.push("/home");
+        } catch (error) {
+            console.error("Logout failed:", error);
+            toast.error("Logout failed");
+        }
     }
 
     const userInitials = user?.name
@@ -43,79 +52,91 @@ export function ProfileMenu() {
             : <User className="h-4 w-4" />;
 
     return (
-        <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <Avatar className="h-9 w-9">
-                        <AvatarImage src={user?.avatar?.url} alt={user?.name || "User"} className="object-cover" />
-                        <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                            {userInitials}
-                        </AvatarFallback>
-                    </Avatar>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 p-2" forceMount>
-                {user?._id ? (
-                    <>
-                        <div className="flex items-center gap-3 p-2">
-                            <Avatar className="h-10 w-10 border border-gray-100 dark:border-gray-800">
-                                <AvatarImage src={user?.avatar?.url} alt={user?.name} className="object-cover" />
-                                <AvatarFallback className="bg-primary/10 text-primary">
-                                    {userInitials}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="flex flex-col space-y-0.5 max-w-[160px]">
-                                <p className="text-sm font-semibold truncate text-gray-900 dark:text-gray-100">
-                                    {user?.name}
-                                </p>
-                                <p className="text-xs text-muted-foreground truncate font-medium">
-                                    {user?.email}
-                                </p>
+        <>
+            <ConfirmationModal
+                open={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={handleLogout}
+                title="Log Out"
+                description="Are you sure you want to log out?"
+                confirmText="Log Out"
+                cancelText="Cancel"
+                confirmVariant="destructive"
+            />
+            <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <Avatar className="h-9 w-9">
+                            <AvatarImage src={user?.avatar?.url} alt={user?.name || "User"} className="object-cover" />
+                            <AvatarFallback className="bg-primary/10 text-primary font-medium">
+                                {userInitials}
+                            </AvatarFallback>
+                        </Avatar>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64 p-2" forceMount>
+                    {user?._id ? (
+                        <>
+                            <div className="flex items-center gap-3 p-2">
+                                <Avatar className="h-10 w-10 border border-gray-100 dark:border-gray-800">
+                                    <AvatarImage src={user?.avatar?.url} alt={user?.name} className="object-cover" />
+                                    <AvatarFallback className="bg-primary/10 text-primary">
+                                        {userInitials}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="flex flex-col space-y-0.5 max-w-[160px]">
+                                    <p className="text-sm font-semibold truncate text-gray-900 dark:text-gray-100">
+                                        {user?.name}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground truncate font-medium">
+                                        {user?.email}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                        <DropdownMenuSeparator className="my-2" />
-                        <DropdownMenuGroup>
-                            {user?.role === "admin" && (
+                            <DropdownMenuSeparator className="my-2" />
+                            <DropdownMenuGroup>
+                                {user?.role === "admin" && (
+                                    <DropdownMenuItem asChild className="cursor-pointer focus:bg-primary/5">
+                                        <Link href="/admin" className="flex items-center gap-2.5 py-2.5">
+                                            <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
+                                            <span className="font-medium">Dashboard</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                )}
                                 <DropdownMenuItem asChild className="cursor-pointer focus:bg-primary/5">
-                                    <Link href="/admin" className="flex items-center gap-2.5 py-2.5">
-                                        <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
-                                        <span className="font-medium">Dashboard</span>
+                                    <Link href="/account/profile" className="flex items-center gap-2.5 py-2.5">
+                                        <User className="h-4 w-4 text-muted-foreground" />
+                                        <span className="font-medium">My Profile</span>
                                     </Link>
                                 </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem asChild className="cursor-pointer focus:bg-primary/5">
-                                <Link href="/account/profile" className="flex items-center gap-2.5 py-2.5">
-                                    <User className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium">My Profile</span>
-                                </Link>
+                                <DropdownMenuItem asChild className="cursor-pointer focus:bg-primary/5">
+                                    <Link href="/account/orders" className="flex items-center gap-2.5 py-2.5">
+                                        <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+                                        <span className="font-medium">My Orders</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator className="my-2" />
+                            <DropdownMenuItem
+                                onClick={() => setIsLogoutModalOpen(true)}
+                                disabled={isLoading}
+                                className="cursor-pointer text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/20 focus:text-red-600 flex items-center gap-2.5 py-2.5"
+                            >
+                                <LogOut className="h-4 w-4" />
+                                <span className="font-medium">Log out</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem asChild className="cursor-pointer focus:bg-primary/5">
-                                <Link href="/account/orders" className="flex items-center gap-2.5 py-2.5">
-                                    <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium">My Orders</span>
-                                </Link>
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator className="my-2" />
+                        </>
+                    ) : (
                         <DropdownMenuItem
-                            onClick={handleLogout}
-                            disabled={isLoading}
-                            className="cursor-pointer text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/20 focus:text-red-600 flex items-center gap-2.5 py-2.5"
+                            onClick={() => router.push("/login")}
+                            className="cursor-pointer focus:bg-primary/5 flex items-center gap-2.5 py-3 justify-center"
                         >
-                            <LogOut className="h-4 w-4" />
-                            <span className="font-medium">Log out</span>
+                            <LogIn className="h-4 w-4 text-primary" />
+                            <span className="font-semibold text-primary">Login or Register</span>
                         </DropdownMenuItem>
-                    </>
-                ) : (
-                    <DropdownMenuItem
-                        onClick={() => router.push("/login")}
-                        className="cursor-pointer focus:bg-primary/5 flex items-center gap-2.5 py-3 justify-center"
-                    >
-                        <LogIn className="h-4 w-4 text-primary" />
-                        <span className="font-semibold text-primary">Login or Register</span>
-                    </DropdownMenuItem>
-                )}
-            </DropdownMenuContent>
-        </DropdownMenu>
+                    )}
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </>
     )
 }

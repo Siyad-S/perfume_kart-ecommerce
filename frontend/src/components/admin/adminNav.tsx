@@ -16,13 +16,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar"
 import { useLogoutMutation } from "@/src/redux/apis/auth"
 import { useRouter } from "next/navigation"
 import { useGetUserQuery } from "@/src/redux/apis/users"
+import { ConfirmationModal } from "../common/confirmationModal"
+import { useState } from "react"
 
 export function AdminNav() {
   const [logout, { isLoading }] = useLogoutMutation()
   const router = useRouter()
   const { data: userData, isSuccess, isLoading: userLoading } = useGetUserQuery()
   const user = userData?.data?.user
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
+
   const handleLogout = async () => {
+    setIsLogoutModalOpen(false)
     try {
       await logout()
       router.push("/admin/auth")
@@ -33,6 +38,17 @@ export function AdminNav() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6 shadow-sm">
+      <ConfirmationModal
+        open={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleLogout}
+        title="Log Out"
+        description="Are you sure you want to log out from the admin dashboard?"
+        confirmText="Log Out"
+        cancelText="Cancel"
+        confirmVariant="destructive"
+      />
+
       <div className="flex-1">
         <h1 className="text-lg font-semibold md:text-xl">Dashboard</h1>
       </div>
@@ -71,7 +87,7 @@ export function AdminNav() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
-              onClick={handleLogout}
+              onClick={() => setIsLogoutModalOpen(true)}
               disabled={isLoading}
             >
               <LogOut className="mr-2 h-4 w-4" />

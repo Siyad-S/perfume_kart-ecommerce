@@ -17,6 +17,7 @@ import { toast } from "sonner"
 import { useDispatch } from "react-redux"
 import { useCategoryNavigation } from "@/src/hooks/useCategoryNavigation"
 import { AiScentMatch } from "@/src/components/ai/AiScentMatch"
+import { ConfirmationModal } from "../../common/confirmationModal";
 
 // Types
 interface Category {
@@ -58,6 +59,7 @@ export function MobileMenu({
     const pathname = usePathname()
     const [openCategory, setOpenCategory] = useState(false)
     const [openBrand, setOpenBrand] = useState(false)
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
     const router = useRouter()
     const { navigateToProducts } = useCategoryNavigation();
 
@@ -436,7 +438,7 @@ export function MobileMenu({
                         <Button
                             variant="destructive"
                             className="w-full rounded-full py-6 text-base font-semibold shadow-lg shadow-red-500/20 cursor-pointer"
-                            onClick={handleLogout}
+                            onClick={() => setIsLogoutModalOpen(true)}
                         >
                             Logout
                         </Button>
@@ -454,6 +456,17 @@ export function MobileMenu({
                 </div>
 
             </div>
+
+            <ConfirmationModal
+                open={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={handleLogout}
+                title="Log Out"
+                description="Are you sure you want to log out?"
+                confirmText="Log Out"
+                cancelText="Cancel"
+                confirmVariant="destructive"
+            />
         </div>
     )
 }

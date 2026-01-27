@@ -16,10 +16,37 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { cn } from "@/src/lib/utils";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useLogoutMutation } from "@/src/redux/apis/auth";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/src/redux/slices/auth";
+import { userApi } from "@/src/redux/apis/users";
+import { toast } from "sonner";
+import { ConfirmationModal } from "@/src/components/common/confirmationModal";
+
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const sidebarRef = useRef<HTMLElement>(null);
     const contentRef = useRef<HTMLElement>(null);
+    const router = useRouter();
+    const dispatch = useDispatch();
+    const [logout, { isLoading }] = useLogoutMutation();
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+    const handleLogout = async () => {
+        setIsLogoutModalOpen(false);
+        try {
+            await logout();
+            dispatch(setUser(null));
+            dispatch(userApi.util.resetApiState());
+            toast.success("Logged out successfully!");
+            router.push("/home");
+        } catch (error) {
+            console.error("Logout failed:", error);
+            toast.error("Logout failed");
+        }
+    };
 
     const navItems = [
         { href: "/account/profile", label: "Profile Info", icon: User },
@@ -47,6 +74,16 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
     return (
         <div className="min-h-[calc(100vh-80px)] bg-gray-50/50">
+            <ConfirmationModal
+                open={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={handleLogout}
+                title="Log Out"
+                description="Are you sure you want to log out?"
+                confirmText="Log Out"
+                cancelText="Cancel"
+                confirmVariant="destructive"
+            />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Sidebar */}
@@ -95,10 +132,8 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
                                 <button
                                     className="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 rounded-xl transition-colors mt-4"
-                                    onClick={() => {
-                                        // Optional: Add logout handler passed from parent or context if needed here
-                                        // For now just consistent styling
-                                    }}
+                                    onClick={() => setIsLogoutModalOpen(true)}
+                                    disabled={isLoading}
                                 >
                                     <LogOut className="w-5 h-5" />
                                     <span>Log Out</span>
