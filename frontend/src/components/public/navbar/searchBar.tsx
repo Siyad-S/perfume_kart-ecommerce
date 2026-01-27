@@ -168,7 +168,7 @@ export function SearchBar() {
                                                                 ₹{product.price}
                                                             </span>
                                                             <span className="block text-sm font-medium text-primary">
-                                                                ₹{product.discount_price}
+                                                                ₹{product.price - product.discount_price}
                                                             </span>
                                                         </>
                                                     ) : (

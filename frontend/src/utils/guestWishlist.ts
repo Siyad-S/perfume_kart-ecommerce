@@ -20,3 +20,18 @@ export const setGuestWishlist = (wishlist: WishlistItemType[]) => {
 export const clearGuestWishlist = () => {
     safeLocalStorage.remove(GUEST_WISHLIST_KEY);
 };
+
+export const mergeWishlists = (userWishlist: WishlistItemType[], guestWishlist: WishlistItemType[]): WishlistItemType[] => {
+    const mergedMap = new Map<string, WishlistItemType>();
+
+    [...userWishlist, ...guestWishlist].forEach((item) => {
+        // Use product_id or product._id depending on the structure
+        const itemId = item.product_id || (item.product && item.product._id);
+
+        if (itemId && !mergedMap.has(itemId)) {
+            mergedMap.set(itemId, { ...item, product_id: itemId });
+        }
+    });
+
+    return Array.from(mergedMap.values());
+};
