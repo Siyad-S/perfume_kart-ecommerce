@@ -76,7 +76,7 @@ export function AiScentMatch({ onOpen, trigger }: AiScentMatchProps) {
             <Dialog.Trigger asChild>
                 {trigger ? trigger : (
                     <button
-                        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary bg-amber-50/50 hover:bg-amber-100/50 rounded-full border border-amber-200/50 transition-colors"
+                        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary bg-amber-50/50 hover:bg-amber-100/50 rounded-full border border-amber-200/50 transition-colors cursor-pointer"
                     >
                         <Sparkles size={16} className="text-amber-600" />
                         <span>Find My Scent</span>

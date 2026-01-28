@@ -115,14 +115,14 @@ export function SearchBar() {
                             onClick={clearSearch}
                             variant="ghost"
                             size="icon"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-transparent"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-transparent cursor-pointer"
                         >
                             <X className="h-4 w-4" />
                         </Button>
                     )}
                 </div>
 
-                <Button type="submit" variant="secondary" size="icon" className="rounded-full shrink-0">
+                <Button type="submit" variant="secondary" size="icon" className="rounded-full shrink-0 cursor-pointer">
                     {showLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
                 </Button>
             </form>

@@ -21,12 +21,23 @@ export const useCart = () => {
     });
 
     useEffect(() => {
+        const updateGuestCart = () => {
+            const guestCart = getGuestCart();
+            setCart(guestCart);
+        };
+
         if (isLoggedIn && data?.data) {
             setCart(data.data);
         } else if (!isLoggedIn) {
-            const guestCart = getGuestCart();
-            setCart(guestCart);
+            // Initial fetch
+            updateGuestCart();
+            // Listen for updates
+            window.addEventListener("guest-cart-updated", updateGuestCart);
         }
+
+        return () => {
+            window.removeEventListener("guest-cart-updated", updateGuestCart);
+        };
     }, [isLoggedIn, data]);
 
     // Order total calculation

@@ -9,10 +9,12 @@ export const getGuestCart = (): CartType[] => {
 
 export const setGuestCart = (cart: CartType[]) => {
     safeLocalStorage.set(GUEST_CART_KEY, cart);
+    window.dispatchEvent(new Event("guest-cart-updated"));
 };
 
 export const clearGuestCart = () => {
     safeLocalStorage.remove(GUEST_CART_KEY);
+    window.dispatchEvent(new Event("guest-cart-updated"));
 };
 
 export const mergeCarts = (userCart: CartType[], guestCart: CartType[]): CartType[] => {

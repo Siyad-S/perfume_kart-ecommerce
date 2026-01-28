@@ -28,20 +28,11 @@ export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false)
   const headerRef = useRef<HTMLElement>(null)
 
-  // 1. Fetch data in Parent
   const { data: megaMenuData, isLoading } = useGetMegaMenuQuery()
-
-  // 2. Safely extract data with fallbacks
-  /* 
-   * 3. Pass data to Child 
-   * Note: MegaMenu data is fetched here to be available for both Desktop and Mobile if needed, 
-   * though currently MobileMenu takes props directly or could fetch its own.
-   */
   const categories = megaMenuData?.data?.categories || []
   const brands = megaMenuData?.data?.brands || []
   const bestSellers = megaMenuData?.data?.bestSellers || []
 
-  // Get pathname to trigger refresh on route change
   const pathname = usePathname()
 
   useGSAP(() => {
@@ -56,11 +47,10 @@ export function Navbar() {
       start: "top top",
       end: 99999,
       onUpdate: (self) => {
-        // Scroll Direction: 1 = down, -1 = up
         if (self.direction === -1) {
-          showAnim.play(); // Show on scroll up
+          showAnim.play();
         } else {
-          showAnim.reverse(); // Hide on scroll down
+          showAnim.reverse();
         }
       },
     });
@@ -75,7 +65,6 @@ export function Navbar() {
       delay: 0.2
     });
 
-    // Refresh ScrollTrigger on route change to account for new page height
     ScrollTrigger.refresh();
 
   }, { scope: headerRef, dependencies: [pathname] })

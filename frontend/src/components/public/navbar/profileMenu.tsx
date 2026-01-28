@@ -65,7 +65,7 @@ export function ProfileMenu() {
             />
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                         <Avatar className="h-9 w-9">
                             <AvatarImage src={user?.avatar?.url} alt={user?.name || "User"} className="object-cover" />
                             <AvatarFallback className="bg-primary/10 text-primary font-medium">
