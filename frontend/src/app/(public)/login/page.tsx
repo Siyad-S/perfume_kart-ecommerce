@@ -159,7 +159,7 @@ function AuthPageContent() {
                                     <button
                                         type="button"
                                         onClick={() => setViewState('forgot-password')}
-                                        className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                                        className="text-sm font-medium text-primary hover:text-primary/80 transition-colors cursor-pointer"
                                     >
                                         Forgot Password?
                                     </button>

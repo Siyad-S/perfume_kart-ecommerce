@@ -96,7 +96,7 @@ export function AiScentMatch({ onOpen, trigger }: AiScentMatchProps) {
                                 AI Scent Matcher
                             </Dialog.Title>
                             <Dialog.Close asChild>
-                                <button className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500">
+                                <button className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 cursor-pointer">
                                     <X size={20} />
                                 </button>
                             </Dialog.Close>
@@ -117,7 +117,7 @@ export function AiScentMatch({ onOpen, trigger }: AiScentMatchProps) {
                             <button
                                 type="submit"
                                 disabled={isFetching || !query.trim()}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                             >
                                 {isFetching && !recommendations.length ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
                             </button>

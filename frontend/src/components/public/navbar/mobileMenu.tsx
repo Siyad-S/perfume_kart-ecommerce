@@ -235,7 +235,7 @@ export function MobileMenu({
                         {query && (
                             <button
                                 onClick={handleClearSearch}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -335,7 +335,7 @@ export function MobileMenu({
                                 <div className="menu-item-animate">
                                     <button
                                         onClick={() => setOpenCategory(!openCategory)}
-                                        className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 text-gray-700 font-medium"
+                                        className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 text-gray-700 font-medium cursor-pointer"
                                     >
                                         Categories
                                         <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${openCategory ? "rotate-180" : ""}`} />
@@ -390,7 +390,7 @@ export function MobileMenu({
                                 <div className="menu-item-animate">
                                     <button
                                         onClick={() => setOpenBrand(!openBrand)}
-                                        className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 text-gray-700 font-medium"
+                                        className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 text-gray-700 font-medium cursor-pointer"
                                     >
                                         Popular Brands
                                         <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${openBrand ? "rotate-180" : ""}`} />

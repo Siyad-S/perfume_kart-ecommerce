@@ -70,13 +70,14 @@ export function ConfirmationModal({
                 )}
 
                 <DialogFooter className="flex justify-end gap-2 mt-6">
-                    <Button variant="outline" onClick={onClose} disabled={loading}>
+                    <Button variant="outline" onClick={onClose} disabled={loading} className="cursor-pointer">
                         {cancelText}
                     </Button>
                     <Button
                         variant={confirmVariant}
                         onClick={handleConfirm}
                         disabled={loading}
+                        className="cursor-pointer"
                     >
                         {loading ? loadingText : confirmText}
                     </Button>

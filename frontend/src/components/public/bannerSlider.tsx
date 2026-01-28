@@ -169,10 +169,10 @@ export default function BannerSlider() {
 
                 {/* Custom Navigation Buttons */}
                 <div className="hidden md:flex absolute bottom-12 right-12 z-30 gap-4">
-                    <button className="custom-prev w-12 h-12 rounded-full border border-white/30 bg-black/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-300 group">
+                    <button className="custom-prev w-12 h-12 rounded-full border border-white/30 bg-black/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-300 group cursor-pointer">
                         <ChevronLeft className="w-6 h-6 group-hover:-translate-x-0.5 transition-transform" />
                     </button>
-                    <button className="custom-next w-12 h-12 rounded-full border border-white/30 bg-black/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-300 group">
+                    <button className="custom-next w-12 h-12 rounded-full border border-white/30 bg-black/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-300 group cursor-pointer">
                         <ChevronRight className="w-6 h-6 group-hover:translate-x-0.5 transition-transform" />
                     </button>
                 </div>

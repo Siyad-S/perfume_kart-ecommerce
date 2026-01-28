@@ -79,7 +79,7 @@ export function MegaMenu({ categories, brands, bestSellers, isLoading }: MegaMen
             onMouseLeave={() => setShowMenu(false)}
             className="h-full flex items-center"
         >
-            <button className="flex items-center gap-1 text-sm font-medium uppercase tracking-wide hover:text-primary transition-colors h-full px-2 group">
+            <button className="flex items-center gap-1 text-sm font-medium uppercase tracking-wide hover:text-primary transition-colors h-full px-2 group cursor-pointer">
                 Perfumes
                 <ChevronDown className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" />
             </button>
@@ -115,7 +115,7 @@ export function MegaMenu({ categories, brands, bestSellers, isLoading }: MegaMen
                                                     </div>
                                                     <button
                                                         onClick={() => handleCategoryClick(cat._id)}
-                                                        className="text-sm text-muted-foreground hover:text-primary transition text-left font-medium"
+                                                        className="text-sm text-muted-foreground hover:text-primary transition text-left font-medium cursor-pointer"
                                                     >
                                                         {cat.name}
                                                     </button>
@@ -150,7 +150,7 @@ export function MegaMenu({ categories, brands, bestSellers, isLoading }: MegaMen
                                                         <li>
                                                             <button
                                                                 onClick={() => handleBrandClick(brand?._id)}
-                                                                className="text-xs font-medium text-primary hover:underline mt-1 block"
+                                                                className="text-xs font-medium text-primary hover:underline mt-1 block cursor-pointer"
                                                             >
                                                                 View More →
                                                             </button>

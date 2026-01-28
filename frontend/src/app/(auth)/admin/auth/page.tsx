@@ -158,7 +158,7 @@ export default function LoginPage() {
                                         <button
                                             type="button"
                                             onClick={() => setIsForgot(true)}
-                                            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                                            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors cursor-pointer"
                                         >
                                             Forgot Password?
                                         </button>

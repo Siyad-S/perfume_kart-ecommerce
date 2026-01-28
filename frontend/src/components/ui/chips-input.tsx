@@ -42,7 +42,7 @@ export function ChipsInput({ value, onChange, placeholder }: ChipsInputProps) {
                         <button
                             type="button"
                             onClick={() => removeChip(chip)}
-                            className="ml-1 rounded-full hover:bg-gray-200 p-0.5"
+                            className="ml-1 rounded-full hover:bg-gray-200 p-0.5 cursor-pointer"
                         >
                             <X className="h-3 w-3 cursor-pointer" />
                         </button>

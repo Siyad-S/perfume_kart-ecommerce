@@ -38,14 +38,14 @@ export const ForgotPasswordForm = ({ onBackToLogin, portal = "user" }: ForgotPas
             <button
                 type="submit"
                 disabled={isForgotLoading}
-                className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 transition-colors disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
             >
                 {isForgotLoading ? "Sending..." : "Send Reset Link"}
             </button>
             <button
                 type="button"
                 onClick={onBackToLogin}
-                className="w-full text-sm text-gray-500 hover:text-gray-900 mt-4 font-medium"
+                className="w-full text-sm text-gray-500 hover:text-gray-900 mt-4 font-medium cursor-pointer"
             >
                 Back to Login
             </button>

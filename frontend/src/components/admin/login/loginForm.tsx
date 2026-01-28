@@ -30,7 +30,7 @@ export function LoginForm({ redirect = "/home" }: { redirect: string }) {
                 if (isAdminPath) {
                     router.push("/admin/products/list");
                 } else {
-                    dispatch(userApi.util.invalidateTags(["User"]));
+                    dispatch(userApi.util.invalidateTags(["User", "Wishlist", "Cart"]));
                     router.push("/home");
                 }
             } catch (err: any) {
@@ -70,7 +70,7 @@ export function LoginForm({ redirect = "/home" }: { redirect: string }) {
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-black text-white font-semibold py-3 rounded-lg hover:bg-gray-800 transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed mt-4 shadow-lg shadow-black/10"
+                className="w-full bg-black text-white font-semibold py-3 rounded-lg hover:bg-gray-800 transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer mt-4 shadow-lg shadow-black/10"
             >
                 {isLoading ? "Authenticating..." : "Sign In"}
             </button>
