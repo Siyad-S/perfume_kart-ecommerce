@@ -270,7 +270,7 @@ export default function CartPage() {
                                                 <button
                                                     onClick={() => handleDecrement(item.product_id)}
                                                     disabled={qty <= 1 || updating}
-                                                    className="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm text-gray-600 hover:text-black disabled:opacity-50 transition-colors"
+                                                    className="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm text-gray-600 hover:text-black disabled:opacity-50 transition-colors cursor-pointer"
                                                 >
                                                     <Minus className="w-3 h-3" />
                                                 </button>
@@ -278,7 +278,7 @@ export default function CartPage() {
                                                 <button
                                                     onClick={() => handleIncrement(item.product_id)}
                                                     disabled={updating}
-                                                    className="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm text-gray-600 hover:text-black disabled:opacity-50 transition-colors"
+                                                    className="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm text-gray-600 hover:text-black disabled:opacity-50 transition-colors cursor-pointer"
                                                 >
                                                     <Plus className="w-3 h-3" />
                                                 </button>
@@ -296,7 +296,7 @@ export default function CartPage() {
                                                     if (card) handleRemove(item.product_id, card);
                                                 }}
                                                 disabled={updating}
-                                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+                                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all cursor-pointer"
                                                 title="Remove Item"
                                             >
                                                 <Trash className="w-5 h-5" />

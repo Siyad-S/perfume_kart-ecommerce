@@ -143,7 +143,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <button
                     ref={wishlistRef}
                     onClick={handleWishlistToggle}
-                    className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-neutral-900 shadow-sm hover:bg-white transition-colors opacity-0 translate-x-4"
+                    className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-neutral-900 shadow-sm hover:bg-white transition-colors opacity-0 translate-x-4 cursor-pointer"
                     disabled={isToggling}
                 >
                     <Heart
