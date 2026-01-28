@@ -55,7 +55,6 @@ export function LoginForm({ redirect = "/home" }: { redirect: string }) {
 
                 <div className="flex items-center justify-between mt-5 mb-1.5">
                     <label className="text-sm font-semibold text-gray-700">Password</label>
-                    <a href="#" className="text-xs text-gray-500 hover:text-black">Forgot?</a>
                 </div>
                 <input
                     type="password"

@@ -26,46 +26,50 @@ export function SignupForm({ setIsLogin = (isLogin: boolean) => void 0 }: { setI
     });
 
     return (
-        <form onSubmit={formik.handleSubmit} className="space-y-4 flex flex-col min-h-[300px] justify-between">
+        <form onSubmit={formik.handleSubmit} className="space-y-4 flex flex-col h-fit justify-between">
             <div>
-                <label className="block mb-1 font-medium">Name</label>
+                <label className="block mb-1.5 text-sm font-semibold text-gray-700">Name</label>
                 <input
                     type="text"
                     {...formik.getFieldProps("name")}
-                    className="w-full border rounded-lg p-2"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all"
                     placeholder="Enter your name"
                 />
                 {formik.touched.name && formik.errors.name && (
-                    <p className="text-red-500 text-sm">{formik.errors.name}</p>
+                    <p className="text-red-500 text-xs mt-1 font-medium">{formik.errors.name}</p>
                 )}
 
-                <label className="block mb-1 font-medium mt-2">Email</label>
-                <input
-                    type="email"
-                    {...formik.getFieldProps("email")}
-                    className="w-full border rounded-lg p-2"
-                    placeholder="Enter your email"
-                />
-                {formik.touched.email && formik.errors.email && (
-                    <p className="text-red-500 text-sm">{formik.errors.email}</p>
-                )}
+                <div className="mt-4">
+                    <label className="block mb-1.5 text-sm font-semibold text-gray-700">Email</label>
+                    <input
+                        type="email"
+                        {...formik.getFieldProps("email")}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all"
+                        placeholder="Enter your email"
+                    />
+                    {formik.touched.email && formik.errors.email && (
+                        <p className="text-red-500 text-xs mt-1 font-medium">{formik.errors.email}</p>
+                    )}
+                </div>
 
-                <label className="block mb-1 font-medium mt-2">Password</label>
-                <input
-                    type="password"
-                    {...formik.getFieldProps("password")}
-                    className="w-full border rounded-lg p-2"
-                    placeholder="Enter your password"
-                />
-                {formik.touched.password && formik.errors.password && (
-                    <p className="text-red-500 text-sm">{formik.errors.password}</p>
-                )}
+                <div className="mt-4">
+                    <label className="block mb-1.5 text-sm font-semibold text-gray-700">Password</label>
+                    <input
+                        type="password"
+                        {...formik.getFieldProps("password")}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all"
+                        placeholder="Enter your password"
+                    />
+                    {formik.touched.password && formik.errors.password && (
+                        <p className="text-red-500 text-xs mt-1 font-medium">{formik.errors.password}</p>
+                    )}
+                </div>
             </div>
 
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-black text-white py-2 rounded-lg"
+                className="w-full bg-black text-white font-semibold py-3 rounded-lg hover:bg-gray-800 transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed mt-4 shadow-lg shadow-black/10"
             >
                 {isLoading ? "Signing up..." : "Sign Up"}
             </button>
