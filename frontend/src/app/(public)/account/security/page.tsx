@@ -6,22 +6,17 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "sonner";
 import { useState, useRef } from "react";
-import { Eye, EyeOff, Lock, Key, ShieldCheck, Loader2 } from "lucide-react";
+import { Lock, Key, ShieldCheck, Loader2 } from "lucide-react";
 import { useTypedSelector } from "@/src/redux/store";
 import { useUpdateUserMutation } from "@/src/redux/apis/users";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { PasswordInput } from "@/src/components/ui/password-input";
 
 export default function SecurityPage() {
     const user = useTypedSelector((state) => state.auth.user);
     const isLoggedIn = !!user?._id;
     const containerRef = useRef<HTMLDivElement>(null);
-
-    const [showPassword, setShowPassword] = useState({
-        current: false,
-        new: false,
-        confirm: false,
-    });
 
     const [updateUser, { isLoading }] = useUpdateUserMutation();
 
@@ -97,9 +92,7 @@ export default function SecurityPage() {
         }
     });
 
-    const togglePassword = (field: "current" | "new" | "confirm") => {
-        setShowPassword((prev) => ({ ...prev, [field]: !prev[field] }));
-    };
+
 
     useGSAP(() => {
         const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
@@ -138,9 +131,8 @@ export default function SecurityPage() {
                     <div className="space-y-1.5">
                         <label className="text-sm font-medium text-gray-700">Current Password</label>
                         <div className="relative">
-                            <Key className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                            <Input
-                                type={showPassword.current ? "text" : "password"}
+                            <Key className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 z-10" />
+                            <PasswordInput
                                 name="password"
                                 placeholder="Enter current password"
                                 className="pl-9 pr-10 bg-white"
@@ -148,13 +140,6 @@ export default function SecurityPage() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                             />
-                            <button
-                                type="button"
-                                onClick={() => togglePassword("current")}
-                                className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 focus:outline-none"
-                            >
-                                {showPassword.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                            </button>
                         </div>
                         {formik.touched.password && formik.errors.password && (
                             <p className="text-red-500 text-xs mt-1">{formik.errors.password}</p>
@@ -166,9 +151,8 @@ export default function SecurityPage() {
                         <div className="space-y-1.5">
                             <label className="text-sm font-medium text-gray-700">New Password</label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                                <Input
-                                    type={showPassword.new ? "text" : "password"}
+                                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 z-10" />
+                                <PasswordInput
                                     name="newPassword"
                                     placeholder="Enter new password"
                                     className="pl-9 pr-10 bg-white"
@@ -176,13 +160,6 @@ export default function SecurityPage() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => togglePassword("new")}
-                                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 focus:outline-none"
-                                >
-                                    {showPassword.new ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                </button>
                             </div>
                             {formik.touched.newPassword && formik.errors.newPassword && (
                                 <p className="text-red-500 text-xs mt-1">{formik.errors.newPassword}</p>
@@ -193,9 +170,8 @@ export default function SecurityPage() {
                         <div className="space-y-1.5">
                             <label className="text-sm font-medium text-gray-700">Confirm Password</label>
                             <div className="relative">
-                                <ShieldCheck className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                                <Input
-                                    type={showPassword.confirm ? "text" : "password"}
+                                <ShieldCheck className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 z-10" />
+                                <PasswordInput
                                     name="confirmPassword"
                                     placeholder="Confirm new password"
                                     className="pl-9 pr-10 bg-white"
@@ -203,13 +179,6 @@ export default function SecurityPage() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => togglePassword("confirm")}
-                                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 focus:outline-none"
-                                >
-                                    {showPassword.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                </button>
                             </div>
                             {formik.touched.confirmPassword && formik.errors.confirmPassword && (
                                 <p className="text-red-500 text-xs mt-1">{formik.errors.confirmPassword}</p>

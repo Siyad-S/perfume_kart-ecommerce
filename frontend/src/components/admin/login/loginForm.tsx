@@ -6,6 +6,7 @@ import { useLoginMutation } from "@/src/redux/apis/auth";
 import { userApi } from "@/src/redux/apis/users";
 import { usePathname, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
+import { PasswordInput } from "../../ui/password-input";
 
 export function LoginForm({ redirect = "/home" }: { redirect: string }) {
     const [login, { isLoading }] = useLoginMutation();
@@ -56,8 +57,7 @@ export function LoginForm({ redirect = "/home" }: { redirect: string }) {
                 <div className="flex items-center justify-between mt-5 mb-1.5">
                     <label className="text-sm font-semibold text-gray-700">Password</label>
                 </div>
-                <input
-                    type="password"
+                <PasswordInput
                     {...formik.getFieldProps("password")}
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all"
                     placeholder="••••••••"

@@ -8,6 +8,7 @@ import Link from "next/link";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { toast } from "sonner";
+import { PasswordInput } from "@/src/components/ui/password-input";
 
 function ResetPasswordContent() {
     const params = useParams();
@@ -134,8 +135,7 @@ function ResetPasswordContent() {
                     <form onSubmit={handleSubmit} className="space-y-4 form-animate-item">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
@@ -146,8 +146,7 @@ function ResetPasswordContent() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required

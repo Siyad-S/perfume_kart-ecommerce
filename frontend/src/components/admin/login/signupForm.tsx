@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "sonner";
 import { useSignupMutation } from "@/src/redux/apis/auth";
+import { PasswordInput } from "../../ui/password-input";
 
 export function SignupForm({ setIsLogin = (isLogin: boolean) => void 0 }: { setIsLogin: (isLogin: boolean) => void }) {
     const [signup, { isLoading }] = useSignupMutation();
@@ -54,8 +55,7 @@ export function SignupForm({ setIsLogin = (isLogin: boolean) => void 0 }: { setI
 
                 <div className="mt-4">
                     <label className="block mb-1.5 text-sm font-semibold text-gray-700">Password</label>
-                    <input
-                        type="password"
+                    <PasswordInput
                         {...formik.getFieldProps("password")}
                         className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all"
                         placeholder="Enter your password"
