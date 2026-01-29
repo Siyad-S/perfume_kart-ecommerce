@@ -5,14 +5,15 @@ import { ProfileMenu } from "./profileMenu"
 import { AiScentMatch } from "@/src/components/ai/AiScentMatch"
 import { useCart } from "@/src/hooks/useCart";
 import { useWishlist } from "@/src/hooks/useWishlist";
+import { useMemo } from "react"
 
 
 export function NavIcons() {
     const { cart } = useCart();
     const { wishlistItems } = useWishlist();
 
-    const cartCount = cart.length;
-    const wishlistCount = wishlistItems.length;
+    const cartCount = useMemo(() => cart.length, [cart]);
+    const wishlistCount = useMemo(() => wishlistItems.length, [wishlistItems]);
 
     return (
         <div className="hidden md:flex items-center gap-4">

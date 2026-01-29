@@ -21,7 +21,7 @@ export default function WishlistPage() {
             .filter((product: any) => !!product);
     }, [wishlistItems]);
 
-    const isLoading = false; // Guest/Local is instant. If we want global loading, we can add it to hook.
+    const isLoading = false;
     const isEmpty = products.length === 0;
 
     useGSAP(
