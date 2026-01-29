@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetUserQuery, useToggleWishlistMutation, useGetWishlistQuery } from "@/src/redux/apis/users";
+import { useTypedSelector } from "@/src/redux/store";
 import { getGuestWishlist, setGuestWishlist, WishlistItemType } from "@/src/utils/guestWishlist";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -14,8 +15,7 @@ export interface ProductInput {
 }
 
 export const useWishlist = () => {
-    const { data: userData } = useGetUserQuery();
-    const user = userData?.data?.user;
+    const user = useTypedSelector((state) => state.auth.user);
     const { data: wishlistData } = useGetWishlistQuery(user?._id || "", {
         skip: !user?._id,
     });

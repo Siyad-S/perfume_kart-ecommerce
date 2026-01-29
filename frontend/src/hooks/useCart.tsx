@@ -26,12 +26,12 @@ export const useCart = () => {
             setCart(guestCart);
         };
 
-        if (isLoggedIn && data?.data) {
-            setCart(data.data);
-        } else if (!isLoggedIn) {
-            // Initial fetch
+        if (isLoggedIn) {
+            if (data?.data) {
+                setCart(data.data);
+            }
+        } else {
             updateGuestCart();
-            // Listen for updates
             window.addEventListener("guest-cart-updated", updateGuestCart);
         }
 
@@ -59,7 +59,6 @@ export const useCart = () => {
         if (itemCount === 0) return 0;
         const baseShipping = 40;
         const perItemCharge = 10;
-        // (itemCount - 1) handles the first item being included in base
         return baseShipping + Math.max(0, itemCount - 1) * perItemCharge;
     }, [itemCount]);
 
