@@ -59,7 +59,7 @@ export function LoginForm({ redirect = "/home" }: { redirect: string }) {
                 </div>
                 <PasswordInput
                     {...formik.getFieldProps("password")}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all h-auto"
                     placeholder="••••••••"
                 />
                 {formik.touched.password && formik.errors.password && (
