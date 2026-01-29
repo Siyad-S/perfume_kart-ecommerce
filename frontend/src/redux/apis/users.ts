@@ -26,7 +26,7 @@ export const userApi = createApi({
                 method: "PATCH",
                 body: updates, // only send updated fields
             }),
-            invalidatesTags: ["User", "Cart"],
+            invalidatesTags: ["User", "Cart", "Wishlist", "Addresses"],
         }),
 
         //get cart data
