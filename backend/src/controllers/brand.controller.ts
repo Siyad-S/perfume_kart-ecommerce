@@ -50,6 +50,12 @@ export const list = catchAsync(async (
             case 'createdAt_desc':
                 listSort = { createdAt: -1 };
                 break;
+            case 'origin_asc':
+                listSort = { origin: 1 };
+                break;
+            case 'origin_desc':
+                listSort = { origin: -1 };
+                break;
             default:
                 listSort = { createdAt: -1 };
                 break;
