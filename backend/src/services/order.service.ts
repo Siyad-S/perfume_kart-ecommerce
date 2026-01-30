@@ -22,9 +22,10 @@ export const update = async (id: mongoose.Types.ObjectId, updateData: Partial<Or
 export const list = async (
   skip: number | null,
   limit: number | null,
-  filter: any = {},
+  filterInput: any = {},
   includes: string[] = [],
 ) => {
+  const filter = { ...filterInput };
   let aggregationQuery: any[] = [];
   const search = filter?.search?.trim() || null;
   const sortOrder = filter?.sort

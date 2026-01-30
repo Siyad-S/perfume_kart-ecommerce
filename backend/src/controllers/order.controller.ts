@@ -73,9 +73,7 @@ export const getOrders = catchAsync(async (
 
   const { search, skip, limit, sort, filter: bodyFilter } = req.body;
 
-  const orders = await OrderServices?.list(skip, limit, bodyFilter || {}, includes); // improved call
-
-  const filter = bodyFilter || {};
+  const filter = { ...(bodyFilter || {}) };
   let listSort: any = { createdAt: -1 };
 
   if (sort) {
@@ -84,8 +82,8 @@ export const getOrders = catchAsync(async (
       'order_date_desc': { order_date: -1 },
       'createdAt_asc': { createdAt: 1 },
       'createdAt_desc': { createdAt: -1 },
-      'total_amount_asc': { total_price: 1 },
-      'total_amount_desc': { total_price: -1 },
+      'total_amount_asc': { total_amount: 1 },
+      'total_amount_desc': { total_amount: -1 },
       'paid_at_asc': { paid_at: 1 },
       'paid_at_desc': { paid_at: -1 }
     };
@@ -94,7 +92,6 @@ export const getOrders = catchAsync(async (
 
   filter.sort = listSort;
   if (search) filter.search = search;
-  if (filter.order_status) filter.status = filter.order_status;
 
   const result = await OrderServices?.list(skip || 0, limit || 10, filter, includes);
   return responseFormatter(res, result, 'Order list', 200);

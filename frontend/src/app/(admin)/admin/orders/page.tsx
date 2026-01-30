@@ -9,6 +9,13 @@ import { toast, Toaster } from "sonner";
 import Loader from "@/src/components/common/loader";
 import { getErrorMessage } from "@/src/lib/utils";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/src/components/ui/select";
 
 type SortColumn = "order_date" | "createdAt" | "total_amount" | "paid_at";
 type SortValue =
@@ -119,20 +126,24 @@ export default function OrdersPage() {
                 totalCount={orders?.data?.totalCount || 0}
                 filters={
                     <div className="flex items-center space-x-2">
-                        <select
+                        <Select
                             value={statusFilter}
-                            onChange={(e) => {
-                                setStatusFilter(e.target.value);
+                            onValueChange={(value) => {
+                                setStatusFilter(value);
                                 setCurrentPage(1); // reset pagination
                             }}
-                            className="border capitalize border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 h-10 bg-background"
                         >
-                            {statuses?.map((status, index) => (
-                                <option key={index} value={status} className="capitalize">
-                                    {status}
-                                </option>
-                            ))}
-                        </select>
+                            <SelectTrigger className="w-[180px] capitalize bg-background">
+                                <SelectValue placeholder="Filter by status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {statuses?.map((status, index) => (
+                                    <SelectItem key={index} value={status} className="capitalize">
+                                        {status}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 }
                 columns={[
