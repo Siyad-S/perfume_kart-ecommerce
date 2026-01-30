@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "sonner";
@@ -13,6 +14,11 @@ export function LoginForm({ redirect = "/home" }: { redirect: string }) {
     const router = useRouter();
     const path = usePathname();
     const dispatch = useDispatch()
+
+    useEffect(() => {
+        document.body.style.pointerEvents = "";
+        document.body.style.overflow = "";
+    }, []);
 
     const formik = useFormik({
         initialValues: { email: "", password: "" },

@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation"
 import { useGetUserQuery } from "@/src/redux/apis/users"
 import { ConfirmationModal } from "../common/confirmationModal"
 import { useState } from "react"
+import { toast } from "sonner"
 
 export function AdminNav() {
   const [logout, { isLoading }] = useLogoutMutation()
@@ -28,12 +29,14 @@ export function AdminNav() {
 
   const handleLogout = async () => {
     setIsLogoutModalOpen(false)
-    await logout()
-    setTimeout(() => {
-      document.body.style.pointerEvents = ""
-      document.body.style.overflow = ""
+    try {
+      await logout()
+      toast.success("Logged out successfully!");
       router.push("/admin/auth")
-    }, 0)
+    } catch (error) {
+      console.error("Logout failed:", error)
+      toast.error("Logout failed");
+    }
   }
 
   return (
