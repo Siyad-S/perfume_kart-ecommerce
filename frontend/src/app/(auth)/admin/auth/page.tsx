@@ -91,7 +91,7 @@ export default function LoginPage() {
                         Precision tools for your digital storefront. Manage inventory, track analytics, and oversee operations in a unified environment.
                     </p>
 
-                    <div className="mt-12 flex gap-4">
+                    {/* <div className="mt-12 flex gap-4">
                         <div className="flex -space-x-3">
                             {[1, 2, 3].map(i => (
                                 <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-500 shadow-sm">
@@ -103,7 +103,7 @@ export default function LoginPage() {
                             <span className="font-semibold text-gray-900">Team Active</span>
                             <span className="text-gray-400">Collaborate securely.</span>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
@@ -127,24 +127,25 @@ export default function LoginPage() {
 
                     {!isForgot && (
                         /* Tab Switcher */
-                        <div className="flex bg-gray-200/50 p-1 rounded-xl mb-8 relative">
-                            <button
-                                onClick={() => setIsLogin(true)}
-                                className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 ${isLogin
-                                    ? "bg-white text-gray-900 shadow-sm"
-                                    : "text-gray-500 hover:text-gray-700"}`}
-                            >
-                                Log In
-                            </button>
-                            <button
-                                onClick={() => setIsLogin(false)}
-                                className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 ${!isLogin
-                                    ? "bg-white text-gray-900 shadow-sm"
-                                    : "text-gray-500 hover:text-gray-700"}`}
-                            >
-                                Sign Up
-                            </button>
-                        </div>
+                        // <div className="flex bg-gray-200/50 p-1 rounded-xl mb-8 relative">
+                        //     <button
+                        //         onClick={() => setIsLogin(true)}
+                        //         className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 ${isLogin
+                        //             ? "bg-white text-gray-900 shadow-sm"
+                        //             : "text-gray-500 hover:text-gray-700"}`}
+                        //     >
+                        //         Log In
+                        //     </button>
+                        //     <button
+                        //         onClick={() => setIsLogin(false)}
+                        //         className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 ${!isLogin
+                        //             ? "bg-white text-gray-900 shadow-sm"
+                        //             : "text-gray-500 hover:text-gray-700"}`}
+                        //     >
+                        //         Sign Up
+                        //     </button>
+                        // </div>
+                        <></>
                     )}
 
                     <div className="bg-white border border-gray-100 p-8 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
