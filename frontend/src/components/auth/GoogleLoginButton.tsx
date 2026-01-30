@@ -7,10 +7,11 @@ interface GoogleLoginButtonProps {
 
 export const GoogleLoginButton = ({ isAdmin = false }: GoogleLoginButtonProps) => {
     const handleGoogleLogin = () => {
+        let authUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
         if (isAdmin) {
-            Cookies.set('admin_login_intent', 'true', { expires: 1 / 24 }); // Expires in 1 hour
+            authUrl += '?role=admin';
         }
-        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+        window.location.href = authUrl;
     };
 
     return (

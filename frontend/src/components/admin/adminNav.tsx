@@ -28,12 +28,12 @@ export function AdminNav() {
 
   const handleLogout = async () => {
     setIsLogoutModalOpen(false)
-    try {
-      await logout()
+    await logout()
+    setTimeout(() => {
+      document.body.style.pointerEvents = ""
+      document.body.style.overflow = ""
       router.push("/admin/auth")
-    } catch (error) {
-      console.error("Logout failed:", error)
-    }
+    }, 0)
   }
 
   return (
