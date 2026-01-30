@@ -82,15 +82,22 @@ export const list = async (
 
     if (search) {
         const searchRegex = new RegExp(search, 'i');
+        const orConditions: any[] = [
+            { 'razorpay.order_id': { $regex: searchRegex } },
+            { 'razorpay.payment_id': { $regex: searchRegex } },
+        ];
+
+        if (mongoose.isValidObjectId(search)) {
+            orConditions.push({ order_id: new mongoose.Types.ObjectId(search) });
+        }
+
+        if (includes.includes('user')) {
+            orConditions.push({ 'user.name': { $regex: searchRegex } });
+        }
+
         aggregationQuery.push({
             $match: {
-                $or: [
-                    { 'razorpay.order_id': { $regex: searchRegex } },
-                    { 'razorpay.payment_id': { $regex: searchRegex } },
-                    ...(includes.includes('user')
-                        ? [{ 'user.name': { $regex: searchRegex } }]
-                        : []),
-                ],
+                $or: orConditions,
             },
         });
     }

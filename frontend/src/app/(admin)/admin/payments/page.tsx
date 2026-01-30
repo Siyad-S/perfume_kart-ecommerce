@@ -31,6 +31,10 @@ interface Payment {
         name: string;
         email: string;
     };
+    razorpay?: {
+        payment_id: string;
+        order_id: string;
+    };
     amount?: number;
     payment_method?: string;
     payment_status?: string;
@@ -163,12 +167,17 @@ export default function PaymentsPage() {
                     {
                         key: "order_id",
                         label: "Order ID",
-                        render: (item: Payment) => item.order_id || "N/A",
+                        render: (item: Payment) => item?.order_id || "N/A",
                     },
                     {
-                        key: "payment_id",
-                        label: "Payment ID",
-                        render: (item: Payment) => item.payment_id || "N/A",
+                        key: "gateway_order_id",
+                        label: "Gateway Order ID",
+                        render: (item: Payment) => item?.razorpay?.order_id || "N/A",
+                    },
+                    {
+                        key: "gateway_payment_id",
+                        label: "Gateway Payment ID",
+                        render: (item: Payment) => item?.razorpay?.payment_id || "N/A",
                     },
                     {
                         key: "createdAt",
