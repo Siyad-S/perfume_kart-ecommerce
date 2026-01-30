@@ -40,7 +40,7 @@ export function AdminNav() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6 shadow-sm">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background pl-14 pr-6 md:px-6 shadow-sm">
       <ConfirmationModal
         open={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
