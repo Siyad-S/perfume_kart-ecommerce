@@ -7,11 +7,15 @@ const router = Router();
 //Google redirect
 router.get(
     '/google',
-    passport.authenticate('google', {
-        session: false,
-        scope: ['profile', 'email'],
-        prompt: 'select_account',
-    })
+    (req, res, next) => {
+        const state = req.query.role === 'admin' ? 'role=admin' : undefined;
+        passport.authenticate('google', {
+            session: false,
+            scope: ['profile', 'email'],
+            prompt: 'select_account',
+            state: state,
+        })(req, res, next);
+    }
 );
 
 //Google callback

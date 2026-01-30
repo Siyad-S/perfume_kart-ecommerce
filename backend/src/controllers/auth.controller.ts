@@ -33,7 +33,8 @@ export const googleCallback = catchAsync(async (req: Request, res: Response, nex
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    const isAdminIntent = req.cookies.admin_login_intent === 'true';
+    const state = req.query.state as string;
+    const isAdminIntent = state === 'role=admin' && user.role === 'admin';
     const redirectUrl = isAdminIntent
         ? `${config.clientUrl}/admin/auth/success`
         : `${config.clientUrl}/auth/success`;
